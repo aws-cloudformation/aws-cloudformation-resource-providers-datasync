@@ -1,5 +1,8 @@
 package software.amazon.datasync.agent;
 
+import jdk.internal.agent.Agent;
+import software.amazon.awssdk.services.datasync.model.AgentListEntry;
+import software.amazon.awssdk.services.datasync.model.ListAgentsResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.OperationStatus;
@@ -11,7 +14,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,6 +31,8 @@ public class ListHandlerTest {
     @Mock
     private Logger logger;
 
+    final String agentArn = "agent-0ae8ac8434143ac66";
+
     @BeforeEach
     public void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
@@ -33,10 +43,22 @@ public class ListHandlerTest {
     public void handleRequest_SimpleSuccess() {
         final ListHandler handler = new ListHandler();
 
-        final ResourceModel model = ResourceModel.builder().build();
+        final List<AgentListEntry> agents = new ArrayList<>();
+
+        AgentListEntry agent1 = AgentListEntry.builder().agentArn(agentArn).build();
+        AgentListEntry agent2 = AgentListEntry.builder().agentArn(agentArn).build();
+        agents.add(agent1);
+        agents.add(agent2);
+
+        ListAgentsResponse listAgentsResponse = ListAgentsResponse.builder()
+                .agents(agents)
+                .build();
+
+        doReturn(listAgentsResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(any(), any());
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-            .desiredResourceState(model)
             .build();
 
         final ProgressEvent<ResourceModel, CallbackContext> response =

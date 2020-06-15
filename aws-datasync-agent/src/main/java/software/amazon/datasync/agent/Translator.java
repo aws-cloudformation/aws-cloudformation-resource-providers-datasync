@@ -10,28 +10,28 @@ public class Translator {
 
     Translator() {}
 
-//    public static CreateAgentRequest translateToCreateRequest(final ResourceModel model) {
-//        return CreateAgentRequest.builder()
-//                .agentName(model.getAgentName())
-//                .activationKey(model.getActivationKey())
-//                .securityGroupArns(model.getSecurityGroupArns())
-//                .subnetArns(model.getSubnetArns())
-//                .vpcEndpointId(model.getVpcEndpointId())
-//                .build();
-//    }
-
     public static CreateAgentRequest translateToCreateRequest(final ResourceModel model) {
-        final CreateAgentRequest.Builder createAgentRequestBuilder =
-                CreateAgentRequest.builder().activationKey(model.getActivationKey());
-
-        checkString(model.getAgentName()).ifPresent(createAgentRequestBuilder::agentName);
-        checkList(model.getSecurityGroupArns()).ifPresent(createAgentRequestBuilder::securityGroupArns);
-        checkList(model.getSubnetArns()).ifPresent(createAgentRequestBuilder::subnetArns);
-        checkString(model.getVpcEndpointId()).ifPresent(createAgentRequestBuilder::vpcEndpointId);
-
-        return createAgentRequestBuilder.build();
-
+        return CreateAgentRequest.builder()
+                .agentName(model.getAgentName())
+                .activationKey(model.getActivationKey())
+                .securityGroupArns(model.getSecurityGroupArns())
+                .subnetArns(model.getSubnetArns())
+                .vpcEndpointId(model.getVpcEndpointId())
+                .build();
     }
+
+//    public static CreateAgentRequest translateToCreateRequest(final ResourceModel model) {
+//        final CreateAgentRequest.Builder createAgentRequestBuilder =
+//                CreateAgentRequest.builder().activationKey(model.getActivationKey());
+//
+//        checkString(model.getAgentName()).ifPresent(createAgentRequestBuilder::agentName);
+//        checkList(model.getSecurityGroupArns()).ifPresent(createAgentRequestBuilder::securityGroupArns);
+//        checkList(model.getSubnetArns()).ifPresent(createAgentRequestBuilder::subnetArns);
+//        checkString(model.getVpcEndpointId()).ifPresent(createAgentRequestBuilder::vpcEndpointId);
+//
+//        return createAgentRequestBuilder.build();
+//
+//    }
 
     public static DeleteAgentRequest translateToDeleteRequest(final ResourceModel model) {
         return DeleteAgentRequest.builder()

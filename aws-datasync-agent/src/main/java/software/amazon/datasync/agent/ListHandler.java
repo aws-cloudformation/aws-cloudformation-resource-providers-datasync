@@ -16,10 +16,10 @@ public class ListHandler extends BaseHandler<CallbackContext> {
 
     @Override
     public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
-        final AmazonWebServicesClientProxy proxy,
-        final ResourceHandlerRequest<ResourceModel> request,
-        final CallbackContext callbackContext,
-        final Logger logger) {
+            final AmazonWebServicesClientProxy proxy,
+            final ResourceHandlerRequest<ResourceModel> request,
+            final CallbackContext callbackContext,
+            final Logger logger) {
 
         final String nextToken = request.getNextToken();
         final DataSyncClient client = ClientBuilder.getClient();
@@ -27,13 +27,13 @@ public class ListHandler extends BaseHandler<CallbackContext> {
         final List<ResourceModel> models = listAgents(nextToken, proxy, client);
 
         return ProgressEvent.<ResourceModel, CallbackContext>builder()
-            .resourceModels(models)
-            .status(OperationStatus.SUCCESS)
-            .build();
+                .resourceModels(models)
+                .status(OperationStatus.SUCCESS)
+                .build();
     }
 
     private List<ResourceModel> listAgents(final String nextToken, final AmazonWebServicesClientProxy proxy,
-                                            DataSyncClient client) {
+                                           DataSyncClient client) {
 
         final ListAgentsRequest request = Translator.translateToListRequest(nextToken);
 

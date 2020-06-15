@@ -1,0 +1,18 @@
+{
+    "credentials": {
+        "accessKeyId": "ASIAWMOOV5YTPCIUTRWA",
+        "secretAccessKey": "s4wNGesOZbjfSIqGv7inXAGMwVmBkp1ZW62jF7An",
+        "sessionToken": "FwoGZXIvYXdzED8aDFzxGovP8uz3l2SoPCKCAdHsC7frDASbRCH/1xlPZjNUHzqUoIlAoyPDzgjx/24QQG/vlT56RAHtHLe2t+XZ/IK54iA0hAuXMWtt9CMBJB00xWkPCFOF2WOhqCn0YGPR/wKIP6R6lVEj7E2F8zEusZA9WQapnC+G7Xat/683My5cxEnbaNc8sEy/GHM1dSiX6A0opeSd9wUyKM58jwi/Oiclh5p0j0adTn219GKMIX93s87SDyKw61UEg/HBIDXiL6Q="
+    },
+    "action": "CREATE",
+    "request": {
+        "clientRequestToken": "4b90a7e4-b790-456b-a937-0cfdfa211dfe",
+        "desiredResourceState": {
+            "AgentName": "MyAgent",
+            "ActivationKey": "P8ORJ-C3G9Q-T06OT-7RQ0B-93SFV"
+        },
+        "logicalResourceIdentifier": "MyResource"
+    },
+    "callbackContext": null,
+    "region" : "us-east-1"
+}

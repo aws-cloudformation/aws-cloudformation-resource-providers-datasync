@@ -1,18 +1,24 @@
 package software.amazon.datasync.agent;
 
-import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
-import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.OperationStatus;
-import software.amazon.cloudformation.proxy.ProgressEvent;
-import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import com.amazonaws.AmazonServiceException;
+import software.amazon.awssdk.core.exception.SdkException;
+import software.amazon.awssdk.services.datasync.DataSyncClient;
+import software.amazon.awssdk.services.datasync.model.*;
+import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
+import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
+import software.amazon.cloudformation.proxy.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import static org.mockito.ArgumentMatchers.any;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateHandlerTest {
@@ -22,6 +28,12 @@ public class CreateHandlerTest {
 
     @Mock
     private Logger logger;
+
+    @Mock
+    private ProxyClient<DataSyncClient> proxyClient;
+
+    final String activationKey = "P8ORJ-C3G9Q-T06OT-7RQ0B-93SFV";
+
 
     @BeforeEach
     public void setup() {
@@ -33,11 +45,15 @@ public class CreateHandlerTest {
     public void handleRequest_SimpleSuccess() {
         final CreateHandler handler = new CreateHandler();
 
-        final ResourceModel model = ResourceModel.builder().build();
+        final ResourceModel model = ResourceModel.builder()
+                .activationKey(activationKey)
+                .agentName("MyAgent")
+                .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
             .build();
+
 
         final ProgressEvent<ResourceModel, CallbackContext> response
             = handler.handleRequest(proxy, request, null, logger);
@@ -46,9 +62,99 @@ public class CreateHandlerTest {
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModel()).isEqualTo(request.getDesiredResourceState());
+        assertThat(response.getResourceModel()).isEqualTo(model);
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
+    }
+
+    @Test
+    public void handleRequest_FailureUnknownError() {
+        final CreateHandler handler = new CreateHandler();
+
+        // Throw an unknown error whenever the DataSync API is called
+        doThrow(SdkException.builder().message("test unknown error").build())
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(any(), any());
+
+        final ResourceModel model = ResourceModel.builder()
+                .activationKey(activationKey)
+                .agentName("MyAgent")
+                .build();
+
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(model)
+                .build();
+
+        assertThrows(SdkException.class, () -> {
+            handler.handleRequest(proxy, request, null, logger);
+        } );
+    }
+
+    @Test
+    public void handleRequest_FailureInvalidRequest() {
+        final CreateHandler handler = new CreateHandler();
+
+        doThrow(InvalidRequestException.class)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(any(CreateAgentRequest.class), any());
+
+        final ResourceModel model = ResourceModel.builder()
+                .activationKey(activationKey)
+                .agentName("MyAgent")
+                .build();
+
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(model)
+                .build();
+
+        assertThrows(CfnInvalidRequestException.class, () -> {
+            handler.handleRequest(proxy, request, null, logger);
+        } );
+    }
+
+    @Test
+    public void handleRequest_FailureInternalException() {
+        final CreateHandler handler = new CreateHandler();
+
+        doThrow(InternalException.class)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(any(CreateAgentRequest.class), any());
+
+        final ResourceModel model = ResourceModel.builder()
+                .activationKey(activationKey)
+                .agentName("MyAgent")
+                .build();
+
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(model)
+                .build();
+
+        assertThrows(CfnServiceInternalErrorException.class, () -> {
+            handler.handleRequest(proxy, request, null, logger);
+        } );
+
+    }
+
+    @Test
+    public void handleRequest_FailureDataSyncException() {
+        final CreateHandler handler = new CreateHandler();
+
+        doThrow(DataSyncException.class)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(any(CreateAgentRequest.class), any());
+
+        final ResourceModel model = ResourceModel.builder()
+                .activationKey(activationKey)
+                .agentName("MyAgent")
+                .build();
+
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(model)
+                .build();
+
+        assertThrows(CfnGeneralServiceException.class, () -> {
+            handler.handleRequest(proxy, request, null, logger);
+        } );
     }
 }
