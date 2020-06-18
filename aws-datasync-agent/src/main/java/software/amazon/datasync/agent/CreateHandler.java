@@ -46,6 +46,7 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
                 .securityGroupArns(model.getSecurityGroupArns())
                 .subnetArns(model.getSubnetArns())
                 .vpcEndpointId(model.getVpcEndpointId())
+                .tags(model.getTags())
                 .build();
 
         return ProgressEvent.defaultSuccessHandler(returnModel);

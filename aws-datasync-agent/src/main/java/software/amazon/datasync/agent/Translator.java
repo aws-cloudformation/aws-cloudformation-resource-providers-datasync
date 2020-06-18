@@ -1,6 +1,16 @@
 package software.amazon.datasync.agent;
 
-import software.amazon.awssdk.services.datasync.model.*;
+
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import software.amazon.awssdk.services.datasync.model.CreateAgentRequest;
+import software.amazon.awssdk.services.datasync.model.DeleteAgentRequest;
+import software.amazon.awssdk.services.datasync.model.ListAgentsRequest;
+import software.amazon.awssdk.services.datasync.model.UpdateAgentRequest;
+import software.amazon.awssdk.services.datasync.model.DescribeAgentRequest;
+import software.amazon.awssdk.services.datasync.model.TagListEntry;
 
 public class Translator {
 
@@ -13,8 +23,8 @@ public class Translator {
                 .securityGroupArns(model.getSecurityGroupArns())
                 .subnetArns(model.getSubnetArns())
                 .vpcEndpointId(model.getVpcEndpointId())
+                .tags(Translator.translateTags(model.getTags()))
                 .build();
-
     }
 
     public static DeleteAgentRequest translateToDeleteRequest(final ResourceModel model) {
@@ -41,5 +51,14 @@ public class Translator {
         return DescribeAgentRequest.builder()
                 .agentArn(model.getAgentArn())
                 .build();
+    }
+
+    // Convert Tag to TagListEntry
+    static Set<TagListEntry> translateTags(final Set<Tag> tags) {
+        if (tags == null)
+            return Collections.emptySet();
+        return tags.stream()
+                .map(tag -> TagListEntry.builder().key(tag.getKey()).value(tag.getValue()).build())
+                .collect(Collectors.toSet());
     }
 }

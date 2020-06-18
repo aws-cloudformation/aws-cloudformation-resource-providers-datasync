@@ -8,11 +8,14 @@
     "request": {
         "clientRequestToken": "4b90a7e4-b790-456b-a937-0cfdfa211dfe",
         "desiredResourceState": {
-            "ActivationKey": "DU6FB-F993R-25QAM-SVM69-MS5NQ",
-            "VpcEndpointId": null,
-            "SecurityGroupArns": null,
-            "SubnetArns": null,
-            "AgentName": "MyAgent"
+            "ActivationKey": "DEIO6-4KFUK-3ALGF-G2RUH-DBR01",
+            "AgentName": "MyTaggedAgent",
+            "Tags": [
+                {
+                    "Key": "testKey",
+                    "Value": "testVal"
+                }
+            ]
         },
         "logicalResourceIdentifier": "MyResource"
     }

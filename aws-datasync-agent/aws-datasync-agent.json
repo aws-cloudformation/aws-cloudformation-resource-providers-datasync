@@ -1,6 +1,32 @@
 {
     "typeName": "AWS::DataSync::Agent",
     "description": "Resource schema for AWS::DataSync::Agent.",
+    "definitions": {
+        "Tag": {
+            "description": "A key-value pair to associate with a resource.",
+            "type": "object",
+            "properties": {
+                "Key": {
+                    "type": "string",
+                    "description": "The key for an AWS resource tag.",
+                    "pattern": "^[a-zA-Z0-9\\s+=.:@/-]+$",
+                    "maxLength": 256,
+                    "minLength": 1
+                },
+                "Value": {
+                    "type": "string",
+                    "description": "The value for an AWS resource tag.",
+                    "pattern": "^[a-zA-Z0-9\\s+=.:@/-]+$",
+                    "maxLength": 256,
+                    "minLength": 1
+                }
+            },
+            "required": [
+                "Key",
+                "Value"
+            ]
+        }
+    },
     "properties": {
         "AgentName" : {
             "description": "The name configured for the agent. Text reference used to identify the agent in the console.",
@@ -37,6 +63,16 @@
             "description": "The ID of the VPC endpoint that the agent has access to.",
             "type": "string",
             "pattern": "^vpce-[0-9a-f]{17}$"
+        },
+        "Tags": {
+            "description": "An array of key-value pairs to apply to this resource.",
+            "type": "array",
+            "maxItems": 55,
+            "uniqueItems": true,
+            "insertionOrder": false,
+            "items": {
+                "$ref": "#/definitions/Tag"
+            }
         },
         "AgentArn": {
             "description": "The DataSync Agent ARN.",

@@ -75,7 +75,8 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
 
     private boolean checkAttributes(ResourceModel model) {
         return (model.getSubnetArns() == null && model.getSecurityGroupArns() == null
-                && model.getActivationKey() == null && model.getVpcEndpointId() == null);
+                && model.getActivationKey() == null && model.getVpcEndpointId() == null
+                && model.getTags() == null);
     }
 
 }

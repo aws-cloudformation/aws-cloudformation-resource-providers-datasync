@@ -8,7 +8,7 @@
     "request": {
         "clientRequestToken": "4b90a7e4-b790-456b-a937-0cfdfa211dfe",
         "desiredResourceState": {
-            "AgentArn" : "arn:aws:datasync:us-east-2:439056985638:agent/agent-08edd043819943b00"
+            "AgentArn" : "arn:aws:datasync:us-east-2:439056985638:agent/agent-09bd90af6417627c1"
         },
         "logicalResourceIdentifier": "MyResource"
     },

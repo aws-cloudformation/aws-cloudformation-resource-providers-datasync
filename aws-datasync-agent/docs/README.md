@@ -17,6 +17,7 @@ To declare this entity in your AWS CloudFormation template, use the following sy
         "<a href="#securitygrouparns" title="SecurityGroupArns">SecurityGroupArns</a>" : <i>[ String, ... ]</i>,
         "<a href="#subnetarns" title="SubnetArns">SubnetArns</a>" : <i>[ String, ... ]</i>,
         "<a href="#vpcendpointid" title="VpcEndpointId">VpcEndpointId</a>" : <i>String</i>,
+        "<a href="#tags" title="Tags">Tags</a>" : <i>[ <a href="tags.md">Tags</a>, ... ]</i>,
     }
 }
 </pre>
@@ -33,6 +34,8 @@ Properties:
     <a href="#subnetarns" title="SubnetArns">SubnetArns</a>: <i>
       - String</i>
     <a href="#vpcendpointid" title="VpcEndpointId">VpcEndpointId</a>: <i>String</i>
+    <a href="#tags" title="Tags">Tags</a>: <i>
+      - <a href="tags.md">Tags</a></i>
 </pre>
 
 ## Properties
@@ -100,6 +103,16 @@ _Required_: No
 _Type_: String
 
 _Pattern_: <code>^vpce-[0-9a-f]{17}$</code>
+
+_Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
+
+#### Tags
+
+An array of key-value pairs to apply to this resource.
+
+_Required_: No
+
+_Type_: List of <a href="tags.md">Tags</a>
 
 _Update requires_: [No interruption](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-updating-stacks-update-behaviors.html#update-no-interrupt)
 
