@@ -1,19 +1,20 @@
 package software.amazon.datasync.agent;
 
-import org.codehaus.plexus.resource.loader.ResourceNotFoundException;
 import software.amazon.awssdk.services.datasync.DataSyncClient;
-import software.amazon.awssdk.services.datasync.model.DataSyncException;
 import software.amazon.awssdk.services.datasync.model.DescribeAgentRequest;
+import software.amazon.awssdk.services.datasync.model.DescribeAgentResponse;
 import software.amazon.awssdk.services.datasync.model.InternalException;
 import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.DataSyncException;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
-import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
+import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+
 
 public class ReadHandler extends BaseHandler<CallbackContext> {
 
@@ -24,23 +25,31 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
             final CallbackContext callbackContext,
             final Logger logger) {
 
-        final ResourceModel model = request.getDesiredResourceState();
         final DataSyncClient client = ClientBuilder.getClient();
+        final ResourceModel model = request.getDesiredResourceState();
 
         final DescribeAgentRequest describeAgentRequest = Translator.translateToReadRequest(model);
 
+        DescribeAgentResponse response;
         try {
-            proxy.injectCredentialsAndInvokeV2(describeAgentRequest, client::describeAgent);
+            response = proxy.injectCredentialsAndInvokeV2(describeAgentRequest, client::describeAgent);
         } catch (InvalidRequestException e) {
-            throw new CfnInvalidRequestException(describeAgentRequest.toString(), e.getCause());
+            throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getAgentArn().toString());
         } catch (InternalException e) {
             throw new CfnServiceInternalErrorException(e.getCause());
         } catch (DataSyncException e) {
             throw new CfnGeneralServiceException(e.getCause());
         }
 
-        return ProgressEvent.defaultSuccessHandler(null);
-    }
+        ResourceModel returnModel = ResourceModel.builder()
+                .agentArn(response.agentArn())
+                .agentName(response.name())
+                .build();
 
+        return ProgressEvent.<ResourceModel, CallbackContext>builder()
+                .resourceModel(returnModel)
+                .status(OperationStatus.SUCCESS)
+                .build();
+    }
 
 }

@@ -46,9 +46,6 @@
         }
     },
     "additionalProperties": false,
-    "required": [
-        "ActivationKey"
-    ],
     "createOnlyProperties": [
         "/properties/ActivationKey"
     ],
@@ -71,7 +68,8 @@
         },
         "update": {
             "permissions": [
-                "datasync:UpdateAgent"
+                "datasync:UpdateAgent",
+                "datasync:DescribeAgent"
             ]
         },
         "delete": {

@@ -1,6 +1,7 @@
 package software.amazon.datasync.agent;
 
 import software.amazon.awssdk.services.datasync.DataSyncClient;
+import software.amazon.awssdk.services.datasync.model.AgentListEntry;
 import software.amazon.awssdk.services.datasync.model.ListAgentsRequest;
 import software.amazon.awssdk.services.datasync.model.ListAgentsResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -24,31 +25,23 @@ public class ListHandler extends BaseHandler<CallbackContext> {
         final String nextToken = request.getNextToken();
         final DataSyncClient client = ClientBuilder.getClient();
 
-        final List<ResourceModel> models = listAgents(nextToken, proxy, client);
+        final ListAgentsRequest listAgentsRequest = Translator.translateToListRequest(nextToken);
+        final ListAgentsResponse response = proxy.injectCredentialsAndInvokeV2(listAgentsRequest, client::listAgents);
+
+        List<ResourceModel> models = new ArrayList<>();
+        for (AgentListEntry a : response.agents()) {
+            ResourceModel model = ResourceModel.builder()
+                    .agentArn(a.agentArn())
+                    .agentName(a.name())
+                    .build();
+            models.add(model);
+        }
 
         return ProgressEvent.<ResourceModel, CallbackContext>builder()
                 .resourceModels(models)
                 .status(OperationStatus.SUCCESS)
+                .nextToken(response.nextToken())
                 .build();
     }
 
-    private List<ResourceModel> listAgents(final String nextToken, final AmazonWebServicesClientProxy proxy,
-                                           DataSyncClient client) {
-
-        final ListAgentsRequest request = Translator.translateToListRequest(nextToken);
-
-        ListAgentsResponse response = proxy.injectCredentialsAndInvokeV2(request, client::listAgents);
-
-        List<ResourceModel> models = new ArrayList<>();
-
-        // For each agent, add its resource model to the models list
-        response.agents().forEach(a -> {
-            ResourceModel model = ResourceModel.builder()
-                    .agentArn(a.agentArn())
-                    .build();
-            models.add(model);
-        });
-
-        return models;
-    }
 }

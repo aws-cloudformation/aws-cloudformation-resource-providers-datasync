@@ -1,6 +1,8 @@
 package software.amazon.datasync.agent;
 
 import jdk.internal.agent.Agent;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 import software.amazon.awssdk.services.datasync.model.AgentListEntry;
 import software.amazon.awssdk.services.datasync.model.ListAgentsResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -23,6 +25,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT) // will delete
 public class ListHandlerTest {
 
     @Mock
@@ -31,7 +34,7 @@ public class ListHandlerTest {
     @Mock
     private Logger logger;
 
-    final String agentArn = "agent-0ae8ac8434143ac66";
+    final String agentArn = "arn:aws:datasync:us-east-2:439056985638:agent/agent-08f5f249998669fb6";
 
     @BeforeEach
     public void setup() {

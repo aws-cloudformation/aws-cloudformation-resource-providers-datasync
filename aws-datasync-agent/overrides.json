@@ -1,0 +1,12 @@
+{
+  "CREATE": {
+    "/ActivationKey": "C9UJK-R049M-QJR9R-27OVK-0D9SR",
+    "/SecurityGroupArns": null,
+    "/SubnetArns": null,
+    "/VpcEndpointId": null,
+    "/AgentName": "MyAgent"
+  },
+  "UPDATE": {
+    "/AgentArn": "arn:aws:datasync:us-east-2:439056985638:agent/agent-01949d6f2bf52a82e"
+  }
+}

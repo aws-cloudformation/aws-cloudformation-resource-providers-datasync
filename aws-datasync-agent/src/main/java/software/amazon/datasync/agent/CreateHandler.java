@@ -2,11 +2,13 @@ package software.amazon.datasync.agent;
 
 import software.amazon.awssdk.services.datasync.DataSyncClient;
 import software.amazon.awssdk.services.datasync.model.CreateAgentRequest;
-import software.amazon.awssdk.services.datasync.model.DataSyncException;
+import software.amazon.awssdk.services.datasync.model.CreateAgentResponse;
 import software.amazon.awssdk.services.datasync.model.InternalException;
 import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
-import software.amazon.awssdk.utils.*;
-import software.amazon.cloudformation.exceptions.*;
+import software.amazon.awssdk.services.datasync.model.DataSyncException;
+import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
+import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -26,10 +28,10 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
 
         CreateAgentRequest createAgentRequest = Translator.translateToCreateRequest(model);
 
+        CreateAgentResponse response;
         try {
-            proxy.injectCredentialsAndInvokeV2(createAgentRequest, client::createAgent);
-            logger.log(String.format("%s %s created successfully", ResourceModel.TYPE_NAME,
-                    model.getAgentArn().toString()));
+            response = proxy.injectCredentialsAndInvokeV2(createAgentRequest, client::createAgent);
+            logger.log(String.format("%s created successfully", ResourceModel.TYPE_NAME));
         } catch (InvalidRequestException e) {
             throw new CfnInvalidRequestException(createAgentRequest.toString(), e.getCause());
         } catch (InternalException e) {
@@ -37,6 +39,15 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         } catch (DataSyncException e) {
             throw new CfnGeneralServiceException(e.getCause());
         }
-        return ProgressEvent.defaultSuccessHandler(model);
+
+        ResourceModel returnModel = ResourceModel.builder()
+                .agentArn(response.agentArn())
+                .agentName(model.getAgentName())
+                .securityGroupArns(model.getSecurityGroupArns())
+                .subnetArns(model.getSubnetArns())
+                .vpcEndpointId(model.getVpcEndpointId())
+                .build();
+
+        return ProgressEvent.defaultSuccessHandler(returnModel);
     }
 }

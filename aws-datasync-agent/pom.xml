@@ -18,6 +18,18 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>software.amazon.awssdk</groupId>
+                <artifactId>bom</artifactId>
+                <version>2.13.36</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <dependencies>
         <!-- https://mvnrepository.com/artifact/software.amazon.cloudformation/aws-cloudformation-rpdk-java-plugin -->
         <dependency>
@@ -38,20 +50,6 @@
             <artifactId>datasync</artifactId>
             <version>2.13.36</version>
         </dependency>
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>bom</artifactId>
-            <version>2.13.36</version>
-            <type>pom</type>
-            <scope>import</scope>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-datasync -->
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-datasync</artifactId>
-            <version>1.11.802</version>
-        </dependency>
-
         <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-simple -->
         <dependency>
             <groupId>org.slf4j</groupId>

@@ -4,10 +4,9 @@ import lombok.NoArgsConstructor;
 import lombok.Data;
 import lombok.Builder;
 
+@Builder
 @Data
 @NoArgsConstructor
-@Builder
 public class CallbackContext  {
-
 
 }
