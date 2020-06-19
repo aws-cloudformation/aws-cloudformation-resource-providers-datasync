@@ -1,9 +1,9 @@
 package software.amazon.datasync.agent;
 
-import jdk.internal.agent.Agent;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
 import software.amazon.awssdk.services.datasync.model.AgentListEntry;
+import software.amazon.awssdk.services.datasync.model.ListAgentsRequest;
 import software.amazon.awssdk.services.datasync.model.ListAgentsResponse;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
@@ -16,7 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -34,7 +34,8 @@ public class ListHandlerTest {
     @Mock
     private Logger logger;
 
-    final String agentArn = "arn:aws:datasync:us-east-2:439056985638:agent/agent-08f5f249998669fb6";
+    final String agentArn1 = "arn:aws:datasync:us-east-2:439056985638:agent/agent-08f5f249998669fb6";
+    final String agentArn2 = "arn:aws:datasync:us-east-2:439056985638:agent/agent-0104b30bb8cf0df9c";
 
     @BeforeEach
     public void setup() {
@@ -46,20 +47,27 @@ public class ListHandlerTest {
     public void handleRequest_SimpleSuccess() {
         final ListHandler handler = new ListHandler();
 
-        final List<AgentListEntry> agents = new ArrayList<>();
 
-        AgentListEntry agent1 = AgentListEntry.builder().agentArn(agentArn).build();
-        AgentListEntry agent2 = AgentListEntry.builder().agentArn(agentArn).build();
-        agents.add(agent1);
-        agents.add(agent2);
+        AgentListEntry agent1 = AgentListEntry.builder().agentArn(agentArn1).build();
+        AgentListEntry agent2 = AgentListEntry.builder().agentArn(agentArn2).build();
+        final List<AgentListEntry> agents = Arrays.asList(agent1, agent2);
 
         ListAgentsResponse listAgentsResponse = ListAgentsResponse.builder()
                 .agents(agents)
+                .nextToken("testToken")
                 .build();
 
         doReturn(listAgentsResponse)
                 .when(proxy)
-                .injectCredentialsAndInvokeV2(any(), any());
+                .injectCredentialsAndInvokeV2(any(ListAgentsRequest.class), any());
+
+        final ResourceModel model1 = ResourceModel.builder()
+                .agentArn(agentArn1)
+                .build();
+
+        final ResourceModel model2 = ResourceModel.builder()
+                .agentArn(agentArn1)
+                .build();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .build();
@@ -72,7 +80,8 @@ public class ListHandlerTest {
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
         assertThat(response.getResourceModel()).isNull();
-        assertThat(response.getResourceModels()).isNotNull();
+        assertThat(response.getResourceModels()).containsAll(Arrays.asList(model1, model2));
+        assertThat(response.getNextToken()).isEqualTo("testToken");
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
     }

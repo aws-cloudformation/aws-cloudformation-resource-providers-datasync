@@ -1,9 +1,8 @@
 package software.amazon.datasync.agent;
 
-import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.services.datasync.model.*;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
-import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
+import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
@@ -47,7 +46,7 @@ public class ReadHandlerTest {
         doReturn(describeResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
-                        any(),
+                        any(DescribeAgentRequest.class),
                         any()
                 );
 
@@ -66,42 +65,20 @@ public class ReadHandlerTest {
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        //assertThat(response.getResourceModel()).isEqualTo(request.getDesiredResourceState());
-        //assertThat(response.getResourceModels()).isNull();
+        assertThat(response.getResourceModel()).isEqualTo(request.getDesiredResourceState());
+        assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
     }
 
-/*
-    @Test
-    public void handleRequest_FailureUnknownError() {
-        final ReadHandler handler = new ReadHandler();
-
-        // Throw an unknown error whenever the DataSync API is called
-        doThrow(SdkException.builder().message("test unknown error").build())
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(any(), any());
-
-        final ResourceModel model = ResourceModel.builder()
-                .agentArn(agentArn)
-                .build();
-
-        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-                .desiredResourceState(model)
-                .build();
-
-        assertThrows(SdkException.class, () -> {
-            handler.handleRequest(proxy, request, null, logger);
-        } );
-    }
 
     @Test
-    public void handleRequest_FailureInvalidRequest() {
+    public void handleRequest_FailureNotFoundRequest() {
         final ReadHandler handler = new ReadHandler();
 
         doThrow(InvalidRequestException.class)
                 .when(proxy)
-                .injectCredentialsAndInvokeV2(any(CreateAgentRequest.class), any());
+                .injectCredentialsAndInvokeV2(any(DescribeAgentRequest.class), any());
 
         final ResourceModel model = ResourceModel.builder()
                 .agentArn(agentArn)
@@ -111,7 +88,7 @@ public class ReadHandlerTest {
                 .desiredResourceState(model)
                 .build();
 
-        assertThrows(CfnInvalidRequestException.class, () -> {
+        assertThrows(CfnNotFoundException.class, () -> {
             handler.handleRequest(proxy, request, null, logger);
         } );
     }
@@ -122,7 +99,7 @@ public class ReadHandlerTest {
 
         doThrow(InternalException.class)
                 .when(proxy)
-                .injectCredentialsAndInvokeV2(any(CreateAgentRequest.class), any());
+                .injectCredentialsAndInvokeV2(any(DescribeAgentRequest.class), any());
 
         final ResourceModel model = ResourceModel.builder()
                 .agentArn(agentArn)
@@ -142,9 +119,9 @@ public class ReadHandlerTest {
     public void handleRequest_FailureDataSyncException() {
         final ReadHandler handler = new ReadHandler();
 
-        doThrow(InternalException.class)
+        doThrow(DataSyncException.class)
                 .when(proxy)
-                .injectCredentialsAndInvokeV2(any(CreateAgentRequest.class), any());
+                .injectCredentialsAndInvokeV2(any(DescribeAgentRequest.class), any());
 
         final ResourceModel model = ResourceModel.builder()
                 .agentArn(agentArn)
@@ -158,6 +135,4 @@ public class ReadHandlerTest {
             handler.handleRequest(proxy, request, null, logger);
         } );
     }
-
- */
 }
