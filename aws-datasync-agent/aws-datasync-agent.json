@@ -81,6 +81,9 @@
             "maxLength": 128
         }
     },
+    "required": [
+        "ActivationKey"
+    ],
     "additionalProperties": false,
     "createOnlyProperties": [
         "/properties/ActivationKey"
