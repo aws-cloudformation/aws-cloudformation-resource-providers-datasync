@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="f16c9ca8-ad79-4dac-b46d-d9ccd241477c" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1dEszhTaC6AKSKIT68M1Dh84avd" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+  </component>
+  <component name="RunManager">
+    <configuration name="CreateHandlerTest.handleRequest_FailureUnknownError" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="aws-datasync-agent-handler" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="software.amazon.datasync.agent.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="software.amazon.datasync.agent" />
+      <option name="MAIN_CLASS_NAME" value="software.amazon.datasync.agent.CreateHandlerTest" />
+      <option name="METHOD_NAME" value="handleRequest_FailureUnknownError" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.CreateHandlerTest.handleRequest_FailureUnknownError" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f16c9ca8-ad79-4dac-b46d-d9ccd241477c" name="Default Changelist" comment="" />
+      <created>1592001850587</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1592001850587</updated>
+      <workItem from="1592001855180" duration="129000" />
+      <workItem from="1592002047120" duration="330000" />
+      <workItem from="1592002381577" duration="615000" />
+      <workItem from="1592003033843" duration="117000" />
+      <workItem from="1592003200180" duration="611000" />
+      <workItem from="1592226085022" duration="4460000" />
+      <workItem from="1592232123953" duration="878000" />
+      <workItem from="1592238028466" duration="14258000" />
+      <workItem from="1592256083668" duration="1592000" />
+      <workItem from="1592312875898" duration="5408000" />
+      <workItem from="1592325385624" duration="7571000" />
+      <workItem from="1592399640317" duration="4381000" />
+      <workItem from="1592406023369" duration="9971000" />
+      <workItem from="1592425009531" duration="300000" />
+      <workItem from="1592428450298" duration="1955000" />
+      <workItem from="1592485707096" duration="13233000" />
+      <workItem from="1592502874106" duration="373000" />
+      <workItem from="1592503251080" duration="3107000" />
+      <workItem from="1592507070795" duration="3349000" />
+      <workItem from="1592510610219" duration="1094000" />
+      <workItem from="1592515027943" duration="3000" />
+      <workItem from="1592573378190" duration="1897000" />
+      <workItem from="1592582288973" duration="6731000" />
+      <workItem from="1592597239812" duration="43000" />
+      <workItem from="1592831186758" duration="126000" />
+      <workItem from="1592849936146" duration="351000" />
+      <workItem from="1592851638732" duration="1000" />
+      <workItem from="1592944665046" duration="405000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="-2011" y="-129" key="#Project_Structure" timestamp="1592486648054">
+      <screen x="-2560" y="-297" width="2560" height="1417" />
+    </state>
+    <state x="-2011" y="-129" key="#Project_Structure/-2560.-297.2560.1417/0.23.1792.1097@-2560.-297.2560.1417" timestamp="1592486648054" />
+    <state x="384" y="153" key="#Project_Structure/-2560.-297.2560.1417/0.23.1792.1097@0.23.1792.1097" timestamp="1592002104722" />
+    <state x="-1816" y="73" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1592245180549">
+      <screen x="-2560" y="-297" width="2560" height="1417" />
+    </state>
+    <state x="-1816" y="73" key="#com.intellij.execution.impl.EditConfigurationsDialog/-2560.-297.2560.1417/0.23.1792.1097@-2560.-297.2560.1417" timestamp="1592245180549" />
+    <state x="-1495" y="283" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes" timestamp="1592238143992">
+      <screen x="-2560" y="-297" width="2560" height="1417" />
+    </state>
+    <state x="-1495" y="283" key="#com.intellij.refactoring.move.moveClassesOrPackages.MoveClassesOrPackagesDialog.classes/-2560.-297.2560.1417/0.23.1792.1097@-2560.-297.2560.1417" timestamp="1592238143992" />
+    <state x="-1792" y="-7" key="SettingsEditor" timestamp="1592227957810">
+      <screen x="-2560" y="-297" width="2560" height="1417" />
+    </state>
+    <state x="-1792" y="-7" key="SettingsEditor/-2560.-297.2560.1417/0.23.1792.1097@-2560.-297.2560.1417" timestamp="1592227957810" />
+    <state x="-2449" y="-297" width="1253" height="1078" maximized="true" key="dock-window-1" timestamp="1592495251851">
+      <screen x="-2560" y="-297" width="2560" height="1417" />
+    </state>
+    <state x="-2449" y="-297" width="1253" height="1078" key="dock-window-1/-2560.-297.2560.1417/0.23.1792.1097@0.23.1792.1097" timestamp="1592325488048" />
+    <state x="0" y="23" width="1792" height="1097" maximized="true" key="dock-window-2" timestamp="1592498905382">
+      <screen x="0" y="23" width="1792" height="1097" />
+    </state>
+    <state x="0" y="23" width="1792" height="1097" maximized="true" key="dock-window-2/-2560.-297.2560.1417/0.23.1792.1097@-2560.-297.2560.1417" timestamp="1592498905382" />
+    <state x="-1269" y="1" width="2359" height="1217" key="dock-window-3" timestamp="1592399951467">
+      <screen x="-2560" y="-297" width="2560" height="1417" />
+    </state>
+    <state x="-1269" y="1" width="2359" height="1217" key="dock-window-3/-2560.-297.2560.1417/0.23.1792.1097@-2560.-297.2560.1417" timestamp="1592399951467" />
+    <state x="-1615" y="28" width="670" height="676" key="search.everywhere.popup" timestamp="1592508420186">
+      <screen x="-2560" y="-297" width="2560" height="1417" />
+    </state>
+    <state x="-1615" y="28" width="670" height="676" key="search.everywhere.popup/-2560.-297.2560.1417/0.23.1792.1097@-2560.-297.2560.1417" timestamp="1592508420186" />
+  </component>
+</project>
