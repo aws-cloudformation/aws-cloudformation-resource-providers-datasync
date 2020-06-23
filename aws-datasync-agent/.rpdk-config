@@ -1,0 +1,16 @@
+{
+    "typeName": "AWS::DataSync::Agent",
+    "language": "java",
+    "runtime": "java8",
+    "entrypoint": "software.amazon.datasync.agent.HandlerWrapper::handleRequest",
+    "testEntrypoint": "software.amazon.datasync.agent.HandlerWrapper::testEntrypoint",
+    "settings": {
+        "namespace": [
+            "software",
+            "amazon",
+            "datasync",
+            "agent"
+        ],
+        "codegen_template_path": "default"
+    }
+}

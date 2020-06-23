@@ -1,0 +1,8 @@
+{
+  "CREATE": {
+    "/AgentName": "MyAgent",
+    "/SecurityGroupArns": null,
+    "/SubnetArns": null,
+    "/VpcEndpointId": null
+  }
+}
