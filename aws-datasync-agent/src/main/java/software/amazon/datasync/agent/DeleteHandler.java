@@ -30,7 +30,11 @@ public class DeleteHandler extends BaseHandler<CallbackContext> {
         try {
             proxy.injectCredentialsAndInvokeV2(deleteAgentRequest, client::deleteAgent);
             logger.log(String.format("%s %s deleted successfully", ResourceModel.TYPE_NAME,
+<<<<<<< HEAD
                     model.getAgentArn()));
+=======
+                    model.getAgentArn().toString()));
+>>>>>>> 0f786d131e5b5f8eb01e8a57add2f5da65d32708
         } catch (InvalidRequestException e) {
             throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getAgentArn().toString());
         } catch (InternalException e) {

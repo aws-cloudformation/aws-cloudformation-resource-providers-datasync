@@ -43,7 +43,10 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         ResourceModel returnModel = ResourceModel.builder()
                 .agentArn(response.agentArn())
                 .agentName(model.getAgentName())
+<<<<<<< HEAD
                 .activationKey(model.getActivationKey())
+=======
+>>>>>>> 0f786d131e5b5f8eb01e8a57add2f5da65d32708
                 .securityGroupArns(model.getSecurityGroupArns())
                 .subnetArns(model.getSubnetArns())
                 .vpcEndpointId(model.getVpcEndpointId())

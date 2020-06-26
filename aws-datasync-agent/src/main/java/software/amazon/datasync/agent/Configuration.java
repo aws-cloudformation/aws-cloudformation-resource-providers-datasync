@@ -12,7 +12,11 @@ class Configuration extends BaseConfiguration {
     }
 
     public Map<String, String> resourceDefinedTags(final ResourceModel resourceModel) {
+<<<<<<< HEAD
         if (CollectionUtils.isNullOrEmpty(resourceModel.getTags()))
+=======
+        if(CollectionUtils.isNullOrEmpty(resourceModel.getTags()))
+>>>>>>> 0f786d131e5b5f8eb01e8a57add2f5da65d32708
             return null;
 
         return resourceModel.getTags()
