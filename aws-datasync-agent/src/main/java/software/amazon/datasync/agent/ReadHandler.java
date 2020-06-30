@@ -44,14 +44,11 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
         ResourceModel returnModel = ResourceModel.builder()
                 .agentArn(response.agentArn())
                 .agentName(response.name())
-<<<<<<< HEAD
                 .activationKey(model.getActivationKey())
                 .securityGroupArns(model.getSecurityGroupArns())
                 .subnetArns(model.getSubnetArns())
                 .vpcEndpointId(model.getVpcEndpointId())
                 .tags(model.getTags())
-=======
->>>>>>> 0f786d131e5b5f8eb01e8a57add2f5da65d32708
                 .build();
 
         return ProgressEvent.<ResourceModel, CallbackContext>builder()

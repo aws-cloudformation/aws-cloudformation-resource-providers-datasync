@@ -35,16 +35,11 @@ public class UpdateHandlerTest {
         logger = mock(Logger.class);
     }
 
-    final String agentArn = "arn:aws:datasync:us-east-2:439056985638:agent/agent-08f5f249998669fb6";
-
     @Test
     public void handleRequest_SimpleSuccess() {
         final UpdateHandler handler = new UpdateHandler();
 
-        final DescribeAgentResponse describeAgentResponse= DescribeAgentResponse.builder()
-                .name("MyUpdatedAgent")
-                .agentArn(agentArn)
-                .build();
+        final DescribeAgentResponse describeAgentResponse = buildDefaultResponse();
 
         doReturn(describeAgentResponse)
                 .when(proxy)
@@ -53,10 +48,7 @@ public class UpdateHandlerTest {
                         any()
                 );
 
-        final ResourceModel model = ResourceModel.builder()
-                .agentName("MyUpdatedAgent")
-                .agentArn(agentArn)
-                .build();
+        final ResourceModel model = buildDefaultModel();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(model)
@@ -80,10 +72,7 @@ public class UpdateHandlerTest {
     public void handleRequest_FailureNotFoundRequest() {
         final UpdateHandler handler = new UpdateHandler();
 
-        final ResourceModel model = ResourceModel.builder()
-                .agentName("MyUpdatedAgent")
-                .agentArn(agentArn)
-                .build();
+        final ResourceModel model = buildDefaultModel();
 
         doThrow(InvalidRequestException.class)
                 .when(proxy)
@@ -102,10 +91,7 @@ public class UpdateHandlerTest {
     public void handleRequest_FailureInternalException() {
         final UpdateHandler handler = new UpdateHandler();
 
-        final ResourceModel model = ResourceModel.builder()
-                .agentName("MyUpdatedAgent")
-                .agentArn(agentArn)
-                .build();
+        final ResourceModel model = buildDefaultModel();
 
         doThrow(InternalException.class)
                 .when(proxy)
@@ -125,10 +111,7 @@ public class UpdateHandlerTest {
     public void handleRequest_FailureDataSyncException() {
         final UpdateHandler handler = new UpdateHandler();
 
-        final ResourceModel model = ResourceModel.builder()
-                .agentName("MyUpdatedAgent")
-                .agentArn(agentArn)
-                .build();
+        final ResourceModel model = buildDefaultModel();
 
         doThrow(DataSyncException.class)
                 .when(proxy)
@@ -141,6 +124,22 @@ public class UpdateHandlerTest {
         assertThrows(CfnGeneralServiceException.class, () -> {
             handler.handleRequest(proxy, request, null, logger);
         } );
+    }
+
+    private static ResourceModel buildDefaultModel() {
+        final String agentArn = "arn:aws:datasync:us-east-2:439056985638:agent/agent-08f5f249998669fb6";
+        return ResourceModel.builder()
+                .agentName("MyUpdatedAgent")
+                .agentArn(agentArn)
+                .build();
+    }
+
+    private static DescribeAgentResponse buildDefaultResponse() {
+        final String agentArn = "arn:aws:datasync:us-east-2:439056985638:agent/agent-08f5f249998669fb6";
+        return DescribeAgentResponse.builder()
+                .name("MyUpdatedAgent")
+                .agentArn(agentArn)
+                .build();
     }
 
 

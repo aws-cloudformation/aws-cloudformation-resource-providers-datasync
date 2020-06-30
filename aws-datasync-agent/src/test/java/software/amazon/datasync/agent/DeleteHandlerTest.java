@@ -29,8 +29,6 @@ public class DeleteHandlerTest {
     @Mock
     private Logger logger;
 
-    final String agentArn = "arn:aws:datasync:us-east-2:439056985638:agent/agent-08f5f249998669fb6";
-
     @BeforeEach
     public void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
@@ -47,9 +45,7 @@ public class DeleteHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(DeleteAgentRequest.class), any());
 
-        final ResourceModel model = ResourceModel.builder()
-                .agentArn(agentArn)
-                .build();
+        final ResourceModel model = buildDefaultModel();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(model)
@@ -77,9 +73,8 @@ public class DeleteHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(DeleteAgentRequest.class), any());
 
-        final ResourceModel model = ResourceModel.builder()
-                .agentArn(agentArn)
-                .build();
+        final ResourceModel model = buildDefaultModel();
+
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(model)
@@ -98,9 +93,7 @@ public class DeleteHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(DeleteAgentRequest.class), any());
 
-        final ResourceModel model = ResourceModel.builder()
-                .agentArn(agentArn)
-                .build();
+        final ResourceModel model = buildDefaultModel();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(model)
@@ -120,9 +113,7 @@ public class DeleteHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(DeleteAgentRequest.class), any());
 
-        final ResourceModel model = ResourceModel.builder()
-                .agentArn(agentArn)
-                .build();
+        final ResourceModel model = buildDefaultModel();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(model)
@@ -131,5 +122,12 @@ public class DeleteHandlerTest {
         assertThrows(CfnGeneralServiceException.class, () -> {
             handler.handleRequest(proxy, request, null, logger);
         } );
+    }
+
+    private static ResourceModel buildDefaultModel() {
+        final String agentArn = "arn:aws:datasync:us-east-2:439056985638:agent/agent-08f5f249998669fb6";
+        return ResourceModel.builder()
+                .agentArn(agentArn)
+                .build();
     }
 }

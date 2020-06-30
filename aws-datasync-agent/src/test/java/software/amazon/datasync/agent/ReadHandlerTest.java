@@ -35,13 +35,11 @@ public class ReadHandlerTest {
         logger = mock(Logger.class);
     }
 
-    final String agentArn = "arn:aws:datasync:us-east-2:439056985638:agent/agent-08f5f249998669fb6";
-
     @Test
     public void handleRequest_SimpleSuccess() {
         final ReadHandler handler = new ReadHandler();
 
-        final DescribeAgentResponse describeResponse = DescribeAgentResponse.builder().agentArn(agentArn).build();
+        final DescribeAgentResponse describeResponse = buildDefaultResponse();
 
         doReturn(describeResponse)
                 .when(proxy)
@@ -50,9 +48,7 @@ public class ReadHandlerTest {
                         any()
                 );
 
-        final ResourceModel model = ResourceModel.builder()
-                .agentArn(agentArn)
-                .build();
+        final ResourceModel model = buildDefaultModel();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
             .desiredResourceState(model)
@@ -80,9 +76,7 @@ public class ReadHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(DescribeAgentRequest.class), any());
 
-        final ResourceModel model = ResourceModel.builder()
-                .agentArn(agentArn)
-                .build();
+        final ResourceModel model = buildDefaultModel();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(model)
@@ -101,9 +95,7 @@ public class ReadHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(DescribeAgentRequest.class), any());
 
-        final ResourceModel model = ResourceModel.builder()
-                .agentArn(agentArn)
-                .build();
+        final ResourceModel model = buildDefaultModel();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(model)
@@ -123,9 +115,7 @@ public class ReadHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(DescribeAgentRequest.class), any());
 
-        final ResourceModel model = ResourceModel.builder()
-                .agentArn(agentArn)
-                .build();
+        final ResourceModel model = buildDefaultModel();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(model)
@@ -134,5 +124,19 @@ public class ReadHandlerTest {
         assertThrows(CfnGeneralServiceException.class, () -> {
             handler.handleRequest(proxy, request, null, logger);
         } );
+    }
+
+    private static ResourceModel buildDefaultModel() {
+        final String agentArn = "arn:aws:datasync:us-east-2:439056985638:agent/agent-08f5f249998669fb6";
+        return ResourceModel.builder()
+                .agentArn(agentArn)
+                .build();
+    }
+
+    private static DescribeAgentResponse buildDefaultResponse() {
+        final String agentArn = "arn:aws:datasync:us-east-2:439056985638:agent/agent-08f5f249998669fb6";
+        return DescribeAgentResponse.builder()
+                .agentArn(agentArn)
+                .build();
     }
 }

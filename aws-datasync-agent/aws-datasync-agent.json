@@ -1,6 +1,7 @@
 {
     "typeName": "AWS::DataSync::Agent",
     "description": "Resource schema for AWS::DataSync::Agent.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-datasync.git",
     "definitions": {
         "Tag": {
             "description": "A key-value pair to associate with a resource.",
@@ -46,18 +47,18 @@
             "type": "array",
             "items": {
                 "type": "string",
-                "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:security-group/.*$"
-            },
-            "maxLength": 128
+                "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:security-group/.*$",
+                "maxLength": 128
+            }
         },
         "SubnetArns": {
             "description": "The ARNs of the subnets in which DataSync will create elastic network interfaces for each data transfer task.",
             "type": "array",
             "items": {
                 "type": "string",
-                "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:subnet/.*$"
-            },
-            "maxLength": 128
+                "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:subnet/.*$",
+                "maxLength": 128
+            }
         },
         "VpcEndpointId": {
             "description": "The ID of the VPC endpoint that the agent has access to.",

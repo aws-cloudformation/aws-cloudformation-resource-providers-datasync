@@ -26,8 +26,6 @@ public class CreateHandlerTest {
     @Mock
     private Logger logger;
 
-    final String activationKey = "TC4FA-K2B39-ECJRH-LOOSE-F0QM5";
-
     @BeforeEach
     public void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
@@ -45,10 +43,7 @@ public class CreateHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(CreateAgentRequest.class), any());
 
-        ResourceModel model = ResourceModel.builder()
-                .activationKey(activationKey)
-                .agentName("MyAgent")
-                .build();
+        ResourceModel model = buildDefaultModel();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(model)
@@ -75,10 +70,7 @@ public class CreateHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(CreateAgentRequest.class), any());
 
-        final ResourceModel model = ResourceModel.builder()
-                .activationKey(activationKey)
-                .agentName("MyAgent")
-                .build();
+        final ResourceModel model = buildDefaultModel();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(model)
@@ -98,10 +90,7 @@ public class CreateHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(CreateAgentRequest.class), any());
 
-        final ResourceModel model = ResourceModel.builder()
-                .activationKey(activationKey)
-                .agentName("MyAgent")
-                .build();
+        final ResourceModel model = buildDefaultModel();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(model)
@@ -121,10 +110,7 @@ public class CreateHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(CreateAgentRequest.class), any());
 
-        final ResourceModel model = ResourceModel.builder()
-                .activationKey(activationKey)
-                .agentName("MyAgent")
-                .build();
+        final ResourceModel model = buildDefaultModel();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(model)
@@ -133,5 +119,13 @@ public class CreateHandlerTest {
         assertThrows(CfnGeneralServiceException.class, () -> {
             handler.handleRequest(proxy, request, null, logger);
         } );
+    }
+
+    private static ResourceModel buildDefaultModel() {
+        final String activationKey = "TC4FA-K2B39-ECJRH-LOOSE-F0QM5";
+        return ResourceModel.builder()
+                .activationKey(activationKey)
+                .agentName("MyAgent")
+                .build();
     }
 }
