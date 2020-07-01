@@ -75,22 +75,22 @@ public class ListHandlerTest {
     }
 
     private static List<AgentListEntry> buildDefaultList() {
-        final String agentArn1 = "arn:aws:datasync:us-east-2:439056985638:agent/agent-08f5f249998669fb6";
-        final String agentArn2 = "arn:aws:datasync:us-east-2:439056985638:agent/agent-0104b30bb8cf0df9c";
+        final String agentArn1 = "arn:aws:datasync:us-east-1:123456789012:agent/agent-01234567890123456";
+        final String agentArn2 = "arn:aws:datasync:us-east-1:123456789012:agent/agent-abcdefabcdefabcde";
         AgentListEntry agent1 = AgentListEntry.builder().agentArn(agentArn1).build();
         AgentListEntry agent2 = AgentListEntry.builder().agentArn(agentArn2).build();
         return Arrays.asList(agent1, agent2);
     }
 
     private static ResourceModel buildDefaultModel1() {
-        final String agentArn = "arn:aws:datasync:us-east-2:439056985638:agent/agent-08f5f249998669fb6";
+        final String agentArn = "arn:aws:datasync:us-east-1:123456789012:agent/agent-01234567890123456";
         return ResourceModel.builder()
                 .agentArn(agentArn)
                 .build();
     }
 
     private static ResourceModel buildDefaultModel2() {
-        final String agentArn = "arn:aws:datasync:us-east-2:439056985638:agent/agent-0104b30bb8cf0df9c";
+        final String agentArn = "arn:aws:datasync:us-east-1:123456789012:agent/agent-abcdefabcdefabcde";
         return ResourceModel.builder()
                 .agentArn(agentArn)
                 .build();

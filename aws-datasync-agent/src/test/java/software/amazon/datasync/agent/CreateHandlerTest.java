@@ -122,7 +122,7 @@ public class CreateHandlerTest {
     }
 
     private static ResourceModel buildDefaultModel() {
-        final String activationKey = "TC4FA-K2B39-ECJRH-LOOSE-F0QM5";
+        final String activationKey = "12345-12345-12345-12345-12345"; // dummy activation key
         return ResourceModel.builder()
                 .activationKey(activationKey)
                 .agentName("MyAgent")

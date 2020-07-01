@@ -125,7 +125,7 @@ public class DeleteHandlerTest {
     }
 
     private static ResourceModel buildDefaultModel() {
-        final String agentArn = "arn:aws:datasync:us-east-2:439056985638:agent/agent-08f5f249998669fb6";
+        final String agentArn = "arn:aws:datasync:us-east-1:123456789012:agent/agent-01234567890123456"; // dummy agent arn
         return ResourceModel.builder()
                 .agentArn(agentArn)
                 .build();

@@ -10,7 +10,7 @@
                 "Key": {
                     "type": "string",
                     "description": "The key for an AWS resource tag.",
-                    "pattern": "^[a-zA-Z0-9\\s+=.:@/-]+$",
+                    "pattern": "^[a-zA-Z0-9\\s+=.:/-]+$",
                     "maxLength": 256,
                     "minLength": 1
                 },
