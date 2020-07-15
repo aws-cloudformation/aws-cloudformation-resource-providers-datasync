@@ -52,4 +52,3 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
 
         return ProgressEvent.defaultSuccessHandler(returnModel);
     }
-}
