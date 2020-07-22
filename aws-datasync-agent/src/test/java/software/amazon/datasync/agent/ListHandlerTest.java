@@ -1,6 +1,5 @@
 package software.amazon.datasync.agent;
 
-
 import software.amazon.awssdk.services.datasync.model.AgentListEntry;
 import software.amazon.awssdk.services.datasync.model.ListAgentsRequest;
 import software.amazon.awssdk.services.datasync.model.ListAgentsResponse;

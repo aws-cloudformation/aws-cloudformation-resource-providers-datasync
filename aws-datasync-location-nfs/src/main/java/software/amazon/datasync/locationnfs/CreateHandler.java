@@ -70,8 +70,6 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
             throw new CfnGeneralServiceException(e.getCause());
         }
 
-        if (response == null)
-            return model;
         return ResourceModel.builder()
                 .locationArn(response.locationArn())
                 .locationUri(response.locationUri())

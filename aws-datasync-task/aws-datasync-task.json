@@ -1,0 +1,250 @@
+{
+    "typeName": "AWS::DataSync::Task",
+    "description": "Resource schema for AWS::DataSync::Task.",
+    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-datasync.git",
+    "definitions": {
+        "FilterRule": {
+            "description": "Specifies which files folders and objects to include or exclude when transferring files from source to destination.",
+            "type": "object",
+            "properties": {
+                "FilterType": {
+                    "description": "The type of filter rule to apply. AWS DataSync only supports the SIMPLE_PATTERN rule type.",
+                    "type": "string",
+                    "enum": [
+                        "SIMPLE_PATTERN"
+                    ],
+                    "pattern": "^[A-Z0-9_]+$",
+                    "maxLength": 128
+                },
+                "Value": {
+                    "description": "A single filter string that consists of the patterns to include or exclude. The patterns are delimited by \"|\".",
+                    "type": "string",
+                    "pattern": "^[^\\x00]+$",
+                    "maxLength": 409600
+                }
+            }
+        },
+        "Tag": {
+            "description": "A key-value pair to associate with a resource.",
+            "type": "object",
+            "properties": {
+                "Key": {
+                    "type": "string",
+                    "description": "The key for an AWS resource tag.",
+                    "pattern": "^[a-zA-Z0-9\\s+=._:/-]+$",
+                    "maxLength": 256,
+                    "minLength": 1
+                },
+                "Value": {
+                    "type": "string",
+                    "description": "The value for an AWS resource tag.",
+                    "pattern": "^[a-zA-Z0-9\\s+=.:@/-]+$",
+                    "maxLength": 256,
+                    "minLength": 1
+                }
+            },
+            "required": [
+                "Key",
+                "Value"
+            ]
+        },
+        "TaskSchedule": {
+            "description": "Specifies the schedule you want your task to use for repeated executions.",
+            "type": "object",
+            "properties": {
+                "ScheduleExpression": {
+                    "description": "A cron expression that specifies when AWS DataSync initiates a scheduled transfer from a source to a destination location",
+                    "type": "string",
+                    "maxLength": 256,
+                    "pattern": "^[a-zA-Z0-9\\ \\_\\*\\?\\,\\|\\^\\-\\/\\#\\s\\(\\)\\+]*$"
+                }
+            },
+            "required": [
+                "ScheduleExpression"
+            ]
+        },
+        "Options": {
+            "description": "Represents the options that are available to control the behavior of a StartTaskExecution operation.",
+            "type": "object",
+            "properties": {
+                "Atime": {
+                    "description": "A file metadata value that shows the last time a file was accessed (that is, when the file was read or written to).",
+                    "type": "string",
+                    "enum": ["NONE", "BEST_EFFORT"]
+                },
+                "BytesPerSecond": {
+                    "description": "A value that limits the bandwidth used by AWS DataSync.",
+                    "type": "integer",
+                    "minimum": -1
+                },
+                "Gid": {
+                    "description": "The group ID (GID) of the file's owners.",
+                    "type": "string",
+                    "enum": ["NONE", "INT_VALUE", "NAME", "BOTH"]
+                },
+                "LogLevel": {
+                    "description": "A value that determines the types of logs that DataSync publishes to a log stream in the Amazon CloudWatch log group that you provide.",
+                    "type": "string",
+                    "enum": ["OFF", "BASIC", "TRANSFER"]
+                },
+                "Mtime": {
+                    "description": "A value that indicates the last time that a file was modified (that is, a file was written to) before the PREPARING phase.",
+                    "type": "string",
+                    "enum": ["NONE", "PRESERVE"]
+                },
+                "OverwriteMode": {
+                    "description": "A value that determines whether files at the destination should be overwritten or preserved when copying files.",
+                    "type": "string",
+                    "enum": ["ALWAYS", "NEVER"]
+                },
+                "PosixPermissions": {
+                    "description": "A value that determines which users or groups can access a file for a specific purpose such as reading, writing, or execution of the file.",
+                    "type": "string",
+                    "enum": ["NONE", "PRESERVE"]
+                },
+                "PreserveDeletedFiles": {
+                    "description": "A value that specifies whether files in the destination that don't exist in the source file system should be preserved.",
+                    "type": "string",
+                    "enum": ["PRESERVE", "REMOVE"]
+                },
+                "PreserveDevices": {
+                    "description": "A value that determines whether AWS DataSync should preserve the metadata of block and character devices in the source file system, and recreate the files with that device name and metadata on the destination.",
+                    "type": "string",
+                    "enum": ["NONE", "PRESERVE"]
+                },
+                "TaskQueueing": {
+                    "description": "A value that determines whether tasks should be queued before executing the tasks.",
+                    "type": "string",
+                    "enum": ["ENABLED", "DISABLED"]
+                },
+                "Uid": {
+                    "description": "The user ID (UID) of the file's owner.",
+                    "type": "string",
+                    "enum": ["NONE", "INT_VALUE", "NAME", "BOTH"]
+                },
+                "VerifyMode": {
+                    "description": "A value that determines whether a data integrity verification should be performed at the end of a task execution after all data and metadata have been transferred.",
+                    "type": "string",
+                    "enum": ["POINT_IN_TIME_CONSISTENT", "ONLY_FILES_TRANSFERRED", "NONE"]
+                }
+            }
+        }
+    },
+    "properties": {
+        "Excludes": {
+            "type": "array",
+            "minItems": 0,
+            "maxItems": 1,
+            "items": {
+                "$ref": "#/definitions/FilterRule"
+            }
+        },
+        "Tags": {
+            "description": "An array of key-value pairs to apply to this resource.",
+            "type": "array",
+            "maxItems": 55,
+            "uniqueItems": true,
+            "insertionOrder": false,
+            "items": {
+                "$ref": "#/definitions/Tag"
+            }
+        },
+        "CloudWatchLogGroupArn": {
+            "description": "The ARN of the Amazon CloudWatch log group that is used to monitor and log events in the task.",
+            "type": "string",
+            "maxLength": 562,
+            "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):logs:[a-z\\-0-9]*:[0-9]{12}:log-group:([^:\\*]*)$"
+        },
+        "DestinationLocationArn": {
+            "description": "The ARN of an AWS storage resource's location.",
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):datasync:[a-z\\-0-9]+:[0-9]{12}:location/loc-[0-9a-z]{17}$"
+        },
+        "Name": {
+            "description": "The name of a task. This value is a text reference that is ued to identify the task in the console.",
+            "type": "string",
+            "maxLength": 256,
+            "minLength": 1,
+            "pattern": "^[a-zA-Z0-9\\s+=._:@/-]+$"
+        },
+        "Options": {
+            "$ref": "#/definitions/Options"
+        },
+        "Schedule": {
+            "$ref": "#/definitions/TaskSchedule"
+        },
+        "SourceLocationArn": {
+            "description": "The ARN of the source location for the task.",
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):datasync:[a-z\\-0-9]+:[0-9]{12}:location/loc-[0-9a-z]{17}$"
+        },
+        "TaskArn": {
+            "description": "The ARN of the task.",
+            "type": "string",
+            "maxLength": 128,
+            "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):datasync:[a-z\\-0-9]*:[0-9]{12}:task/task-[0-9a-f]{17}$"
+        },
+        "ErrorCode": {
+            "description": "Errors that AWS DataSync encountered during execution of the task. You can use this error code to help troubleshoot issues.",
+            "type": "string"
+        },
+        "ErrorDetail": {
+            "description": "Detailed description of an error that was encountered during the task execution.",
+            "type": "string"
+        },
+        "Status": {
+            "description": "The status of the task that was described.",
+            "type": "string",
+            "enum": ["AVAILABLE", "CREATING", "QUEUED", "RUNNING", "UNAVAILABLE"]
+        }
+    },
+    "additionalProperties": false,
+    "required": [
+        "DestinationLocationArn",
+        "SourceLocationArn"
+    ],
+    "readOnlyProperties": [
+        "/properties/TaskArn",
+        "/properties/ErrorCode",
+        "/properties/ErrorDetail",
+        "/properties/Status"
+    ],
+    "createOnlyProperties": [
+        "/properties/Tags",
+        "/properties/DestinationLocationArn",
+        "/properties/SourceLocationArn"
+    ],
+    "primaryIdentifier": [
+        "/properties/TaskArn"
+    ],
+    "handlers": {
+        "create": {
+            "permissions": [
+                "datasync:CreateTask"
+            ]
+        },
+        "read": {
+            "permissions": [
+                "datasync:DescribeTask"
+            ]
+        },
+        "update": {
+            "permissions": [
+                "datasync:UpdateTask",
+                "datasync:DescribeTask"
+            ]
+        },
+        "delete": {
+            "permissions": [
+                "datasync:DeleteTask"
+            ]
+        },
+        "list": {
+            "permissions": [
+                "datasync:ListTasks"
+            ]
+        }
+    }
+}

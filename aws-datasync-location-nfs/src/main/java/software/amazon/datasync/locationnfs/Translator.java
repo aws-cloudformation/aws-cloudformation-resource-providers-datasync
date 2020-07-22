@@ -54,6 +54,7 @@ public class Translator {
     }
 
     public static NfsMountOptions translateToDataSyncMountOptions(MountOptions mountOptions) {
+        // If null, add in default NFS Mount Options
         if (mountOptions == null)
             return NfsMountOptions.builder()
                     .version("AUTOMATIC")
@@ -64,6 +65,7 @@ public class Translator {
     }
 
     public static MountOptions translateToResourceModelMountOptions(NfsMountOptions mountOptions) {
+        // If null, add in default NFS Mount Options
         if (mountOptions == null)
             return MountOptions.builder()
                     .version("AUTOMATIC")
@@ -75,6 +77,7 @@ public class Translator {
 
     public static OnPremConfig translateToDataSyncOnPremConfig(
             software.amazon.datasync.locationnfs.OnPremConfig onPremConfig) {
+        // Prevents Null Pointer Exception:
         if (onPremConfig == null)
             return OnPremConfig.builder().build();
         return OnPremConfig.builder()

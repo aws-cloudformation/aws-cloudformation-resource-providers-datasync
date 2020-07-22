@@ -46,11 +46,14 @@ public class ListHandler extends BaseHandler<CallbackContext> {
 
         final List<ResourceModel> models = new ArrayList<>();
         for (LocationListEntry loc : response.locations()) {
-            ResourceModel model = ResourceModel.builder()
-                    .locationArn(loc.locationArn())
-                    .locationUri(loc.locationUri())
-                    .build();
-            models.add(model);
+            // Add only if it is an NFS location
+            if (loc.locationUri().startsWith("nfs")) {
+                ResourceModel model = ResourceModel.builder()
+                        .locationArn(loc.locationArn())
+                        .locationUri(loc.locationUri())
+                        .build();
+                models.add(model);
+            }
         }
 
         return ProgressEvent.<ResourceModel, CallbackContext>builder()

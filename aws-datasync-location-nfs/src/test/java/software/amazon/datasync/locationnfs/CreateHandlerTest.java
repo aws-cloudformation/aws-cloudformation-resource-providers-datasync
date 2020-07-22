@@ -3,6 +3,8 @@ package software.amazon.datasync.locationnfs;
 import software.amazon.awssdk.services.datasync.model.CreateLocationNfsRequest;
 import software.amazon.awssdk.services.datasync.model.CreateLocationNfsResponse;
 import software.amazon.awssdk.services.datasync.model.DataSyncException;
+import software.amazon.awssdk.services.datasync.model.DescribeLocationNfsRequest;
+import software.amazon.awssdk.services.datasync.model.DescribeLocationNfsResponse;
 import software.amazon.awssdk.services.datasync.model.InternalException;
 import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
@@ -51,9 +53,16 @@ public class CreateHandlerTest {
         final CreateLocationNfsResponse createLocationNfsResponse = CreateLocationNfsResponse.builder()
                 .build();
 
+        final DescribeLocationNfsResponse describeLocationNfsResponse = DescribeLocationNfsResponse.builder()
+                .build();
+
         doReturn(createLocationNfsResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(CreateLocationNfsRequest.class), any());
+
+        doReturn(describeLocationNfsResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(any(DescribeLocationNfsRequest.class), any());
 
         final ResourceModel model = buildDefaultModel();
 
@@ -68,7 +77,6 @@ public class CreateHandlerTest {
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModel()).isEqualTo(request.getDesiredResourceState());
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();

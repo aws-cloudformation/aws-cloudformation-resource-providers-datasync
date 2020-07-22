@@ -36,6 +36,12 @@
             "maxLength": 256,
             "minLength": 1
         },
+        "AgentAddress" : {
+            "description": "When your sync agent has been deployed, enter the domain name or IP address. Make sure that this is an address that you control.",
+            "type": "string",
+            "pattern": "^(([a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9\\-]*[A-Za-z0-9])$",
+            "maxLength": 255
+        },
         "ActivationKey" : {
             "description": "Activation key of the Agent.",
             "type": "string",
@@ -83,12 +89,8 @@
         }
     },
     "required": [
-        "ActivationKey"
     ],
     "additionalProperties": false,
-    "createOnlyProperties": [
-        "/properties/ActivationKey"
-    ],
     "readOnlyProperties": [
         "/properties/AgentArn"
     ],
@@ -98,7 +100,9 @@
     "handlers": {
         "create": {
             "permissions": [
-                "datasync:CreateAgent"
+                "datasync:CreateAgent",
+                "ec2:DescribeVpcEndpoints",
+                "ec2:DescribeNetworkInterfaces"
             ]
         },
         "read": {

@@ -41,11 +41,6 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
             throw new CfnGeneralServiceException(describeLocationNfsRequest.toString(), e.getCause());
         }
 
-        if (response == null)
-            return ProgressEvent.<ResourceModel, CallbackContext>builder()
-                    .resourceModel(model)
-                    .status(OperationStatus.SUCCESS)
-                    .build();
 
         ResourceModel returnModel = ResourceModel.builder()
                 .locationArn(response.locationArn())
