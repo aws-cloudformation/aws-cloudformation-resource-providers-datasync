@@ -1,9 +1,11 @@
 package software.amazon.datasync.agent;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.HttpClientBuilder;
 import software.amazon.awssdk.services.datasync.DataSyncClient;
 import software.amazon.awssdk.services.datasync.model.CreateAgentRequest;
 import software.amazon.awssdk.services.datasync.model.CreateAgentResponse;
@@ -20,7 +22,9 @@ import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
+import software.amazon.cloudformation.proxy.HandlerErrorCode;
 import software.amazon.cloudformation.proxy.Logger;
+import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
@@ -42,14 +46,20 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         // If an Activation Key is NOT input, then use the input Agent Address to retrieve one and add it to the model:
         if (model.getActivationKey() == null) {
             try {
-                model.setActivationKey(obtainCorrectActivationKey(model, proxy));
+                String activationKey = obtainCorrectActivationKey(model, proxy);
+                model.setActivationKey(activationKey);
             } catch (IOException e) {
                 return ProgressEvent.defaultFailureHandler(e, null);
             }
         }
+        // If the Activation Key is null again, then the HTTP GET failed:
+        if (model.getActivationKey() == null)
+            return ProgressEvent.<ResourceModel, CallbackContext>builder()
+                    .errorCode(HandlerErrorCode.InternalFailure)
+                    .status(OperationStatus.FAILED)
+                    .build();
 
         CreateAgentRequest createAgentRequest = Translator.translateToCreateRequest(model);
-
         CreateAgentResponse response;
         try {
             response = proxy.injectCredentialsAndInvokeV2(createAgentRequest, client::createAgent);
@@ -76,8 +86,8 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         return ProgressEvent.defaultSuccessHandler(returnModel);
     }
 
-    private String obtainCorrectActivationKey(ResourceModel model,
-                                              AmazonWebServicesClientProxy proxy) throws IOException {
+    public String obtainCorrectActivationKey(ResourceModel model,
+                                             AmazonWebServicesClientProxy proxy) throws IOException {
         // If there is no VPC endpoint ID, obtain Activation Key for Agent w/ Public service endpoints
         if (model.getVpcEndpointId() == null) {
             return getActivationKeyPublicEndpoint(model.getAgentAddress());
@@ -91,10 +101,21 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
      * Assumes that the Address is reachable on Port 80
      * @throws IOException if HTTP GET execution fails and leads to a resource creation failure
      */
-    private String getActivationKeyPublicEndpoint(String IpAddress) throws IOException {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+    public String getActivationKeyPublicEndpoint(String IpAddress) throws IOException {
+        // Enforce 15 second timeout:
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(15 * 1000)
+                .setConnectionRequestTimeout(15 * 1000)
+                .setSocketTimeout(15 * 1000)
+                .build();
+        CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
         HttpGet httpGet = new HttpGet("http://" + IpAddress + "/?gatewayType=SYNC&activationRegion=us-west-2&no_redirect");
-        HttpResponse httpResponse = httpClient.execute(httpGet);
+        CloseableHttpResponse httpResponse;
+        try {
+            httpResponse = httpClient.execute(httpGet);
+        } catch (Exception e) {
+            return null;
+        }
         Scanner sc = new Scanner(httpResponse.getEntity().getContent(), "UTF-8");
         return sc.nextLine();
     }
@@ -134,10 +155,21 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         final String url = "http://" + IpAddress +
                 "/?gatewayType=SYNC&activationRegion=us-west-2&privateLinkEndpoint="
                 + elasticIpAddress + "&endpointType=PRIVATE_LINK&no_redirect";
-        // Make HTTP GET Request
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        // Make HTTP GET Request; enforce 15 second timeout
+        RequestConfig config = RequestConfig.custom()
+                .setConnectTimeout(15 * 1000)
+                .setConnectionRequestTimeout(15 * 1000)
+                .setSocketTimeout(15 * 1000)
+                .build();
+        CloseableHttpClient httpClient = HttpClientBuilder.create().setDefaultRequestConfig(config).build();
         HttpGet httpGet = new HttpGet(url);
-        HttpResponse httpResponse = httpClient.execute(httpGet);
+
+        HttpResponse httpResponse;
+        try {
+            httpResponse = httpClient.execute(httpGet);
+        } catch (Exception e) {
+            return null;
+        }
         Scanner sc = new Scanner(httpResponse.getEntity().getContent(), "UTF-8");
         return sc.nextLine();
     }

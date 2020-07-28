@@ -97,6 +97,11 @@
     "primaryIdentifier": [
         "/properties/AgentArn"
     ],
+    "createOnlyProperties": [
+        "/properties/AgentAddress",
+        "/properties/ActivationKey",
+        "/properties/Tags"
+    ],
     "handlers": {
         "create": {
             "permissions": [
