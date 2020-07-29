@@ -47,7 +47,7 @@ public class ListHandler extends BaseHandler<CallbackContext> {
         List<ResourceModel> models = new ArrayList<>();
         // Only list if it is an S3 Location
         for (LocationListEntry loc : response.locations()) {
-            if (loc.locationUri().startsWith("s3")) {
+            if (loc.locationUri().startsWith("s3://")) {
                 ResourceModel model = ResourceModel.builder()
                         .locationArn(loc.locationArn())
                         .locationUri(loc.locationUri())

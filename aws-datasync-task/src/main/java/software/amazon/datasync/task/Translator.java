@@ -41,7 +41,6 @@ public class Translator {
 
     public static ListTasksRequest translateToListRequest(final String nextToken) {
         return ListTasksRequest.builder()
-                .maxResults(100)
                 .nextToken(nextToken)
                 .build();
     }

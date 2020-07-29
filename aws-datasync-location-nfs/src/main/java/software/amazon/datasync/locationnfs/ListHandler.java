@@ -47,7 +47,7 @@ public class ListHandler extends BaseHandler<CallbackContext> {
         final List<ResourceModel> models = new ArrayList<>();
         for (LocationListEntry loc : response.locations()) {
             // Add only if it is an NFS location
-            if (loc.locationUri().startsWith("nfs")) {
+            if (loc.locationUri().startsWith("nfs://")) {
                 ResourceModel model = ResourceModel.builder()
                         .locationArn(loc.locationArn())
                         .locationUri(loc.locationUri())

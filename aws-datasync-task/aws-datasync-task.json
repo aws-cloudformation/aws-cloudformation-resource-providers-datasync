@@ -211,13 +211,13 @@
         "/properties/ErrorDetail",
         "/properties/Status"
     ],
+    "primaryIdentifier": [
+        "/properties/TaskArn"
+    ],
     "createOnlyProperties": [
         "/properties/Tags",
         "/properties/DestinationLocationArn",
         "/properties/SourceLocationArn"
-    ],
-    "primaryIdentifier": [
-        "/properties/TaskArn"
     ],
     "handlers": {
         "create": {

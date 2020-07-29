@@ -27,7 +27,11 @@ import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
+import javax.xml.crypto.Data;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,6 +41,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateHandlerTest {
@@ -47,10 +52,18 @@ public class CreateHandlerTest {
     @Mock
     private Logger logger;
 
+    @Mock
+    private CloseableHttpClient httpClient;
+
+    @Mock
+    private ResourceModel model;
+
     @BeforeEach
     public void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
         logger = mock(Logger.class);
+        httpClient = HttpClientBuilder.create().build();
+        model = mock(ResourceModel.class);
     }
 
     @Test
@@ -90,7 +103,10 @@ public class CreateHandlerTest {
 
         doReturn(activationKey)
                 .when(handler)
-                .obtainCorrectActivationKey(any(ResourceModel.class), any(AmazonWebServicesClientProxy.class));
+                .obtainCorrectActivationKey(
+                        any(ResourceModel.class),
+                        any(AmazonWebServicesClientProxy.class),
+                        any());
 
         final CreateAgentResponse createAgentResponse = CreateAgentResponse.builder()
                 .build();
@@ -191,6 +207,7 @@ public class CreateHandlerTest {
         return ResourceModel.builder()
                 .agentAddress(agentAddress)
                 .agentName("MyAgent")
+                .endpointType("PUBLIC")
                 .build();
 
     }

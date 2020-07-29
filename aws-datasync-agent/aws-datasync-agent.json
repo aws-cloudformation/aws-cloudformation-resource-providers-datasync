@@ -71,6 +71,11 @@
             "type": "string",
             "pattern": "^vpce-[0-9a-f]{17}$"
         },
+        "EndpointType": {
+            "description": "The service endpoints that the agent will connect to. Only required if an Activation Key is not given.",
+            "type": "string",
+            "enum": ["FIPS", "PUBLIC", "PRIVATE_LINK"]
+        },
         "Tags": {
             "description": "An array of key-value pairs to apply to this resource.",
             "type": "array",
@@ -88,8 +93,6 @@
             "maxLength": 128
         }
     },
-    "required": [
-    ],
     "additionalProperties": false,
     "readOnlyProperties": [
         "/properties/AgentArn"

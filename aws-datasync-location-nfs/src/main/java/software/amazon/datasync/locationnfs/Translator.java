@@ -40,7 +40,6 @@ public class Translator {
 
     public static ListLocationsRequest translateToListRequest(final String nextToken) {
         return ListLocationsRequest.builder()
-                .maxResults(100)
                 .nextToken(nextToken)
                 .build();
     }
@@ -54,22 +53,16 @@ public class Translator {
     }
 
     public static NfsMountOptions translateToDataSyncMountOptions(MountOptions mountOptions) {
-        // If null, add in default NFS Mount Options
         if (mountOptions == null)
-            return NfsMountOptions.builder()
-                    .version("AUTOMATIC")
-                    .build();
+            return null;
         return NfsMountOptions.builder()
                 .version(mountOptions.getVersion())
                 .build();
     }
 
     public static MountOptions translateToResourceModelMountOptions(NfsMountOptions mountOptions) {
-        // If null, add in default NFS Mount Options
         if (mountOptions == null)
-            return MountOptions.builder()
-                    .version("AUTOMATIC")
-                    .build();
+            return null;
         return MountOptions.builder()
                 .version(mountOptions.versionAsString())
                 .build();

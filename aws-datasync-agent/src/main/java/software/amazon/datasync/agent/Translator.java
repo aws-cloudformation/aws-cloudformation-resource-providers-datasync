@@ -34,7 +34,6 @@ public class Translator {
 
     public static ListAgentsRequest translateToListRequest(final String nextToken) {
         return ListAgentsRequest.builder()
-                .maxResults(100)
                 .nextToken(nextToken)
                 .build();
     }

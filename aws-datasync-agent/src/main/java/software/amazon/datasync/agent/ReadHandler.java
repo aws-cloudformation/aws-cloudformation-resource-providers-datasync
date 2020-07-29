@@ -49,6 +49,7 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
                 .securityGroupArns(model.getSecurityGroupArns())
                 .subnetArns(model.getSubnetArns())
                 .vpcEndpointId(model.getVpcEndpointId())
+                .endpointType(model.getEndpointType())
                 .tags(model.getTags())
                 .build();
 

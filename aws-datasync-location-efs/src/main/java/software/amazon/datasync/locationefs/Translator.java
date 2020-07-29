@@ -31,7 +31,6 @@ public class Translator {
 
     public static ListLocationsRequest translateToListRequest(final String nextToken) {
         return ListLocationsRequest.builder()
-                .maxResults(100)
                 .nextToken(nextToken)
                 .build();
     }
