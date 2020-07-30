@@ -6,6 +6,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.codehaus.plexus.util.StringUtils;
 import software.amazon.awssdk.services.datasync.DataSyncClient;
 import software.amazon.awssdk.services.datasync.model.CreateAgentRequest;
 import software.amazon.awssdk.services.datasync.model.CreateAgentResponse;
@@ -74,8 +75,8 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
                     .status(OperationStatus.FAILED)
                     .build();
 
-        // If the Activation Key is empty, we had a problem with the HTTP GET
-        if (model.getActivationKey().equals(""))
+        // If the Activation Key is blank, we had a problem with the HTTP GET
+        if (StringUtils.isBlank(model.getActivationKey()))
             return ProgressEvent.<ResourceModel, CallbackContext>builder()
                     .errorCode(HandlerErrorCode.InternalFailure)
                     .status(OperationStatus.FAILED)
@@ -205,7 +206,7 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
                 getNetworkInterfaceIds(describeSubnetNetworkInterfacesResponse.networkInterfaces());
 
         // Find the network interface which exists in the subnet:
-        String desiredNetworkInterfaceId = "";
+        String desiredNetworkInterfaceId = null;
         for (String endpointNetworkInterfaceId : endpointNetworkInterfaceIds) {
             // If the Endpoint Network Interface ID matches the one in the subnet, that is our desired ID
             if (subnetNetworkInterfaceIds.contains(endpointNetworkInterfaceId)) {
@@ -213,7 +214,7 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
                 break;
             }
         }
-        if (desiredNetworkInterfaceId.equals("")) // If ID doesn't exist, the subnet given is incorrect, so return null and fail with Invalid Request
+        if (desiredNetworkInterfaceId == null) // If ID doesn't exist, the subnet given is incorrect, so return null and fail with Invalid Request
             return null;
 
         // Finally, get the Elastic IP Address of the obtained Network Interface:
@@ -262,6 +263,7 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         DescribeSubnetsRequest describeSubnetsRequest = DescribeSubnetsRequest.builder()
                 .filters(subnetFilter)
                 .build();
+
         DescribeSubnetsResponse describeSubnetsResponse =
                 proxy.injectCredentialsAndInvokeV2(describeSubnetsRequest, ec2Client::describeSubnets);
         return describeSubnetsResponse.subnets().get(0).subnetId();
