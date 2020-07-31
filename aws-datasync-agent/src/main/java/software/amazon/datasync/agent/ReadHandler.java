@@ -34,20 +34,22 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
         try {
             response = proxy.injectCredentialsAndInvokeV2(describeAgentRequest, client::describeAgent);
         } catch (InvalidRequestException e) {
-            throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getAgentArn().toString());
+            throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getAgentArn());
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(e.getCause());
+            throw new CfnServiceInternalErrorException(describeAgentRequest.toString(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getCause());
+            throw new CfnGeneralServiceException(describeAgentRequest.toString(), e.getCause());
         }
 
         ResourceModel returnModel = ResourceModel.builder()
                 .agentArn(response.agentArn())
                 .agentName(response.name())
+                .agentAddress(model.getAgentAddress())
                 .activationKey(model.getActivationKey())
                 .securityGroupArns(model.getSecurityGroupArns())
                 .subnetArns(model.getSubnetArns())
                 .vpcEndpointId(model.getVpcEndpointId())
+                .endpointType(model.getEndpointType())
                 .tags(model.getTags())
                 .build();
 

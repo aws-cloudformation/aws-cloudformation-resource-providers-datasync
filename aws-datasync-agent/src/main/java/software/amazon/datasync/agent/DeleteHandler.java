@@ -32,11 +32,11 @@ public class DeleteHandler extends BaseHandler<CallbackContext> {
             logger.log(String.format("%s %s deleted successfully", ResourceModel.TYPE_NAME,
                     model.getAgentArn()));
         } catch (InvalidRequestException e) {
-            throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getAgentArn().toString());
+            throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getAgentArn());
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(e.getCause());
+            throw new CfnServiceInternalErrorException(deleteAgentRequest.toString(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getCause());
+            throw new CfnGeneralServiceException(deleteAgentRequest.toString(), e.getCause());
         }
         return ProgressEvent.defaultSuccessHandler(null);
 

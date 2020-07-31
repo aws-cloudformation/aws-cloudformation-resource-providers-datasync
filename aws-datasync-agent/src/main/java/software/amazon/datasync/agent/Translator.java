@@ -1,6 +1,5 @@
 package software.amazon.datasync.agent;
 
-
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -35,7 +34,6 @@ public class Translator {
 
     public static ListAgentsRequest translateToListRequest(final String nextToken) {
         return ListAgentsRequest.builder()
-                .maxResults(100)
                 .nextToken(nextToken)
                 .build();
     }

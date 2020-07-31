@@ -1,7 +1,12 @@
 package software.amazon.datasync.agent;
 
 import software.amazon.awssdk.services.datasync.DataSyncClient;
-import software.amazon.awssdk.services.datasync.model.*;
+import software.amazon.awssdk.services.datasync.model.DataSyncException;
+import software.amazon.awssdk.services.datasync.model.DescribeAgentRequest;
+import software.amazon.awssdk.services.datasync.model.DescribeAgentResponse;
+import software.amazon.awssdk.services.datasync.model.InternalException;
+import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.UpdateAgentRequest;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -31,9 +36,9 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
         } catch (InvalidRequestException e) {
             throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getAgentArn());
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(e.getCause());
+            throw new CfnServiceInternalErrorException(updateAgentRequest.toString(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getCause());
+            throw new CfnGeneralServiceException(updateAgentRequest.toString(), e.getCause());
         }
 
         ResourceModel returnModel = retrieveUpdatedModel(model, proxy, client);
@@ -57,10 +62,12 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
         ResourceModel returnModel = ResourceModel.builder()
                 .agentArn(response.agentArn())
                 .agentName(response.name())
+                .agentAddress(model.getAgentAddress())
                 .activationKey(model.getActivationKey())
                 .securityGroupArns(model.getSecurityGroupArns())
                 .subnetArns(model.getSubnetArns())
                 .vpcEndpointId(model.getVpcEndpointId())
+                .endpointType(model.getEndpointType())
                 .tags(model.getTags())
                 .build();
 
