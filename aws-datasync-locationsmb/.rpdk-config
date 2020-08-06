@@ -1,0 +1,17 @@
+{
+    "typeName": "AWS::DataSync::LocationSMB",
+    "language": "java",
+    "runtime": "java8",
+    "entrypoint": "software.amazon.datasync.locationsmb.HandlerWrapper::handleRequest",
+    "testEntrypoint": "software.amazon.datasync.locationsmb.HandlerWrapper::testEntrypoint",
+    "settings": {
+        "namespace": [
+            "software",
+            "amazon",
+            "datasync",
+            "locationsmb"
+        ],
+        "codegen_template_path": "default",
+        "protocolVersion": "2.0.0"
+    }
+}
