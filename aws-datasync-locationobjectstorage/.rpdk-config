@@ -1,0 +1,17 @@
+{
+    "typeName": "AWS::DataSync::LocationObjectStorage",
+    "language": "java",
+    "runtime": "java8",
+    "entrypoint": "software.amazon.datasync.locationobjectstorage.HandlerWrapper::handleRequest",
+    "testEntrypoint": "software.amazon.datasync.locationobjectstorage.HandlerWrapper::testEntrypoint",
+    "settings": {
+        "namespace": [
+            "software",
+            "amazon",
+            "datasync",
+            "locationobjectstorage"
+        ],
+        "codegen_template_path": "default",
+        "protocolVersion": "2.0.0"
+    }
+}
