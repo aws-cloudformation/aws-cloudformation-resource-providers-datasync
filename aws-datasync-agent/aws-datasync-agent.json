@@ -1,138 +1,142 @@
 {
-    "typeName": "AWS::DataSync::Agent",
-    "description": "Resource schema for AWS::DataSync::Agent.",
-    "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-datasync.git",
-    "definitions": {
-        "Tag": {
-            "description": "A key-value pair to associate with a resource.",
-            "type": "object",
-            "properties": {
-                "Key": {
-                    "type": "string",
-                    "description": "The key for an AWS resource tag.",
-                    "pattern": "^[a-zA-Z0-9\\s+=.:/-]+$",
-                    "maxLength": 256,
-                    "minLength": 1
-                },
-                "Value": {
-                    "type": "string",
-                    "description": "The value for an AWS resource tag.",
-                    "pattern": "^[a-zA-Z0-9\\s+=.:@/-]+$",
-                    "maxLength": 256,
-                    "minLength": 1
-                }
-            },
-            "required": [
-                "Key",
-                "Value"
-            ]
+  "typeName": "AWS::DataSync::Agent",
+  "description": "Resource schema for AWS::DataSync::Agent.",
+  "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-datasync.git",
+  "definitions": {
+    "Tag": {
+      "description": "A key-value pair to associate with a resource.",
+      "type": "object",
+      "properties": {
+        "Key": {
+          "type": "string",
+          "description": "The key for an AWS resource tag.",
+          "pattern": "^[a-zA-Z0-9\\s+=.:/-]+$",
+          "maxLength": 256,
+          "minLength": 1
+        },
+        "Value": {
+          "type": "string",
+          "description": "The value for an AWS resource tag.",
+          "pattern": "^[a-zA-Z0-9\\s+=.:@/-]+$",
+          "maxLength": 256,
+          "minLength": 1
         }
-    },
-    "properties": {
-        "AgentName" : {
-            "description": "The name configured for the agent. Text reference used to identify the agent in the console.",
-            "type": "string",
-            "pattern": "^[a-zA-Z0-9\\s+=.:@/-]+$",
-            "maxLength": 256,
-            "minLength": 1
-        },
-        "AgentAddress" : {
-            "description": "When your sync agent has been deployed, enter the domain name or IP address. Make sure that this is an address that you control.",
-            "type": "string",
-            "pattern": "^(([a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9\\-]*[A-Za-z0-9])$",
-            "maxLength": 255
-        },
-        "ActivationKey" : {
-            "description": "Activation key of the Agent.",
-            "type": "string",
-            "pattern": "[A-Z0-9]{5}(-[A-Z0-9]{5}){4}",
-            "maxLength": 29
-        },
-        "SecurityGroupArns": {
-            "description": "The ARNs of the security group used to protect your data transfer task subnets.",
-            "type": "array",
-            "items": {
-                "type": "string",
-                "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:security-group/.*$",
-                "maxLength": 128
-            }
-        },
-        "SubnetArns": {
-            "description": "The ARNs of the subnets in which DataSync will create elastic network interfaces for each data transfer task.",
-            "type": "array",
-            "items": {
-                "type": "string",
-                "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:subnet/.*$",
-                "maxLength": 128
-            }
-        },
-        "VpcEndpointId": {
-            "description": "The ID of the VPC endpoint that the agent has access to.",
-            "type": "string",
-            "pattern": "^vpce-[0-9a-f]{17}$"
-        },
-        "EndpointType": {
-            "description": "The service endpoints that the agent will connect to. Only required if an Activation Key is not given.",
-            "type": "string",
-            "enum": ["FIPS", "PUBLIC", "PRIVATE_LINK"]
-        },
-        "Tags": {
-            "description": "An array of key-value pairs to apply to this resource.",
-            "type": "array",
-            "maxItems": 55,
-            "uniqueItems": true,
-            "insertionOrder": false,
-            "items": {
-                "$ref": "#/definitions/Tag"
-            }
-        },
-        "AgentArn": {
-            "description": "The DataSync Agent ARN.",
-            "type": "string",
-            "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):datasync:[a-z\\-0-9]+:[0-9]{12}:agent/agent-[0-9a-z]{17}$",
-            "maxLength": 128
-        }
-    },
-    "additionalProperties": false,
-    "readOnlyProperties": [
-        "/properties/AgentArn"
-    ],
-    "primaryIdentifier": [
-        "/properties/AgentArn"
-    ],
-    "createOnlyProperties": [
-        "/properties/AgentAddress",
-        "/properties/ActivationKey",
-        "/properties/Tags"
-    ],
-    "handlers": {
-        "create": {
-            "permissions": [
-                "datasync:CreateAgent",
-                "ec2:DescribeVpcEndpoints",
-                "ec2:DescribeNetworkInterfaces"
-            ]
-        },
-        "read": {
-            "permissions": [
-                "datasync:DescribeAgent"
-            ]
-        },
-        "update": {
-            "permissions": [
-                "datasync:UpdateAgent",
-                "datasync:DescribeAgent"
-            ]
-        },
-        "delete": {
-            "permissions": [
-                "datasync:DeleteAgent"
-            ]
-        },
-        "list": {
-            "permissions": [
-                "datasync:ListAgents"
-            ]
-        }
+      },
+      "required": [
+        "Key",
+        "Value"
+      ]
     }
+  },
+  "properties": {
+    "AgentName": {
+      "description": "The name configured for the agent. Text reference used to identify the agent in the console.",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9\\s+=.:@/-]+$",
+      "maxLength": 256,
+      "minLength": 1
+    },
+    "AgentAddress": {
+      "description": "When your sync agent has been deployed, enter the domain name or IP address. Make sure that this is an address that you control.",
+      "type": "string",
+      "pattern": "^(([a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9\\-]*[A-Za-z0-9])$",
+      "maxLength": 255
+    },
+    "ActivationKey": {
+      "description": "Activation key of the Agent.",
+      "type": "string",
+      "pattern": "[A-Z0-9]{5}(-[A-Z0-9]{5}){4}",
+      "maxLength": 29
+    },
+    "SecurityGroupArns": {
+      "description": "The ARNs of the security group used to protect your data transfer task subnets.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:security-group/.*$",
+        "maxLength": 128
+      }
+    },
+    "SubnetArns": {
+      "description": "The ARNs of the subnets in which DataSync will create elastic network interfaces for each data transfer task.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:subnet/.*$",
+        "maxLength": 128
+      }
+    },
+    "VpcEndpointId": {
+      "description": "The ID of the VPC endpoint that the agent has access to.",
+      "type": "string",
+      "pattern": "^vpce-[0-9a-f]{17}$"
+    },
+    "EndpointType": {
+      "description": "The service endpoints that the agent will connect to. Only required if an Activation Key is not given.",
+      "type": "string",
+      "enum": [
+        "FIPS",
+        "PUBLIC",
+        "PRIVATE_LINK"
+      ]
+    },
+    "Tags": {
+      "description": "An array of key-value pairs to apply to this resource.",
+      "type": "array",
+      "maxItems": 55,
+      "uniqueItems": true,
+      "insertionOrder": false,
+      "items": {
+        "$ref": "#/definitions/Tag"
+      }
+    },
+    "AgentArn": {
+      "description": "The DataSync Agent ARN.",
+      "type": "string",
+      "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):datasync:[a-z\\-0-9]+:[0-9]{12}:agent/agent-[0-9a-z]{17}$",
+      "maxLength": 128
+    }
+  },
+  "additionalProperties": false,
+  "readOnlyProperties": [
+    "/properties/AgentArn"
+  ],
+  "primaryIdentifier": [
+    "/properties/AgentArn"
+  ],
+  "createOnlyProperties": [
+    "/properties/AgentAddress",
+    "/properties/ActivationKey",
+    "/properties/Tags"
+  ],
+  "handlers": {
+    "create": {
+      "permissions": [
+        "datasync:CreateAgent",
+        "ec2:DescribeVpcEndpoints",
+        "ec2:DescribeNetworkInterfaces"
+      ]
+    },
+    "read": {
+      "permissions": [
+        "datasync:DescribeAgent"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "datasync:UpdateAgent",
+        "datasync:DescribeAgent"
+      ]
+    },
+    "delete": {
+      "permissions": [
+        "datasync:DeleteAgent"
+      ]
+    },
+    "list": {
+      "permissions": [
+        "datasync:ListAgents"
+      ]
+    }
+  }
 }
