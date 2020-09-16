@@ -28,6 +28,10 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         final ResourceModel model = request.getDesiredResourceState();
         final DataSyncClient client = ClientBuilder.getClient();
 
+        if (callbackContext == null && (request.getDesiredResourceState().getLocationArn() != null)) {
+            throw new CfnInvalidRequestException("LocationArn cannot be specified to create a location.");
+        }
+
         CreateLocationEfsRequest createLocationEfsRequest = Translator.translateToCreateRequest(model);
 
         CreateLocationEfsResponse response;

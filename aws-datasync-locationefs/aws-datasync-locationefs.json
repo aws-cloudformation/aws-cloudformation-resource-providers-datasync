@@ -89,7 +89,7 @@
     "LocationUri": {
       "description": "The URL of the EFS location that was described.",
       "type": "string",
-      "pattern": "^(efs|nfs|s3|smb|fsxw)://[a-zA-Z0-9.\\-]+$",
+      "pattern": "^(efs|nfs|s3|smb|fsxw)://[a-zA-Z0-9.\\-/]+$",
       "maxLength": 4356
     }
   },
