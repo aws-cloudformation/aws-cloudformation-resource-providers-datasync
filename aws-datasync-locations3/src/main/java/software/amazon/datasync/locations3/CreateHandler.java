@@ -25,6 +25,10 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         final CallbackContext callbackContext,
         final Logger logger) {
 
+        if (callbackContext == null && (request.getDesiredResourceState().getLocationArn() != null)) {
+            throw new CfnInvalidRequestException("LocationArn cannot be specified to create a location.");
+        }
+
         final ResourceModel model = request.getDesiredResourceState();
         final DataSyncClient client = ClientBuilder.getClient();
 
@@ -70,7 +74,7 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
             throw new CfnGeneralServiceException(e.getCause());
         }
 
-        ResourceModel returnModel = ResourceModel.builder()
+        return ResourceModel.builder()
                 .locationArn(model.getLocationArn())
                 .locationUri(response.locationUri())
                 .s3BucketArn(model.getS3BucketArn())
@@ -79,7 +83,5 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
                 .subdirectory(model.getSubdirectory())
                 .tags(model.getTags())
                 .build();
-
-        return returnModel;
     }
 }
