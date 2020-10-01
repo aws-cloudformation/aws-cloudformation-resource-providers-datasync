@@ -41,7 +41,6 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
             throw new CfnGeneralServiceException(describeLocationObjectStorageRequest.toString(), e.getCause());
         }
 
-        Double serverPort = response.serverPort() == null ? null : response.serverPort().doubleValue();
         ResourceModel returnModel = ResourceModel.builder()
                 .locationArn(response.locationArn())
                 .locationUri(response.locationUri())
@@ -50,7 +49,7 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
                 .bucketName(model.getBucketName())
                 .secretKey(model.getSecretKey())
                 .serverHostname(model.getServerHostname())
-                .serverPort(serverPort)
+                .serverPort(model.getServerPort())
                 .serverProtocol(response.serverProtocolAsString())
                 .subdirectory(model.getSubdirectory())
                 .tags(model.getTags())

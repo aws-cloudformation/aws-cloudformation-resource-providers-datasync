@@ -26,6 +26,10 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         final CallbackContext callbackContext,
         final Logger logger) {
 
+        if (callbackContext == null && (request.getDesiredResourceState().getLocationArn() != null)) {
+            throw new CfnInvalidRequestException("AgentArn cannot be specified to create a location.");
+        }
+
         final ResourceModel model = request.getDesiredResourceState();
         final DataSyncClient client = ClientBuilder.getClient();
 
@@ -35,6 +39,7 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         CreateLocationObjectStorageResponse response;
         try {
             response = proxy.injectCredentialsAndInvokeV2(createLocationObjectStorageRequest, client::createLocationObjectStorage);
+            logger.log(String.format("%s created successfully.", ResourceModel.TYPE_NAME));
         } catch (InvalidRequestException e) {
             throw new CfnInvalidRequestException(createLocationObjectStorageRequest.toString(), e.getCause());
         } catch (InternalException e) {
@@ -73,7 +78,6 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
             throw new CfnGeneralServiceException(e.getCause());
         }
 
-        Double serverPort = response.serverPort() == null ? null : response.serverPort().doubleValue();
         return ResourceModel.builder()
                 .locationArn(response.locationArn())
                 .locationUri(response.locationUri())
@@ -82,7 +86,7 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
                 .bucketName(model.getBucketName())
                 .secretKey(model.getSecretKey())
                 .serverHostname(model.getServerHostname())
-                .serverPort(serverPort)
+                .serverPort(model.getServerPort())
                 .serverProtocol(response.serverProtocolAsString())
                 .subdirectory(model.getSubdirectory())
                 .tags(model.getTags())
