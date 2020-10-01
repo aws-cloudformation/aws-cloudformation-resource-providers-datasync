@@ -62,7 +62,10 @@
       "pattern": "^([A-Za-z0-9]+[A-Za-z0-9-.]*)*[A-Za-z0-9-]*[A-Za-z0-9]$"
     },
     "MountOptions": {
-      "$ref": "#/definitions/MountOptions"
+      "$ref": "#/definitions/MountOptions",
+      "default": {
+        "Version": "AUTOMATIC"
+      }
     },
     "Password": {
       "description": "The password of the user who can mount the share, has the permissions to access files and folders in the SMB share.",
@@ -107,7 +110,7 @@
     "LocationUri": {
       "description": "The URL of the EFS location that was described.",
       "type": "string",
-      "pattern": "^(efs|nfs|s3|smb|fsxw)://[a-zA-Z0-9.\\-]+$",
+      "pattern": "^(efs|nfs|s3|smb|fsxw)://[a-zA-Z0-9./\\-]+$",
       "maxLength": 4356
     }
   },
@@ -116,7 +119,6 @@
     "User",
     "Subdirectory",
     "ServerHostname",
-    "Password",
     "AgentArns"
   ],
   "readOnlyProperties": [
