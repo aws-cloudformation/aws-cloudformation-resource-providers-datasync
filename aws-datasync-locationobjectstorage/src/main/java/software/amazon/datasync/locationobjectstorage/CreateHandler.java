@@ -27,7 +27,7 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         final Logger logger) {
 
         if (callbackContext == null && (request.getDesiredResourceState().getLocationArn() != null)) {
-            throw new CfnInvalidRequestException("AgentArn cannot be specified to create a location.");
+            throw new CfnInvalidRequestException("LocationArn cannot be specified to create a location.");
         }
 
         final ResourceModel model = request.getDesiredResourceState();
