@@ -1,5 +1,6 @@
 package software.amazon.datasync.agent;
 
+import software.amazon.awssdk.services.datasync.DataSyncClient;
 import software.amazon.awssdk.services.datasync.model.DataSyncException;
 import software.amazon.awssdk.services.datasync.model.DeleteAgentRequest;
 import software.amazon.awssdk.services.datasync.model.DeleteAgentResponse;
@@ -8,57 +9,58 @@ import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
-import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
-import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.OperationStatus;
-import software.amazon.cloudformation.proxy.ProgressEvent;
-import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import software.amazon.cloudformation.proxy.*;
+import software.amazon.cloudformation.proxy.delay.Constant;
+
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
+import static software.amazon.datasync.agent.AbstractTestBase.MOCK_PROXY;
 
 @ExtendWith(MockitoExtension.class)
-public class DeleteHandlerTest {
+public class DeleteHandlerTest extends AbstractTestBase {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
 
-    @Mock
-    private Logger logger;
+    @Mock private ProxyClient<DataSyncClient> proxyClient;
+
+    @Mock DataSyncClient dataSyncClient;
+
+    Delay testDelay = Constant.of().timeout(Duration.ofMinutes(1)).delay(Duration.ofMillis(1L)).build();
 
     @BeforeEach
     public void setup() {
-        proxy = mock(AmazonWebServicesClientProxy.class);
-        logger = mock(Logger.class);
+        proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
+        dataSyncClient = mock(DataSyncClient.class);
+        proxyClient = MOCK_PROXY(proxy, dataSyncClient);
     }
 
     @Test
     public void handleRequest_SimpleSuccess() {
-        final DeleteHandler handler = new DeleteHandler();
+        final DeleteHandler handler = new DeleteHandler(testDelay);
 
         final DeleteAgentResponse deleteAgentResponse = DeleteAgentResponse.builder().build();
 
-        doReturn(deleteAgentResponse)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(any(DeleteAgentRequest.class), any());
-
         final ResourceModel model = buildDefaultModel();
+
+        when(proxyClient.client().deleteAgent(any(DeleteAgentRequest.class)))
+                .thenReturn(deleteAgentResponse);
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(model)
                 .build();
 
         final ProgressEvent<ResourceModel, CallbackContext> response
-                = handler.handleRequest(proxy, request, null, logger);
+                = handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
@@ -75,9 +77,8 @@ public class DeleteHandlerTest {
     public void handleRequest_FailureNotFoundRequest() {
         final DeleteHandler handler = new DeleteHandler();
 
-        doThrow(InvalidRequestException.builder().build())
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(any(DeleteAgentRequest.class), any());
+        when(proxyClient.client().deleteAgent(any(DeleteAgentRequest.class)))
+                .thenThrow(InvalidRequestException.builder().build());
 
         final ResourceModel model = buildDefaultModel();
 
@@ -87,7 +88,7 @@ public class DeleteHandlerTest {
                 .build();
 
         assertThrows(CfnNotFoundException.class, () -> {
-            handler.handleRequest(proxy, request, null, logger);
+            handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
         } );
     }
 
@@ -95,9 +96,9 @@ public class DeleteHandlerTest {
     public void handleRequest_FailureInternalException() {
         final DeleteHandler handler = new DeleteHandler();
 
-        doThrow(InternalException.class)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(any(DeleteAgentRequest.class), any());
+        when(proxyClient.client().deleteAgent(any(DeleteAgentRequest.class)))
+                .thenThrow(InternalException.builder().build());
+
 
         final ResourceModel model = buildDefaultModel();
 
@@ -106,7 +107,7 @@ public class DeleteHandlerTest {
                 .build();
 
         assertThrows(CfnServiceInternalErrorException.class, () -> {
-            handler.handleRequest(proxy, request, null, logger);
+            handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
         } );
 
     }
@@ -115,9 +116,8 @@ public class DeleteHandlerTest {
     public void handleRequest_FailureDataSyncException() {
         final DeleteHandler handler = new DeleteHandler();
 
-        doThrow(DataSyncException.class)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(any(DeleteAgentRequest.class), any());
+        when(proxyClient.client().deleteAgent(any(DeleteAgentRequest.class)))
+                .thenThrow(DataSyncException.builder().build());
 
         final ResourceModel model = buildDefaultModel();
 
@@ -126,7 +126,7 @@ public class DeleteHandlerTest {
                 .build();
 
         assertThrows(CfnGeneralServiceException.class, () -> {
-            handler.handleRequest(proxy, request, null, logger);
+            handler.handleRequest(proxy, request, new CallbackContext(), proxyClient, logger);
         } );
     }
 

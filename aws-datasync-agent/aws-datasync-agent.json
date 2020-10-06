@@ -131,7 +131,8 @@
     "delete": {
       "permissions": [
         "datasync:DeleteAgent"
-      ]
+      ],
+      "timeoutInMinutes": 6
     },
     "list": {
       "permissions": [

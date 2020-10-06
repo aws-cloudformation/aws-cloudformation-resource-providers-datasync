@@ -1,5 +1,6 @@
 package software.amazon.datasync.agent;
 
+import software.amazon.awssdk.services.datasync.DataSyncClient;
 import software.amazon.awssdk.services.datasync.model.DataSyncException;
 import software.amazon.awssdk.services.datasync.model.DescribeAgentRequest;
 import software.amazon.awssdk.services.datasync.model.DescribeAgentResponse;
@@ -8,11 +9,7 @@ import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
-import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
-import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.OperationStatus;
-import software.amazon.cloudformation.proxy.ProgressEvent;
-import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.cloudformation.proxy.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -31,6 +28,10 @@ public class ReadHandlerTest {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
+
+    @Mock private ProxyClient<DataSyncClient> proxyClient;
+
+    @Mock DataSyncClient dataSyncClient;
 
     @Mock
     private Logger logger;

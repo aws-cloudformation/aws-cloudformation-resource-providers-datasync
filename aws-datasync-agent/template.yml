@@ -4,7 +4,8 @@ Description: AWS SAM template for the AWS::DataSync::Agent resource type
 
 Globals:
   Function:
-    Timeout: 60  # docker start-up times can be long for SAM CLI
+    Timeout: 600
+    MemorySize: 256
 
 Resources:
   TypeFunction:

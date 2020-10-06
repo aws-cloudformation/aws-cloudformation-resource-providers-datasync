@@ -8,6 +8,7 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import software.amazon.awssdk.services.datasync.DataSyncClient;
 import software.amazon.awssdk.services.datasync.model.CreateAgentRequest;
 import software.amazon.awssdk.services.datasync.model.CreateAgentResponse;
 import software.amazon.awssdk.services.datasync.model.DataSyncException;
@@ -21,11 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
-import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.OperationStatus;
-import software.amazon.cloudformation.proxy.ProgressEvent;
-import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.cloudformation.proxy.*;
 
 import javax.xml.crypto.Data;
 import java.io.ByteArrayInputStream;
@@ -42,12 +39,19 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static software.amazon.datasync.agent.AbstractTestBase.MOCK_PROXY;
 
 @ExtendWith(MockitoExtension.class)
 public class CreateHandlerTest {
 
     @Mock
     private AmazonWebServicesClientProxy proxy;
+
+    @Mock
+    private ProxyClient<DataSyncClient> proxyClient;
+
+    @Mock
+    private DataSyncClient dataSyncClient;
 
     @Mock
     private Logger logger;
@@ -61,6 +65,7 @@ public class CreateHandlerTest {
     @BeforeEach
     public void setup() {
         proxy = mock(AmazonWebServicesClientProxy.class);
+        proxyClient = MOCK_PROXY(proxy, dataSyncClient);
         logger = mock(Logger.class);
         httpClient = HttpClientBuilder.create().build();
         model = mock(ResourceModel.class);
@@ -84,7 +89,7 @@ public class CreateHandlerTest {
                 .build();
 
         final ProgressEvent<ResourceModel, CallbackContext> response
-                = handler.handleRequest(proxy, request, null, logger);
+                = handler.handleRequest(proxy, request, null, proxyClient, logger);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
@@ -122,7 +127,7 @@ public class CreateHandlerTest {
                 .build();
 
         final ProgressEvent<ResourceModel, CallbackContext> response
-                = handler.handleRequest(proxy, request, null, logger);
+                = handler.handleRequest(proxy, request, null, proxyClient, logger);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
@@ -150,7 +155,7 @@ public class CreateHandlerTest {
                 .build();
 
         assertThrows(CfnInvalidRequestException.class, () -> {
-            handler.handleRequest(proxy, request, null, logger);
+            handler.handleRequest(proxy, request, null, proxyClient, logger);
         } );
     }
 
@@ -170,7 +175,7 @@ public class CreateHandlerTest {
                 .build();
 
         assertThrows(CfnServiceInternalErrorException.class, () -> {
-            handler.handleRequest(proxy, request, null, logger);
+            handler.handleRequest(proxy, request, null, proxyClient, logger);
         } );
 
     }
@@ -190,7 +195,7 @@ public class CreateHandlerTest {
                 .build();
 
         assertThrows(CfnGeneralServiceException.class, () -> {
-            handler.handleRequest(proxy, request, null, logger);
+            handler.handleRequest(proxy, request, null, proxyClient, logger);
         } );
     }
 
