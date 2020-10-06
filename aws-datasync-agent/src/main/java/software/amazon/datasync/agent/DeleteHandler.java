@@ -113,4 +113,3 @@ public class DeleteHandler extends BaseHandlerStd {
         return ProgressEvent.defaultSuccessHandler(null);
     }
 }
-
