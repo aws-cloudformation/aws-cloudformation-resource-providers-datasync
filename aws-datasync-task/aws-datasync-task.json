@@ -147,6 +147,14 @@
             "DISABLED"
           ]
         },
+        "TransferMode": {
+          "description": "A value that determines whether DataSync transfers only the data and metadata that differ between the source and the destination location, or whether DataSync transfers all the content from the source, without comparing to the destination location.",
+          "type": "string",
+          "enum": [
+            "CHANGED",
+            "ALL"
+          ]
+        },
         "Uid": {
           "description": "The user ID (UID) of the file's owner.",
           "type": "string",
@@ -167,6 +175,24 @@
           ]
         }
       }
+    },
+    "SourceNetworkInterfaceArns": {
+      "description": "The Amazon Resource Name (ARN) of the source ENIs (Elastic Network Interface) that was created for your subnet.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^arn:aws[\\-a-z]{0,}:ec2:[a-z\\-0-9]*:[0-9]{12}:network-interface/eni-[0-9a-f]+$"
+      },
+      "maxItems": 128
+    },
+    "DestinationNetworkInterfaceArns": {
+      "description": "The Amazon Resource Name (ARN) of the source ENIs (Elastic Network Interface) that was created for your subnet.",
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^arn:aws[\\-a-z]{0,}:ec2:[a-z\\-0-9]*:[0-9]{12}:network-interface/eni-[0-9a-f]+$"
+      },
+      "maxItems": 128
     }
   },
   "properties": {
@@ -243,6 +269,9 @@
         "RUNNING",
         "UNAVAILABLE"
       ]
+    },
+    "SourceNetworkInterfaceArns": {
+      "$ref": "#/definitions/SourceNetworkInterfaceArns"
     }
   },
   "additionalProperties": false,

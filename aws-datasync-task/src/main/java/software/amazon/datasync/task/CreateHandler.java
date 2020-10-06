@@ -25,6 +25,10 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
             final CallbackContext callbackContext,
             final Logger logger) {
 
+        if (callbackContext == null && (request.getDesiredResourceState().getTaskArn() != null)) {
+            throw new CfnInvalidRequestException("TaskArn cannot be specified to create a task.");
+        }
+
         final ResourceModel model = request.getDesiredResourceState();
         final DataSyncClient client = ClientBuilder.getClient();
 
