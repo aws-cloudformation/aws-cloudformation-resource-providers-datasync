@@ -111,7 +111,10 @@
     "create": {
       "permissions": [
         "datasync:CreateLocationFsxWindows",
-        "datasync:DescribeLocationFsxWindows"
+        "datasync:DescribeLocationFsxWindows",
+        "fsx:DescribeFileSystems",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeSecurityGroups"
       ]
     },
     "read": {

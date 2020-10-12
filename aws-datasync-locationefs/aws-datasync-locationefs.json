@@ -109,7 +109,11 @@
     "create": {
       "permissions": [
         "datasync:CreateLocationEfs",
-        "datasync:DescribeLocationEfs"
+        "datasync:DescribeLocationEfs",
+        "elasticfilesystem:DescribeFileSystems",
+        "elasticfilesystem:DescribeMountTargets",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeSecurityGroups"
       ]
     },
     "read": {

@@ -119,6 +119,8 @@
       "permissions": [
         "datasync:CreateLocationS3",
         "datasync:DescribeLocationS3",
+        "s3:ListAllMyBuckets",
+        "s3:ListBucket",
         "iam:GetRole",
         "iam:PassRole"
       ]
