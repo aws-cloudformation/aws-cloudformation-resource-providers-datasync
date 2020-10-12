@@ -33,9 +33,9 @@ public class ReadHandler extends BaseHandlerStd {
         } catch (InvalidRequestException e) {
             throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getAgentArn());
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(describeAgentRequest.toString(), e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(describeAgentRequest.toString(), e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
         ResourceModel returnModel = ResourceModel.builder()

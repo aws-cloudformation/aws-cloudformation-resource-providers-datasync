@@ -80,9 +80,9 @@ public class DeleteHandler extends BaseHandlerStd {
         } catch (InvalidRequestException e) {
             throw new CfnNotFoundException(ResourceModel.TYPE_NAME, deleteAgentRequest.agentArn(), e);
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(deleteAgentRequest.toString(), e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(deleteAgentRequest.toString(), e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
         logger.log(String.format("%s successfully deleted.", ResourceModel.TYPE_NAME));
