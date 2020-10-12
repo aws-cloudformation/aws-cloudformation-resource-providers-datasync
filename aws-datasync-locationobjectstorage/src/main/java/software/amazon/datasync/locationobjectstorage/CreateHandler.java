@@ -41,11 +41,11 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
             response = proxy.injectCredentialsAndInvokeV2(createLocationObjectStorageRequest, client::createLocationObjectStorage);
             logger.log(String.format("%s created successfully.", ResourceModel.TYPE_NAME));
         } catch (InvalidRequestException e) {
-            throw new CfnInvalidRequestException(createLocationObjectStorageRequest.toString(), e.getCause());
+            throw new CfnInvalidRequestException(e.getMessage(), e.getCause());
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(createLocationObjectStorageRequest.toString(), e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(createLocationObjectStorageRequest.toString(), e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
         final ResourceModel modelNoUri = ResourceModel.builder()
@@ -73,9 +73,9 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         try {
             response = proxy.injectCredentialsAndInvokeV2(describeLocationObjectStorageRequest, client::describeLocationObjectStorage);
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
         return ResourceModel.builder()

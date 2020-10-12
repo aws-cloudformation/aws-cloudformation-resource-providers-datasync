@@ -39,11 +39,11 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         try {
             response = proxy.injectCredentialsAndInvokeV2(createLocationFsxWindowsRequest, client::createLocationFsxWindows);
         } catch (InvalidRequestException e) {
-            throw new CfnInvalidRequestException(createLocationFsxWindowsRequest.toString(), e.getCause());
+            throw new CfnInvalidRequestException(e.getMessage(), e.getCause());
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(createLocationFsxWindowsRequest.toString(), e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(createLocationFsxWindowsRequest.toString(), e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
         final ResourceModel modelNoUri = ResourceModel.builder()
@@ -71,9 +71,9 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         try {
             response = proxy.injectCredentialsAndInvokeV2(describeLocationFsxWindowsRequest, client::describeLocationFsxWindows);
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
         return ResourceModel.builder()
