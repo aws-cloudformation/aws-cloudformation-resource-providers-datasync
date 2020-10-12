@@ -37,9 +37,9 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
         } catch (InvalidRequestException e) {
             throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getTaskArn());
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(updateTaskRequest.toString(), e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(updateTaskRequest.toString(), e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
         ResourceModel returnModel = retrieveUpdatedModel(model, proxy, client);
@@ -57,9 +57,9 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
         try {
             response = proxy.injectCredentialsAndInvokeV2(describeTaskRequest, client::describeTask);
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
         return ResourceModel.builder()
