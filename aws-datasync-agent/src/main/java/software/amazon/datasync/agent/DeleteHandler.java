@@ -10,6 +10,8 @@ import software.amazon.cloudformation.proxy.*;
 import software.amazon.cloudformation.proxy.delay.Constant;
 
 import java.time.Duration;
+import java.util.function.BiFunction;
+import java.util.function.Function;
 
 public class DeleteHandler extends BaseHandlerStd {
 
@@ -21,10 +23,9 @@ public class DeleteHandler extends BaseHandlerStd {
     and providing stabilization delay prevents failed stacks by giving deployed agents
     time to deactivate and reboot.
      */
-    private static final int MAX_RETRY_ATTEMPTS = 8; // How many times to check for agent stabilization
     private static final Constant STABILIZATION_DELAY = Constant.of()
             .timeout(Duration.ofDays(365L))  // Nonsense value; we already enforce timeout in the resource schema
-            .delay(Duration.ofSeconds(30))   // How long to delay between each check for agent stabilization
+            .delay(Duration.ofMinutes(3L))   // How long to delay to allow the host to stabilize
             .build();
 
     private Logger logger;
@@ -33,7 +34,7 @@ public class DeleteHandler extends BaseHandlerStd {
 
     public DeleteHandler() {
         super();
-        delay = STABILIZATION_DELAY;
+        this.delay = STABILIZATION_DELAY;
     }
 
     public DeleteHandler(Delay delay) {
@@ -51,23 +52,26 @@ public class DeleteHandler extends BaseHandlerStd {
 
         this.logger = logger;
 
-        // For a new DELETE request, reset the number of retries.
-        if (!callbackContext.isDeleteAgentStarted()) {
-            callbackContext.setStabilizationRetriesRemaining(MAX_RETRY_ATTEMPTS);
-            callbackContext.setDeleteAgentStarted(true);
-        }
-
         final ResourceModel model = request.getDesiredResourceState();
 
         return ProgressEvent.progress(model, callbackContext)
                 .then(progress ->
                         proxy.initiate("AWS-DataSync-Agent::Delete", proxyClient, model, callbackContext)
                                 .translateToServiceRequest(Translator::translateToDeleteRequest)
-                                .backoffDelay(delay)
                                 .makeServiceCall(this::deleteAgent)
-                                .stabilize(this::isStabilized)
-                                .done(this::returnSuccess));
+                                .progress())
+                .then(progress ->
+                        proxy.initiate("AWS-DataSync-Agent::PostDeleteStabilize", proxyClient, model, callbackContext)
+                                .translateToServiceRequest(Function.identity())
+                                .backoffDelay(delay)
+                                .makeServiceCall(EMPTY_CALL)
+                                .stabilize((req, resp, prox, mod, ctx) -> isStabilized(ctx))
+                                .progress())
+                .then(progress -> ProgressEvent.defaultSuccessHandler(null));
     }
+
+    private static final BiFunction<ResourceModel, ProxyClient<DataSyncClient>, ResourceModel> EMPTY_CALL =
+            (model, proxyClient) -> model;
 
     private DeleteAgentResponse deleteAgent(
             final DeleteAgentRequest deleteAgentRequest,
@@ -89,27 +93,13 @@ public class DeleteHandler extends BaseHandlerStd {
         return deleteAgentResponse;
     }
 
-    private boolean isStabilized(
-            final DeleteAgentRequest deleteAgentRequest,
-            final DeleteAgentResponse deleteAgentResponse,
-            final ProxyClient<DataSyncClient> proxyClient,
-            final ResourceModel model,
-            final CallbackContext callbackContext) {
-        if (callbackContext.getStabilizationRetriesRemaining() == 0) {
+    private boolean isStabilized(final CallbackContext callbackContext) {
+        if (callbackContext.isDeleteStabilizationStarted()) {
             return true;
         } else {
-            callbackContext.decrementStabilizationRetriesRemaining();
+            callbackContext.setDeleteStabilizationStarted(true);
             return false;
         }
     }
 
-    private ProgressEvent<ResourceModel, CallbackContext> returnSuccess(
-            DeleteAgentRequest deleteAgentRequest,
-            DeleteAgentResponse deleteAgentResponse,
-            ProxyClient<DataSyncClient> proxyClient,
-            ResourceModel resourceModel,
-            CallbackContext callbackContext) {
-        logger.log(String.format("%s successfully stabilized.", ResourceModel.TYPE_NAME));
-        return ProgressEvent.defaultSuccessHandler(null);
-    }
 }

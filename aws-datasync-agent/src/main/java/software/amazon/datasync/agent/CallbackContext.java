@@ -8,11 +8,6 @@ import software.amazon.cloudformation.proxy.StdCallbackContext;
 @lombok.EqualsAndHashCode(callSuper = true)
 public class CallbackContext extends StdCallbackContext {
 
-    private int stabilizationRetriesRemaining;
-    private boolean deleteAgentStarted;
-
-    public void decrementStabilizationRetriesRemaining() {
-        stabilizationRetriesRemaining--;
-    }
+    private boolean deleteStabilizationStarted;
 
 }
