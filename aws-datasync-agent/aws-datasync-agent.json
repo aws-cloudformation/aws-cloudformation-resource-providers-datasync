@@ -114,7 +114,9 @@
       "permissions": [
         "datasync:CreateAgent",
         "ec2:DescribeVpcEndpoints",
-        "ec2:DescribeNetworkInterfaces"
+        "ec2:DescribeNetworkInterfaces",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSubnets"
       ]
     },
     "read": {
