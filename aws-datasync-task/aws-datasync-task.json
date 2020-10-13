@@ -186,7 +186,7 @@
       "maxItems": 128
     },
     "DestinationNetworkInterfaceArns": {
-      "description": "The Amazon Resource Name (ARN) of the source ENIs (Elastic Network Interface) that was created for your subnet.",
+      "description": "The Amazon Resource Names (ARNs) of the destination ENIs (Elastic Network Interfaces) that were created for your subnet.",
       "type": "array",
       "items": {
         "type": "string",
