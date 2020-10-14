@@ -334,7 +334,7 @@
         "elasticfilesystem:DescribeMountTargets",
         "iam:GetRole",
         "iam:PassRole"
-     ]
+      ]
     },
     "list": {
       "permissions": [
