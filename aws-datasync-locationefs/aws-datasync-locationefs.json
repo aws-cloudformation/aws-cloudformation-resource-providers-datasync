@@ -66,7 +66,7 @@
       "maxLength": 128
     },
     "Subdirectory": {
-      "description": "A subdirectory in the location\u2019s path. This subdirectory in the EFS file system is used to read data from the EFS source location or write data to the EFS destination.",
+      "description": "A subdirectory in the location's path. This subdirectory in the EFS file system is used to read data from the EFS source location or write data to the EFS destination.",
       "type": "string",
       "maxLength": 4096
     },

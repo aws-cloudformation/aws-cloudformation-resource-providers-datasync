@@ -104,7 +104,7 @@
       "maxLength": 128
     },
     "LocationUri": {
-      "description": "The URL of the location that was described.",
+      "description": "The URL of the object storage location that was described.",
       "type": "string",
       "pattern": "^(efs|nfs|s3|smb|fsxw|object-storage)://[a-zA-Z0-9./\\-]+$",
       "maxLength": 4356
