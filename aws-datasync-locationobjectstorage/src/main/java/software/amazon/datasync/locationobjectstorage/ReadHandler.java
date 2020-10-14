@@ -36,12 +36,11 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
         } catch (InvalidRequestException e) {
             throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getLocationArn());
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(describeLocationObjectStorageRequest.toString(), e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(describeLocationObjectStorageRequest.toString(), e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
-        Double serverPort = response.serverPort() == null ? null : response.serverPort().doubleValue();
         ResourceModel returnModel = ResourceModel.builder()
                 .locationArn(response.locationArn())
                 .locationUri(response.locationUri())
@@ -50,7 +49,7 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
                 .bucketName(model.getBucketName())
                 .secretKey(model.getSecretKey())
                 .serverHostname(model.getServerHostname())
-                .serverPort(serverPort)
+                .serverPort(model.getServerPort())
                 .serverProtocol(response.serverProtocolAsString())
                 .subdirectory(model.getSubdirectory())
                 .tags(model.getTags())

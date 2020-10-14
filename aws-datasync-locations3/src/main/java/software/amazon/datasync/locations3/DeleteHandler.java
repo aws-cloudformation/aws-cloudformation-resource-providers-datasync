@@ -1,5 +1,6 @@
 package software.amazon.datasync.locations3;
 
+import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
@@ -34,9 +35,9 @@ public class DeleteHandler extends BaseHandler<CallbackContext> {
         } catch (InvalidRequestException e) {
             throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getLocationArn());
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(deleteLocationRequest.toString(), e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(deleteLocationRequest.toString(), e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
         return ProgressEvent.defaultSuccessHandler(null);
 

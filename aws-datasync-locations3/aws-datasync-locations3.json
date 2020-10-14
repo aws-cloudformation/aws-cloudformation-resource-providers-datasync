@@ -76,7 +76,8 @@
         "INTELLIGENT_TIERING",
         "GLACIER",
         "DEEP_ARCHIVE"
-      ]
+      ],
+      "default": "STANDARD"
     },
     "Tags": {
       "description": "An array of key-value pairs to apply to this resource.",
@@ -95,9 +96,9 @@
       "maxLength": 128
     },
     "LocationUri": {
-      "description": "The URL of the EFS location that was described.",
+      "description": "The URL of the S3 location that was described.",
       "type": "string",
-      "pattern": "^(efs|nfs|s3|smb|fsxw)://[a-zA-Z0-9.\\-]+$",
+      "pattern": "^(efs|nfs|s3|smb|fsxw)://[a-zA-Z0-9.\\-/]+$",
       "maxLength": 4356
     }
   },
@@ -108,9 +109,7 @@
   ],
   "readOnlyProperties": [
     "/properties/LocationArn",
-    "/properties/LocationUri",
-    "/properties/BucketName",
-    "/properties/BucketAccessRoleName"
+    "/properties/LocationUri"
   ],
   "primaryIdentifier": [
     "/properties/LocationArn"
@@ -119,6 +118,9 @@
     "create": {
       "permissions": [
         "datasync:CreateLocationS3",
+        "datasync:DescribeLocationS3",
+        "s3:ListAllMyBuckets",
+        "s3:ListBucket",
         "iam:GetRole",
         "iam:PassRole"
       ]

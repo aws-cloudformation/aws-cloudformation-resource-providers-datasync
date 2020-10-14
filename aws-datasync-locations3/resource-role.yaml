@@ -29,6 +29,8 @@ Resources:
                 - "datasync:ListLocations"
                 - "iam:GetRole"
                 - "iam:PassRole"
+                - "s3:ListAllMyBuckets"
+                - "s3:ListBucket"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:

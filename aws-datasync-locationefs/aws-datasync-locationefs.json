@@ -66,7 +66,7 @@
       "maxLength": 128
     },
     "Subdirectory": {
-      "description": "A subdirectory in the location\u2019s path. This subdirectory in the EFS file system is used to read data from the EFS source location or write data to the EFS destination.",
+      "description": "A subdirectory in the location's path. This subdirectory in the EFS file system is used to read data from the EFS source location or write data to the EFS destination.",
       "type": "string",
       "maxLength": 4096
     },
@@ -89,7 +89,7 @@
     "LocationUri": {
       "description": "The URL of the EFS location that was described.",
       "type": "string",
-      "pattern": "^(efs|nfs|s3|smb|fsxw)://[a-zA-Z0-9.\\-]+$",
+      "pattern": "^(efs|nfs|s3|smb|fsxw)://[a-zA-Z0-9.\\-/]+$",
       "maxLength": 4356
     }
   },
@@ -109,7 +109,11 @@
     "create": {
       "permissions": [
         "datasync:CreateLocationEfs",
-        "datasync:DescribeLocationEfs"
+        "datasync:DescribeLocationEfs",
+        "elasticfilesystem:DescribeFileSystems",
+        "elasticfilesystem:DescribeMountTargets",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeSecurityGroups"
       ]
     },
     "read": {

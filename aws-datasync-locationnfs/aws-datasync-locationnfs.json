@@ -66,7 +66,10 @@
   },
   "properties": {
     "MountOptions": {
-      "$ref": "#/definitions/MountOptions"
+      "$ref": "#/definitions/MountOptions",
+      "default": {
+        "Version": "AUTOMATIC"
+      }
     },
     "OnPremConfig": {
       "$ref": "#/definitions/OnPremConfig"
@@ -93,15 +96,15 @@
       }
     },
     "LocationArn": {
-      "description": "The Amazon Resource Name (ARN) of the Amazon NFS file system location that is created.",
+      "description": "The Amazon Resource Name (ARN) of the NFS location.",
       "type": "string",
       "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):datasync:[a-z\\-0-9]+:[0-9]{12}:location/loc-[0-9a-z]{17}$",
       "maxLength": 128
     },
     "LocationUri": {
-      "description": "The URL of the EFS location that was described.",
+      "description": "The URL of the NFS location that was described.",
       "type": "string",
-      "pattern": "^(efs|nfs|s3|smb|fsxw)://[a-zA-Z0-9.\\-]+$",
+      "pattern": "^(efs|nfs|s3|smb|fsxw)://[a-zA-Z0-9./\\-]+$",
       "maxLength": 4356
     }
   },

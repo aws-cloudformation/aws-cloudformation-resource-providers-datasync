@@ -79,15 +79,15 @@
       }
     },
     "LocationArn": {
-      "description": "The Amazon Resource Name (ARN) of the Amazon EFS file system location that is created.",
+      "description": "The Amazon Resource Name (ARN) of the Amazon FSx for Windows file system location that is created.",
       "type": "string",
       "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):datasync:[a-z\\-0-9]+:[0-9]{12}:location/loc-[0-9a-z]{17}$",
       "maxLength": 128
     },
     "LocationUri": {
-      "description": "The URL of the EFS location that was described.",
+      "description": "The URL of the FSx for Windows location that was described.",
       "type": "string",
-      "pattern": "^(efs|nfs|s3|smb|fsxw)://[a-zA-Z0-9.\\-]+$",
+      "pattern": "^(efs|nfs|s3|smb|fsxw)://[a-zA-Z0-9./\\-]+$",
       "maxLength": 4356
     }
   },
@@ -95,7 +95,6 @@
   "required": [
     "User",
     "SecurityGroupArns",
-    "Password",
     "FsxFilesystemArn"
   ],
   "readOnlyProperties": [
@@ -112,7 +111,10 @@
     "create": {
       "permissions": [
         "datasync:CreateLocationFsxWindows",
-        "datasync:DescribeLocationFsxWindows"
+        "datasync:DescribeLocationFsxWindows",
+        "fsx:DescribeFileSystems",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeSecurityGroups"
       ]
     },
     "read": {

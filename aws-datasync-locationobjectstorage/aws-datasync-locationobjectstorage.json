@@ -69,7 +69,7 @@
     },
     "ServerPort": {
       "description": "The port that your self-managed server accepts inbound network traffic on.",
-      "type": "number",
+      "type": "integer",
       "minimum": 1,
       "maximum": 65536
     },
@@ -104,9 +104,9 @@
       "maxLength": 128
     },
     "LocationUri": {
-      "description": "The URL of the location that was described.",
+      "description": "The URL of the object storage location that was described.",
       "type": "string",
-      "pattern": "^(efs|nfs|s3|smb|fsxw)://[a-zA-Z0-9.\\-]+$",
+      "pattern": "^(efs|nfs|s3|smb|fsxw|object-storage)://[a-zA-Z0-9./\\-]+$",
       "maxLength": 4356
     }
   },

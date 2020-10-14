@@ -36,9 +36,9 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
         } catch (InvalidRequestException e) {
             throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getLocationArn());
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(describeLocationNfsRequest.toString(), e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(describeLocationNfsRequest.toString(), e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
 
