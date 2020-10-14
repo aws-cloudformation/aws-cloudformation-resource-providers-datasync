@@ -35,9 +35,9 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
         } catch (InvalidRequestException e) {
             throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getTaskArn());
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(describeTaskRequest.toString(), e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(describeTaskRequest.toString(), e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
         ResourceModel returnModel = ResourceModel.builder()

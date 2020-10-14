@@ -25,6 +25,10 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
             final CallbackContext callbackContext,
             final Logger logger) {
 
+        if (callbackContext == null && (request.getDesiredResourceState().getTaskArn() != null)) {
+            throw new CfnInvalidRequestException("TaskArn cannot be specified to create a task.");
+        }
+
         final ResourceModel model = request.getDesiredResourceState();
         final DataSyncClient client = ClientBuilder.getClient();
 
@@ -35,11 +39,11 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
             response = proxy.injectCredentialsAndInvokeV2(createTaskRequest, client::createTask);
             logger.log(String.format("%s created successfully.", ResourceModel.TYPE_NAME));
         } catch (InvalidRequestException e) {
-            throw new CfnInvalidRequestException(createTaskRequest.toString(), e.getCause());
+            throw new CfnInvalidRequestException(e.getMessage(), e.getCause());
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(createTaskRequest.toString(), e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(createTaskRequest.toString(), e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
         ResourceModel modelTagsAndArn = ResourceModel.builder()
@@ -62,9 +66,9 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         try {
             response = proxy.injectCredentialsAndInvokeV2(describeTaskRequest, client::describeTask);
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
         return ResourceModel.builder()
