@@ -1,12 +1,13 @@
 package software.amazon.datasync.agent;
 
-import lombok.NoArgsConstructor;
-import lombok.Data;
-import lombok.Builder;
+import software.amazon.cloudformation.proxy.StdCallbackContext;
 
-@Builder
-@Data
-@NoArgsConstructor
-public class CallbackContext  {
+@lombok.Getter
+@lombok.Setter
+@lombok.ToString
+@lombok.EqualsAndHashCode(callSuper = true)
+public class CallbackContext extends StdCallbackContext {
+
+    private boolean deleteStabilizationStarted;
 
 }

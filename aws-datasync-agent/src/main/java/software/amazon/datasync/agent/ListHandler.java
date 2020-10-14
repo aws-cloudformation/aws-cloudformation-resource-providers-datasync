@@ -37,11 +37,11 @@ public class ListHandler extends BaseHandler<CallbackContext> {
         try {
             response = proxy.injectCredentialsAndInvokeV2(listAgentsRequest, client::listAgents);
         } catch (InvalidRequestException e) {
-            throw new CfnInvalidRequestException(listAgentsRequest.toString(), e.getCause());
+            throw new CfnInvalidRequestException(e.getMessage(), e.getCause());
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
         List<ResourceModel> models = new ArrayList<>();

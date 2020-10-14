@@ -27,30 +27,29 @@ import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInternalFailureException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
-import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
-import software.amazon.cloudformation.proxy.HandlerErrorCode;
-import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.OperationStatus;
-import software.amazon.cloudformation.proxy.ProgressEvent;
-import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+import software.amazon.cloudformation.proxy.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class CreateHandler extends BaseHandler<CallbackContext> {
+public class CreateHandler extends BaseHandlerStd {
 
-    @Override
     public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
             final AmazonWebServicesClientProxy proxy,
             final ResourceHandlerRequest<ResourceModel> request,
             final CallbackContext callbackContext,
+            final ProxyClient<DataSyncClient> proxyClient,
             final Logger logger) {
 
         final ResourceModel model = request.getDesiredResourceState();
-        final DataSyncClient client = ClientBuilder.getClient();
+        final DataSyncClient client = proxyClient.client();
         final String region = request.getRegion();
+
+        if (model.getAgentArn() != null) {
+            throw new CfnInvalidRequestException("AgentArn cannot be specified to create an Agent.");
+        }
 
         // Assert that both Activation Key and Agent Address are not given together:
         if (model.getActivationKey() != null && model.getAgentAddress() != null)
@@ -88,11 +87,11 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
             response = proxy.injectCredentialsAndInvokeV2(createAgentRequest, client::createAgent);
             logger.log(String.format("%s created successfully", ResourceModel.TYPE_NAME));
         } catch (InvalidRequestException e) {
-            throw new CfnInvalidRequestException(createAgentRequest.toString(), e.getCause());
+            throw new CfnInvalidRequestException(e.getMessage(), e.getCause());
         } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(createAgentRequest.toString(), e.getCause());
+            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(createAgentRequest.toString(), e.getCause());
+            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
         ResourceModel returnModel = ResourceModel.builder()
