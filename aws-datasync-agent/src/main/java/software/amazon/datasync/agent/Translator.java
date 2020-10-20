@@ -1,15 +1,11 @@
 package software.amazon.datasync.agent;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import software.amazon.awssdk.services.datasync.model.CreateAgentRequest;
-import software.amazon.awssdk.services.datasync.model.DeleteAgentRequest;
-import software.amazon.awssdk.services.datasync.model.ListAgentsRequest;
-import software.amazon.awssdk.services.datasync.model.UpdateAgentRequest;
-import software.amazon.awssdk.services.datasync.model.DescribeAgentRequest;
-import software.amazon.awssdk.services.datasync.model.TagListEntry;
+import software.amazon.awssdk.services.datasync.model.*;
 
 public class Translator {
 
@@ -51,6 +47,26 @@ public class Translator {
                 .build();
     }
 
+    public static ListTagsForResourceRequest translateToListTagsRequest(final ResourceModel model) {
+        return ListTagsForResourceRequest.builder()
+                .resourceArn(model.getAgentArn())
+                .build();
+    }
+
+    public static TagResourceRequest translateToTagResourceRequest(Set<Tag> tagsToAdd, String agentArn) {
+        return TagResourceRequest.builder()
+                .resourceArn(agentArn)
+                .tags(translateTags(tagsToAdd))
+                .build();
+    }
+
+    public static UntagResourceRequest translateToUntagResourceRequest(Set<String> tagsToRemove, String agentArn) {
+        return UntagResourceRequest.builder()
+                .resourceArn(agentArn)
+                .keys(tagsToRemove)
+                .build();
+    }
+
     // Convert Tag to TagListEntry
     static Set<TagListEntry> translateTags(final Set<Tag> tags) {
         if (tags == null)
@@ -59,4 +75,22 @@ public class Translator {
                 .map(tag -> TagListEntry.builder().key(tag.getKey()).value(tag.getValue()).build())
                 .collect(Collectors.toSet());
     }
+
+    // Convert TagListEntry to Tag
+    static Set<Tag> translateTagListEntries(final List<TagListEntry> tags) {
+        if (tags == null)
+            return Collections.emptySet();
+        return tags.stream()
+                .map(tag -> Tag.builder().key(tag.key()).value(tag.value()).build())
+                .collect(Collectors.toSet());
+    }
+
+    static Set<String> extractTagKeys(final Set<Tag> tags) {
+        if (tags == null)
+            return Collections.emptySet();
+        return tags.stream()
+                .map(tag -> tag.getKey())
+                .collect(Collectors.toSet());
+    }
+
 }

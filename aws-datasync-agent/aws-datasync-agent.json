@@ -106,8 +106,7 @@
   ],
   "createOnlyProperties": [
     "/properties/AgentAddress",
-    "/properties/ActivationKey",
-    "/properties/Tags"
+    "/properties/ActivationKey"
   ],
   "handlers": {
     "create": {

@@ -1,11 +1,12 @@
 package software.amazon.datasync.agent;
 
+import com.google.common.collect.Sets;
 import software.amazon.awssdk.services.datasync.DataSyncClient;
 import software.amazon.awssdk.services.datasync.model.DataSyncException;
-import software.amazon.awssdk.services.datasync.model.DescribeAgentRequest;
-import software.amazon.awssdk.services.datasync.model.DescribeAgentResponse;
 import software.amazon.awssdk.services.datasync.model.InternalException;
 import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.TagResourceRequest;
+import software.amazon.awssdk.services.datasync.model.UntagResourceRequest;
 import software.amazon.awssdk.services.datasync.model.UpdateAgentRequest;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
@@ -14,6 +15,9 @@ import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class UpdateHandler extends BaseHandler<CallbackContext> {
 
@@ -24,54 +28,68 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
             final CallbackContext callbackContext,
             final Logger logger) {
 
-        final ResourceModel model = request.getDesiredResourceState();
+        final ResourceModel prevModel = request.getPreviousResourceState();
+        final ResourceModel currentModel = request.getDesiredResourceState();
         final DataSyncClient client = ClientBuilder.getClient();
 
-        UpdateAgentRequest updateAgentRequest = Translator.translateToUpdateRequest(model);
+        UpdateAgentRequest updateAgentRequest = Translator.translateToUpdateRequest(currentModel);
 
         try {
             proxy.injectCredentialsAndInvokeV2(updateAgentRequest, client::updateAgent);
             logger.log(String.format("%s %s updated successfully", ResourceModel.TYPE_NAME,
-                    model.getAgentArn()));
+                    currentModel.getAgentArn()));
         } catch (InvalidRequestException e) {
-            throw new CfnNotFoundException(ResourceModel.TYPE_NAME, model.getAgentArn());
+            throw new CfnNotFoundException(ResourceModel.TYPE_NAME, currentModel.getAgentArn());
         } catch (InternalException e) {
             throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
             throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
-        ResourceModel returnModel = retrieveUpdatedModel(model, proxy, client);
-
-        return ProgressEvent.defaultSuccessHandler(returnModel);
-    }
-
-    private ResourceModel retrieveUpdatedModel(final ResourceModel model,
-                                               final AmazonWebServicesClientProxy proxy,
-                                               final DataSyncClient client) {
-        DescribeAgentRequest describeAgentRequest= Translator.translateToReadRequest(model);
-        DescribeAgentResponse response;
-        try {
-            response = proxy.injectCredentialsAndInvokeV2(describeAgentRequest, client::describeAgent);
-        } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
-        } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
+        Set<Tag> currentTags = new HashSet<>();
+        if (currentModel.getTags() != null) {
+            currentTags = currentModel.getTags();
         }
 
-        ResourceModel returnModel = ResourceModel.builder()
-                .agentArn(response.agentArn())
-                .agentName(response.name())
-                .agentAddress(model.getAgentAddress())
-                .activationKey(model.getActivationKey())
-                .securityGroupArns(model.getSecurityGroupArns())
-                .subnetArns(model.getSubnetArns())
-                .vpcEndpointId(model.getVpcEndpointId())
-                .endpointType(model.getEndpointType())
-                .tags(model.getTags())
-                .build();
+        Set<Tag> existingTags = new HashSet<>();
+        if (prevModel != null && prevModel.getTags() != null) {
+            existingTags = prevModel.getTags();
+        }
 
-        return returnModel;
+        final Set<String> keysToRemove = Sets.difference(
+                Translator.extractTagKeys(existingTags),
+                Translator.extractTagKeys(currentTags)
+        );
+        if (!keysToRemove.isEmpty()) {
+            UntagResourceRequest untagResourceRequest = Translator.translateToUntagResourceRequest(
+                    keysToRemove, currentModel.getAgentArn());
+            logger.log(String.format("%s %s old tags removed successfully", ResourceModel.TYPE_NAME,
+                    currentModel.getAgentArn()));
+            try {
+                proxy.injectCredentialsAndInvokeV2(untagResourceRequest, client::untagResource);
+            } catch (InvalidRequestException e) {
+                throw new CfnNotFoundException(ResourceModel.TYPE_NAME, currentModel.getAgentArn());
+            } catch (InternalException e) {
+                throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
+            }
+        }
+
+        final Set<Tag> tagsToAdd = Sets.difference(currentTags, existingTags);
+        if (!tagsToAdd.isEmpty()) {
+            TagResourceRequest tagResourceRequest = Translator.translateToTagResourceRequest(
+                    tagsToAdd, currentModel.getAgentArn());
+            logger.log(String.format("%s %s tags updated successfully", ResourceModel.TYPE_NAME,
+                    currentModel.getAgentArn()));
+            try {
+                proxy.injectCredentialsAndInvokeV2(tagResourceRequest, client::tagResource);
+            } catch (InvalidRequestException e) {
+                throw new CfnNotFoundException(ResourceModel.TYPE_NAME, currentModel.getAgentArn());
+            } catch (InternalException e) {
+                throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
+            }
+        }
+
+        return new ReadHandler().handleRequest(proxy, request, callbackContext, logger);
     }
 
 }
