@@ -102,45 +102,6 @@ public class CreateHandlerTest {
     }
 
     @Test
-    public void handleRequestAgentAddress_SimpleSuccess() throws IOException {
-        final CreateHandler handler = spy(new CreateHandler()); // Use a spy to detect HTTP GET calls
-        final String activationKey = "12345-12345-12345-12345-12345";
-
-        doReturn(activationKey)
-                .when(handler)
-                .obtainCorrectActivationKey(
-                        any(ResourceModel.class),
-                        any(AmazonWebServicesClientProxy.class),
-                        any());
-
-        final CreateAgentResponse createAgentResponse = CreateAgentResponse.builder()
-                .build();
-
-        doReturn(createAgentResponse)
-                .when(proxy)
-                .injectCredentialsAndInvokeV2(any(CreateAgentRequest.class), any());
-
-        ResourceModel model = buildAgentAddressDefaultModel();
-
-        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
-                .desiredResourceState(model)
-                .build();
-
-        final ProgressEvent<ResourceModel, CallbackContext> response
-                = handler.handleRequest(proxy, request, null, proxyClient, logger);
-
-        assertThat(response).isNotNull();
-        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
-        assertThat(response.getCallbackContext()).isNull();
-        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
-        assertThat(response.getResourceModels()).isNull();
-        assertThat(response.getResourceModel()).hasFieldOrPropertyWithValue("agentName", "MyAgent");
-        assertThat(response.getMessage()).isNull();
-        assertThat(response.getErrorCode()).isNull();
-
-    }
-
-    @Test
     public void handleRequest_FailureInvalidRequest() {
         final CreateHandler handler = new CreateHandler();
 
