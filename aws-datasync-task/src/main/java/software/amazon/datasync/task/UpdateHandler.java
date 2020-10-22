@@ -42,39 +42,9 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
             throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
-        ResourceModel returnModel = retrieveUpdatedModel(model, proxy, client);
+        TagRequestMaker.updateTagsForResource(proxy, client, model.getTaskArn(), request, logger);
 
-        return ProgressEvent.defaultSuccessHandler(returnModel);
+        return new ReadHandler().handleRequest(proxy, request, callbackContext, logger);
     }
 
-
-    private ResourceModel retrieveUpdatedModel(final ResourceModel model,
-                                               final AmazonWebServicesClientProxy proxy,
-                                               final DataSyncClient client) {
-
-        DescribeTaskRequest describeTaskRequest = Translator.translateToReadRequest(model.getTaskArn());
-        DescribeTaskResponse response;
-        try {
-            response = proxy.injectCredentialsAndInvokeV2(describeTaskRequest, client::describeTask);
-        } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
-        } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
-        }
-
-        return ResourceModel.builder()
-                .cloudWatchLogGroupArn(response.cloudWatchLogGroupArn())
-                .taskArn(response.taskArn())
-                .destinationLocationArn(response.destinationLocationArn())
-                .errorCode(response.errorCode())
-                .errorDetail(response.errorDetail())
-                .status(response.statusAsString())
-                .excludes(Translator.translateToResourceModelExcludes(response.excludes()))
-                .name(response.name())
-                .options(Translator.translateToResourceModelOptions(response.options()))
-                .schedule(Translator.translateToResourceModelTaskSchedule(response.schedule()))
-                .sourceLocationArn(response.sourceLocationArn())
-                .tags(model.getTags())
-                .build();
-    }
 }
