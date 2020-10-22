@@ -1,7 +1,13 @@
 package software.amazon.datasync.agent;
 
 import software.amazon.awssdk.services.datasync.DataSyncClient;
-import software.amazon.awssdk.services.datasync.model.*;
+import software.amazon.awssdk.services.datasync.model.DataSyncException;
+import software.amazon.awssdk.services.datasync.model.DescribeAgentRequest;
+import software.amazon.awssdk.services.datasync.model.DescribeAgentResponse;
+import software.amazon.awssdk.services.datasync.model.InternalException;
+import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.ListTagsForResourceRequest;
+import software.amazon.awssdk.services.datasync.model.ListTagsForResourceResponse;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -12,14 +18,15 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 public class ReadHandlerTest {

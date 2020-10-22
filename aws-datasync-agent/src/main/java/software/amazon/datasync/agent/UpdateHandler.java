@@ -19,7 +19,6 @@ import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,12 +50,9 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
             throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
-        Map<String, String> tagList = new HashMap<String, String>();
-        if (request.getDesiredResourceTags() != null) {
-            tagList.putAll(request.getDesiredResourceTags());
-        }
-        if (request.getSystemTags() != null) {
-            tagList.putAll(request.getSystemTags());
+        Map<String, String> tagList = request.getDesiredResourceTags();
+        if (tagList == null) {
+            tagList = new HashMap<String, String>();
         }
 
         Map<String, String> prevTagList = new HashMap<String, String>();
@@ -71,10 +67,10 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
         if (!keysToRemove.isEmpty()) {
             UntagResourceRequest untagResourceRequest = Translator.translateToUntagResourceRequest(
                     keysToRemove, currentModel.getAgentArn());
-            logger.log(String.format("%s %s old tags removed successfully", ResourceModel.TYPE_NAME,
-                    currentModel.getAgentArn()));
             try {
                 proxy.injectCredentialsAndInvokeV2(untagResourceRequest, client::untagResource);
+                logger.log(String.format("%s %s old tags removed successfully", ResourceModel.TYPE_NAME,
+                        currentModel.getAgentArn()));
             } catch (InvalidRequestException e) {
                 throw new CfnNotFoundException(ResourceModel.TYPE_NAME, currentModel.getAgentArn());
             } catch (InternalException e) {
@@ -91,10 +87,10 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
         if (!tagsToAdd.isEmpty()) {
             TagResourceRequest tagResourceRequest = Translator.translateToTagResourceRequest(
                     tagsToAdd, currentModel.getAgentArn());
-            logger.log(String.format("%s %s tags updated successfully", ResourceModel.TYPE_NAME,
-                    currentModel.getAgentArn()));
             try {
                 proxy.injectCredentialsAndInvokeV2(tagResourceRequest, client::tagResource);
+                logger.log(String.format("%s %s tags updated successfully", ResourceModel.TYPE_NAME,
+                        currentModel.getAgentArn()));
             } catch (InvalidRequestException e) {
                 throw new CfnNotFoundException(ResourceModel.TYPE_NAME, currentModel.getAgentArn());
             } catch (InternalException e) {

@@ -1,8 +1,13 @@
 package software.amazon.datasync.agent;
 
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import software.amazon.awssdk.services.datasync.model.*;
+import software.amazon.awssdk.services.datasync.model.DataSyncException;
+import software.amazon.awssdk.services.datasync.model.DescribeAgentResponse;
+import software.amazon.awssdk.services.datasync.model.InternalException;
+import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.ListTagsForResourceRequest;
+import software.amazon.awssdk.services.datasync.model.ListTagsForResourceResponse;
+import software.amazon.awssdk.services.datasync.model.TagResourceRequest;
+import software.amazon.awssdk.services.datasync.model.UpdateAgentRequest;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -16,6 +21,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.util.Arrays;
 import java.util.HashSet;

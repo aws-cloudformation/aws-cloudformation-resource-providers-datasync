@@ -1,7 +1,6 @@
 package software.amazon.datasync.agent;
 
 import java.util.Map;
-import java.util.stream.Collectors;
 
 class Configuration extends BaseConfiguration {
 

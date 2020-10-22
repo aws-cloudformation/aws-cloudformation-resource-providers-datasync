@@ -83,9 +83,6 @@ public class CreateHandler extends BaseHandlerStd {
         if (tagList == null) {
             tagList = new HashMap<String, String>();
         }
-        if (request.getSystemTags() != null) {
-            tagList.putAll(request.getSystemTags());
-        }
 
         CreateAgentRequest createAgentRequest = Translator.translateToCreateRequest(model, tagList);
         CreateAgentResponse response;
