@@ -107,7 +107,9 @@ public class UpdateHandlerTest {
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .previousResourceState(model)
+                .previousResourceTags(Translator.translateTagsToMap(defaultTags))
                 .desiredResourceState(updatedModel)
+                .desiredResourceTags(Translator.translateTagsToMap(updatedTags))
                 .build();
 
         final ProgressEvent<ResourceModel, CallbackContext> response

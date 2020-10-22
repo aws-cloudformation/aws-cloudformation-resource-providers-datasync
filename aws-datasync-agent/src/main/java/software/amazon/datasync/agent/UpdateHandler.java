@@ -1,5 +1,7 @@
 package software.amazon.datasync.agent;
 
+import com.google.common.collect.MapDifference;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import software.amazon.awssdk.services.datasync.DataSyncClient;
 import software.amazon.awssdk.services.datasync.model.DataSyncException;
@@ -16,8 +18,11 @@ import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UpdateHandler extends BaseHandler<CallbackContext> {
 
@@ -46,19 +51,22 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
             throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
-        Set<Tag> currentTags = new HashSet<>();
-        if (currentModel.getTags() != null) {
-            currentTags = currentModel.getTags();
+        Map<String, String> tagList = new HashMap<String, String>();
+        if (request.getDesiredResourceTags() != null) {
+            tagList.putAll(request.getDesiredResourceTags());
+        }
+        if (request.getSystemTags() != null) {
+            tagList.putAll(request.getSystemTags());
         }
 
-        Set<Tag> existingTags = new HashSet<>();
-        if (prevModel != null && prevModel.getTags() != null) {
-            existingTags = prevModel.getTags();
+        Map<String, String> prevTagList = new HashMap<String, String>();
+        if (request.getPreviousResourceTags() != null) {
+            prevTagList = request.getPreviousResourceTags();
         }
 
         final Set<String> keysToRemove = Sets.difference(
-                Translator.extractTagKeys(existingTags),
-                Translator.extractTagKeys(currentTags)
+                prevTagList.keySet(),
+                tagList.keySet()
         );
         if (!keysToRemove.isEmpty()) {
             UntagResourceRequest untagResourceRequest = Translator.translateToUntagResourceRequest(
@@ -74,7 +82,12 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
             }
         }
 
-        final Set<Tag> tagsToAdd = Sets.difference(currentTags, existingTags);
+        MapDifference<String, String> mapDifference = Maps.difference(tagList, prevTagList);
+        final Set<Tag> tagsToAdd = mapDifference.entriesDiffering().entrySet().stream().map(entry -> {
+            return Tag.builder().key(entry.getKey()).value(entry.getValue().leftValue()).build();
+        }).collect(Collectors.toSet());
+        tagsToAdd.addAll(Translator.translateMapToTags(mapDifference.entriesOnlyOnLeft()));
+
         if (!tagsToAdd.isEmpty()) {
             TagResourceRequest tagResourceRequest = Translator.translateToTagResourceRequest(
                     tagsToAdd, currentModel.getAgentArn());

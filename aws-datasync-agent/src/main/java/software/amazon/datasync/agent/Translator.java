@@ -2,6 +2,7 @@ package software.amazon.datasync.agent;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -11,14 +12,14 @@ public class Translator {
 
     Translator() {}
 
-    public static CreateAgentRequest translateToCreateRequest(final ResourceModel model) {
+    public static CreateAgentRequest translateToCreateRequest(final ResourceModel model, final Map<String, String> tags) {
         return CreateAgentRequest.builder()
                 .agentName(model.getAgentName())
                 .activationKey(model.getActivationKey())
                 .securityGroupArns(model.getSecurityGroupArns())
                 .subnetArns(model.getSubnetArns())
                 .vpcEndpointId(model.getVpcEndpointId())
-                .tags(Translator.translateTags(model.getTags()))
+                .tags(translateMapToTagListEntries(tags))
                 .build();
     }
 
@@ -85,12 +86,26 @@ public class Translator {
                 .collect(Collectors.toSet());
     }
 
-    static Set<String> extractTagKeys(final Set<Tag> tags) {
+    static Map<String, String> translateTagsToMap(final Set<Tag> tags) {
+        if (tags == null)
+            return Collections.emptyMap();
+        return tags.stream().collect(Collectors.toMap(Tag::getKey, Tag::getValue));
+    }
+
+    static Set<TagListEntry> translateMapToTagListEntries(final Map<String, String> tags) {
         if (tags == null)
             return Collections.emptySet();
-        return tags.stream()
-                .map(tag -> tag.getKey())
-                .collect(Collectors.toSet());
+        return tags.entrySet().stream().map(entry -> {
+            return TagListEntry.builder().key(entry.getKey()).value(entry.getValue()).build();
+        }).collect(Collectors.toSet());
+    }
+
+    static Set<Tag> translateMapToTags(final Map<String, String> tags) {
+        if (tags == null)
+            return Collections.emptySet();
+        return tags.entrySet().stream().map(entry -> {
+            return Tag.builder().key(entry.getKey()).value(entry.getValue()).build();
+        }).collect(Collectors.toSet());
     }
 
 }

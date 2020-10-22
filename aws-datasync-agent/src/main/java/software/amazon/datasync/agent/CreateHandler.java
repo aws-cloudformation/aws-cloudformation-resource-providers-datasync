@@ -30,9 +30,7 @@ import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorExceptio
 import software.amazon.cloudformation.proxy.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class CreateHandler extends BaseHandlerStd {
 
@@ -81,7 +79,15 @@ public class CreateHandler extends BaseHandlerStd {
                     .status(OperationStatus.FAILED)
                     .build();
 
-        CreateAgentRequest createAgentRequest = Translator.translateToCreateRequest(model);
+        Map<String, String> tagList = request.getDesiredResourceTags();
+        if (tagList == null) {
+            tagList = new HashMap<String, String>();
+        }
+        if (request.getSystemTags() != null) {
+            tagList.putAll(request.getSystemTags());
+        }
+
+        CreateAgentRequest createAgentRequest = Translator.translateToCreateRequest(model, tagList);
         CreateAgentResponse response;
         try {
             response = proxy.injectCredentialsAndInvokeV2(createAgentRequest, client::createAgent);
@@ -103,7 +109,7 @@ public class CreateHandler extends BaseHandlerStd {
                 .subnetArns(model.getSubnetArns())
                 .vpcEndpointId(model.getVpcEndpointId())
                 .endpointType(model.getEndpointType())
-                .tags(model.getTags())
+                .tags(Translator.translateMapToTags(tagList))
                 .build();
 
         return ProgressEvent.defaultSuccessHandler(returnModel);
