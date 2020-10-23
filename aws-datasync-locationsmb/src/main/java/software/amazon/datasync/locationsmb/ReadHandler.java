@@ -15,6 +15,8 @@ import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
+import java.util.Set;
+
 public class ReadHandler extends BaseHandler<CallbackContext> {
 
     @Override
@@ -41,6 +43,8 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
             throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
+        final Set<Tag> tags = TagRequestMaker.listTagsForResource(proxy, client, model.getLocationArn());
+
         ResourceModel returnModel = ResourceModel.builder()
                 .mountOptions(Translator.translateToResourceModelMountOptions(response.mountOptions()))
                 .locationArn(response.locationArn())
@@ -49,7 +53,7 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
                 .password(model.getPassword())
                 .serverHostname(model.getServerHostname())
                 .subdirectory(model.getSubdirectory())
-                .tags(model.getTags())
+                .tags(tags)
                 .locationUri(response.locationUri())
                 .user(response.user())
                 .build();

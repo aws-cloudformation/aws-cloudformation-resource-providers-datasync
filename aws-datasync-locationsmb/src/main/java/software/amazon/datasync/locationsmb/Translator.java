@@ -8,6 +8,7 @@ import software.amazon.awssdk.services.datasync.model.SmbMountOptions;
 import software.amazon.awssdk.services.datasync.model.TagListEntry;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,7 +16,7 @@ public class Translator {
 
     Translator() {}
 
-    public static CreateLocationSmbRequest translateToCreateRequest(final ResourceModel model) {
+    public static CreateLocationSmbRequest translateToCreateRequest(final ResourceModel model, Map<String, String> tags) {
         return CreateLocationSmbRequest.builder()
                 .agentArns(model.getAgentArns())
                 .domain(model.getDomain())
@@ -23,7 +24,7 @@ public class Translator {
                 .password(model.getPassword())
                 .serverHostname(model.getServerHostname())
                 .subdirectory(model.getSubdirectory())
-                .tags(translateTags(model.getTags()))
+                .tags(TagTranslator.translateMapToTagListEntries(tags))
                 .user(model.getUser())
                 .build();
     }
@@ -44,14 +45,6 @@ public class Translator {
         return DeleteLocationRequest.builder()
                 .locationArn(model.getLocationArn())
                 .build();
-    }
-
-    private static Set<TagListEntry> translateTags(final Set<Tag> tags) {
-        if (tags == null)
-            return Collections.emptySet();
-        return tags.stream()
-                .map(tag -> TagListEntry.builder().key(tag.getKey()).value(tag.getValue()).build())
-                .collect(Collectors.toSet());
     }
 
     private static SmbMountOptions translateToDataSyncMountOptions(MountOptions mountOptions) {

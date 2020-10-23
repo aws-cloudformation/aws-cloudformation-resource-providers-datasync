@@ -131,16 +131,35 @@
   "writeOnlyProperties": [
     "/properties/Password"
   ],
+  "createOnlyProperties": [
+    "/properties/AgentArns",
+    "/properties/Domain",
+    "/properties/MountOptions",
+    "/properties/Password",
+    "/properties/ServerHostname",
+    "/properties/Subdirectory",
+    "/properties/User"
+  ],
   "handlers": {
     "create": {
       "permissions": [
         "datasync:CreateLocationSmb",
-        "datasync:DescribeLocationSmb"
+        "datasync:DescribeLocationSmb",
+        "datasync:ListTagsForResource"
       ]
     },
     "read": {
       "permissions": [
-        "datasync:DescribeLocationSmb"
+        "datasync:DescribeLocationSmb",
+        "datasync:ListTagsForResource"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "datasync:DescribeLocationSmb",
+        "datasync:ListTagsForResource",
+        "datasync:TagResource",
+        "datasync:UntagResource"
       ]
     },
     "delete": {

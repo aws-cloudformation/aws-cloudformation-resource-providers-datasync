@@ -1,12 +1,6 @@
 package software.amazon.datasync.locationsmb;
 
-import software.amazon.awssdk.services.datasync.model.DataSyncException;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationNfsRequest;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationNfsResponse;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationSmbRequest;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationSmbResponse;
-import software.amazon.awssdk.services.datasync.model.InternalException;
-import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.*;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -50,10 +44,19 @@ public class ReadHandlerTest {
 
         final DescribeLocationSmbResponse describeLocationSmbResponse = buildDefaultResponse();
 
+        final ListTagsForResourceResponse listTagsForResourceResponse = TagTestResources.buildDefaultTagsResponse();
+
         doReturn(describeLocationSmbResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
                         any(DescribeLocationSmbRequest.class),
+                        any()
+                );
+
+        doReturn(listTagsForResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        any(ListTagsForResourceRequest.class),
                         any()
                 );
 
