@@ -16,6 +16,9 @@ import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CreateHandler extends BaseHandler<CallbackContext> {
 
     @Override
@@ -32,7 +35,12 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         final ResourceModel model = request.getDesiredResourceState();
         final DataSyncClient client = ClientBuilder.getClient();
 
-        CreateLocationS3Request createLocationS3Request = Translator.translateToCreateRequest(model);
+        Map<String, String> tagList = request.getDesiredResourceTags();
+        if (tagList == null) {
+            tagList = new HashMap<String, String>();
+        }
+
+        CreateLocationS3Request createLocationS3Request = Translator.translateToCreateRequest(model, tagList);
 
         CreateLocationS3Response response;
         try {
@@ -55,33 +63,11 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
                 .tags(model.getTags())
                 .build();
 
-        final ResourceModel returnModel = retrieveUpdatedModel(modelNoUri, proxy, client);
-
-        return ProgressEvent.defaultSuccessHandler(returnModel);
-    }
-
-    private static ResourceModel retrieveUpdatedModel(final ResourceModel model,
-                                                      final AmazonWebServicesClientProxy proxy,
-                                                      final DataSyncClient client) {
-
-        DescribeLocationS3Request describeLocationS3Request = Translator.translateToReadRequest(model.getLocationArn());
-        DescribeLocationS3Response response;
-        try {
-            response = proxy.injectCredentialsAndInvokeV2(describeLocationS3Request, client::describeLocationS3);
-        } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
-        } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
-        }
-
-        return ResourceModel.builder()
-                .locationArn(model.getLocationArn())
-                .locationUri(response.locationUri())
-                .s3BucketArn(model.getS3BucketArn())
-                .s3Config(model.getS3Config())
-                .s3StorageClass(model.getS3StorageClass())
-                .subdirectory(model.getSubdirectory())
-                .tags(model.getTags())
+        ResourceHandlerRequest<ResourceModel> requestWithArn = request.toBuilder()
+                .desiredResourceState(modelNoUri)
                 .build();
+
+        return new ReadHandler().handleRequest(proxy, requestWithArn, callbackContext, logger);
     }
+
 }

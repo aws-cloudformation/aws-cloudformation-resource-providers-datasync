@@ -1,12 +1,6 @@
 package software.amazon.datasync.locations3;
 
-import software.amazon.awssdk.services.datasync.model.CreateLocationS3Request;
-import software.amazon.awssdk.services.datasync.model.CreateLocationS3Response;
-import software.amazon.awssdk.services.datasync.model.DataSyncException;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationS3Request;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationS3Response;
-import software.amazon.awssdk.services.datasync.model.InternalException;
-import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.*;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -55,6 +49,9 @@ public class CreateHandlerTest {
                 DescribeLocationS3Response.builder()
                         .build();
 
+        final ListTagsForResourceResponse listTagsForResourceResponse =
+                TagTestResources.buildDefaultTagsResponse();
+
         doReturn(createLocationS3Response)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
@@ -66,6 +63,13 @@ public class CreateHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
                         any(DescribeLocationS3Request.class),
+                        any()
+                );
+
+        doReturn(listTagsForResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        any(ListTagsForResourceRequest.class),
                         any()
                 );
 
@@ -158,6 +162,7 @@ public class CreateHandlerTest {
         return ResourceModel.builder()
                 .s3BucketArn(bucketArn)
                 .s3Config(s3Config)
+                .tags(TagTestResources.defaultTags)
                 .build();
     }
 }

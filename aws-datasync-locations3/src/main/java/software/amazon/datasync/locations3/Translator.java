@@ -8,6 +8,7 @@ import software.amazon.awssdk.services.datasync.model.S3Config;
 import software.amazon.awssdk.services.datasync.model.TagListEntry;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -15,13 +16,13 @@ public class Translator {
 
     Translator() {}
 
-    public static CreateLocationS3Request translateToCreateRequest(final ResourceModel model) {
+    public static CreateLocationS3Request translateToCreateRequest(final ResourceModel model, Map<String, String> tags) {
         return CreateLocationS3Request.builder()
                 .s3BucketArn(model.getS3BucketArn())
                 .s3Config(translateToDataSyncS3Config(model.getS3Config()))
                 .s3StorageClass(model.getS3StorageClass())
                 .subdirectory(model.getSubdirectory())
-                .tags(translateTags(model.getTags()))
+                .tags(TagTranslator.translateMapToTagListEntries(tags))
                 .build();
     }
 
@@ -50,12 +51,4 @@ public class Translator {
                 .build();
     }
 
-    // Convert Tag object to TagListEntry object
-    public static Set<TagListEntry> translateTags(final Set<Tag> tags) {
-        if (tags == null)
-            return Collections.emptySet();
-        return tags.stream()
-                .map(tag -> TagListEntry.builder().key(tag.getKey()).value(tag.getValue()).build())
-                .collect(Collectors.toSet());
-    }
 }
