@@ -8,17 +8,18 @@ import software.amazon.awssdk.services.datasync.model.ListLocationsRequest;
 import software.amazon.awssdk.services.datasync.model.TagListEntry;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Translator {
 
-    public static CreateLocationEfsRequest translateToCreateRequest(final ResourceModel model) {
+    public static CreateLocationEfsRequest translateToCreateRequest(final ResourceModel model, Map<String, String> tags) {
         return CreateLocationEfsRequest.builder()
                 .ec2Config(translateToDataSyncEC2Config(model.getEC2Config()))
                 .efsFilesystemArn(model.getEfsFilesystemArn())
                 .subdirectory(model.getSubdirectory())
-                .tags(translateTags(model.getTags()))
+                .tags(TagTranslator.translateMapToTagListEntries(tags))
                 .build();
     }
 
@@ -61,12 +62,4 @@ public class Translator {
                 .build();
     }
 
-    // Convert Tag object to TagListEntry object
-    public static Set<TagListEntry> translateTags(final Set<Tag> tags) {
-        if (tags == null)
-            return Collections.emptySet();
-        return tags.stream()
-                .map(tag -> TagListEntry.builder().key(tag.getKey()).value(tag.getValue()).build())
-                .collect(Collectors.toSet());
-    }
 }
