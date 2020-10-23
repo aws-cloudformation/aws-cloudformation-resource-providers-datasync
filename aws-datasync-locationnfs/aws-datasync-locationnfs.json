@@ -121,16 +121,32 @@
   "primaryIdentifier": [
     "/properties/LocationArn"
   ],
+  "createOnlyProperties": [
+    "/properties/MountOptions",
+    "/properties/OnPremConfig",
+    "/properties/ServerHostname",
+    "/properties/Subdirectory"
+  ],
   "handlers": {
     "create": {
       "permissions": [
         "datasync:CreateLocationNfs",
-        "datasync:DescribeLocationNfs"
+        "datasync:DescribeLocationNfs",
+        "datasync:ListTagsForResource"
       ]
     },
     "read": {
       "permissions": [
-        "datasync:DescribeLocationNfs"
+        "datasync:DescribeLocationNfs",
+        "datasync:ListTagsForResource"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "datasync:DescribeLocationNfs",
+        "datasync:ListTagsForResource",
+        "datasync:TagResource",
+        "datasync:UntagResource"
       ]
     },
     "delete": {
