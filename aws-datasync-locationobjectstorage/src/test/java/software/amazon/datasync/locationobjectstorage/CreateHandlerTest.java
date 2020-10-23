@@ -1,12 +1,6 @@
 package software.amazon.datasync.locationobjectstorage;
 
-import software.amazon.awssdk.services.datasync.model.CreateLocationObjectStorageRequest;
-import software.amazon.awssdk.services.datasync.model.CreateLocationObjectStorageResponse;
-import software.amazon.awssdk.services.datasync.model.DataSyncException;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationObjectStorageRequest;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationObjectStorageResponse;
-import software.amazon.awssdk.services.datasync.model.InternalException;
-import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.*;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -59,10 +53,20 @@ public class CreateHandlerTest {
                 DescribeLocationObjectStorageResponse.builder()
                         .build();
 
+        final ListTagsForResourceResponse listTagsForResourceResponse =
+                TagTestResources.buildDefaultTagsResponse();
+
         doReturn(createLocationObjectStorageResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
                         any(CreateLocationObjectStorageRequest.class),
+                        any()
+                );
+
+        doReturn(listTagsForResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        any(ListTagsForResourceRequest.class),
                         any()
                 );
 

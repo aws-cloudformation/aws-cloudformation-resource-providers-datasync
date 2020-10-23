@@ -49,7 +49,7 @@ public class CreateHandlerTest {
 
         final DescribeLocationFsxWindowsResponse describeLocationFsxWindowsResponse =
                 DescribeLocationFsxWindowsResponse.builder().build();
-        
+
         final ListTagsForResourceResponse listTagsForResourceResponse =
                 TagTestResources.buildDefaultTagsResponse();
 

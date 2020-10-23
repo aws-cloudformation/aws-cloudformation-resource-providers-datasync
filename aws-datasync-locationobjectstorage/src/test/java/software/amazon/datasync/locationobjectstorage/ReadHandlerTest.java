@@ -1,10 +1,6 @@
 package software.amazon.datasync.locationobjectstorage;
 
-import software.amazon.awssdk.services.datasync.model.DataSyncException;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationObjectStorageRequest;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationObjectStorageResponse;
-import software.amazon.awssdk.services.datasync.model.InternalException;
-import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.*;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -47,10 +43,20 @@ public class ReadHandlerTest {
 
         final DescribeLocationObjectStorageResponse describeLocationObjectStorageResponse = buildDefaultResponse();
 
+        final ListTagsForResourceResponse listTagsForResourceResponse =
+                TagTestResources.buildDefaultTagsResponse();
+
         doReturn(describeLocationObjectStorageResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
                         any(DescribeLocationObjectStorageRequest.class),
+                        any()
+                );
+
+        doReturn(listTagsForResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        any(ListTagsForResourceRequest.class),
                         any()
                 );
 
