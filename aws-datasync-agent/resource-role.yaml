@@ -28,10 +28,6 @@ Resources:
                 - "datasync:DescribeAgent"
                 - "datasync:ListAgents"
                 - "datasync:UpdateAgent"
-                - "ec2:DescribeNetworkInterfaces"
-                - "ec2:DescribeSecurityGroups"
-                - "ec2:DescribeSubnets"
-                - "ec2:DescribeVpcEndpoints"
                 Resource: "*"
 Outputs:
   ExecutionRoleArn:
