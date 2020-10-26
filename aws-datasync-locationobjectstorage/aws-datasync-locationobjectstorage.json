@@ -48,7 +48,7 @@
       "maxItems": 4
     },
     "BucketName": {
-      "description": "The bucket on the self-managed object storage server that is used to read data from.",
+      "description": "The bucket name on the self-managed object storage server.",
       "type": "string",
       "maxLength": 63,
       "minLength": 3,

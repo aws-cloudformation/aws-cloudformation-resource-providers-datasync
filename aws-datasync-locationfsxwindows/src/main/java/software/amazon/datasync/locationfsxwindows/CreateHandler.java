@@ -56,7 +56,7 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
                 .tags(model.getTags())
                 .build();
 
-        ResourceModel returnModel = retrieveUpdatedModel(modelNoUri, proxy, client); // Retrieve Location URI
+        ResourceModel returnModel = retrieveUpdatedModel(modelNoUri, proxy, client);
 
         return ProgressEvent.defaultSuccessHandler(returnModel);
     }
