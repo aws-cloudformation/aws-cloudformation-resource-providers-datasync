@@ -42,6 +42,7 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
             throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
+        // Tags are not handled by the Update call and must be updated separately
         TagRequestMaker.updateTagsForResource(proxy, client, model.getTaskArn(), request, logger);
 
         return new ReadHandler().handleRequest(proxy, request, callbackContext, logger);
