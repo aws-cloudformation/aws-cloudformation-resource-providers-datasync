@@ -50,6 +50,9 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
             throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
+        // Since tags are not maintained by the update request, we must manually calculate
+        // a delta of tags to add and remove based on the resource- and stack-level tags
+        // provided by the model and CloudFormation
         Map<String, String> tagList = request.getDesiredResourceTags();
         if (tagList == null) {
             tagList = new HashMap<String, String>();

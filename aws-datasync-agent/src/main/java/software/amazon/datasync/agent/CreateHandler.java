@@ -79,6 +79,7 @@ public class CreateHandler extends BaseHandlerStd {
                     .status(OperationStatus.FAILED)
                     .build();
 
+        // Get combined resource- and stack-level tags, since CFN stack stags are not in the model.
         Map<String, String> tagList = request.getDesiredResourceTags();
         if (tagList == null) {
             tagList = new HashMap<String, String>();

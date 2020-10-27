@@ -43,6 +43,8 @@ public class ReadHandler extends BaseHandlerStd {
             throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
+        // Since tags are not returned by the DescribeAgent call but can be modified,
+        // we must separately retrieve and return them to ensure we return an up-to-date model.
         final ListTagsForResourceRequest listTagsForResourceRequest = Translator.translateToListTagsRequest(model);
 
         ListTagsForResourceResponse tagsResponse;
