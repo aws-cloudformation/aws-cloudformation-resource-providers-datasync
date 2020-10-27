@@ -106,8 +106,7 @@
   ],
   "createOnlyProperties": [
     "/properties/AgentAddress",
-    "/properties/ActivationKey",
-    "/properties/Tags"
+    "/properties/ActivationKey"
   ],
   "handlers": {
     "create": {
@@ -121,13 +120,17 @@
     },
     "read": {
       "permissions": [
-        "datasync:DescribeAgent"
+        "datasync:DescribeAgent",
+        "datasync:ListTagsForResource"
       ]
     },
     "update": {
       "permissions": [
         "datasync:UpdateAgent",
-        "datasync:DescribeAgent"
+        "datasync:DescribeAgent",
+        "datasync:ListTagsForResource",
+        "datasync:TagResource",
+        "datasync:UntagResource"
       ]
     },
     "delete": {
