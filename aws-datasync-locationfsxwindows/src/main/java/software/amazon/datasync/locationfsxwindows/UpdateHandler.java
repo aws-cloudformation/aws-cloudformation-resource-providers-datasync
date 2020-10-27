@@ -19,6 +19,7 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
         final ResourceModel model = request.getDesiredResourceState();
         final DataSyncClient client = ClientBuilder.getClient();
 
+        // Tags are not handled by the Update call and must be updated separately
         TagRequestMaker.updateTagsForResource(proxy, client, model.getLocationArn(), request, logger);
 
         return new ReadHandler().handleRequest(proxy, request, callbackContext, logger);

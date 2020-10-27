@@ -18,8 +18,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Since tags cannot be retrieved or updated through the DataSync Describe and Update
+ * API calls, these methods make the appropriate tag-specific API requests.
+ */
 public class TagRequestMaker {
 
+    /**
+     * Retrieve the tags associated with the given resource.
+     *
+     * @param proxy
+     * @param client
+     * @param resourceArn
+     * @return the set of tags currently attached to the resource
+     */
     public static Set<Tag> listTagsForResource(
             final AmazonWebServicesClientProxy proxy,
             final DataSyncClient client,
@@ -43,6 +55,16 @@ public class TagRequestMaker {
         return new HashSet<Tag>();
     }
 
+    /**
+     * Calculate and perform a delta update (additions and removals as needed) to
+     * resource tags based on the current and previous tags supplied by the CloudFormation request.
+     *
+     * @param proxy
+     * @param client
+     * @param resourceArn
+     * @param request
+     * @param logger
+     */
     public static void updateTagsForResource(
             final AmazonWebServicesClientProxy proxy,
             final DataSyncClient client,

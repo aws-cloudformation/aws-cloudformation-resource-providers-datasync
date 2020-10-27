@@ -35,6 +35,7 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         final ResourceModel model = request.getDesiredResourceState();
         final DataSyncClient client = ClientBuilder.getClient();
 
+        // In order to include stack-level tags, they must be retrieved separately from the model
         Map<String, String> tagList = request.getDesiredResourceTags();
         if (tagList == null) {
             tagList = new HashMap<String, String>();

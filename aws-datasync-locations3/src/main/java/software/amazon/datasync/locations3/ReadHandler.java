@@ -42,6 +42,7 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
             throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
+        // Current tags are not supplied by the Describe call and must be retrieved separately
         final Set<Tag> tags = TagRequestMaker.listTagsForResource(proxy, client, model.getLocationArn());
 
         ResourceModel returnModel = ResourceModel.builder()
