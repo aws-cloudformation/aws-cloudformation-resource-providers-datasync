@@ -1,12 +1,6 @@
 package software.amazon.datasync.task;
 
-import software.amazon.awssdk.services.datasync.model.CreateTaskRequest;
-import software.amazon.awssdk.services.datasync.model.CreateTaskResponse;
-import software.amazon.awssdk.services.datasync.model.DataSyncException;
-import software.amazon.awssdk.services.datasync.model.DescribeTaskRequest;
-import software.amazon.awssdk.services.datasync.model.DescribeTaskResponse;
-import software.amazon.awssdk.services.datasync.model.InternalException;
-import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.*;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -53,6 +47,9 @@ public class CreateHandlerTest {
         final DescribeTaskResponse describeTaskResponse =
                 DescribeTaskResponse.builder().build();
 
+        final ListTagsForResourceResponse listTagsForResourceResponse =
+                TagTestResources.buildDefaultTagsResponse();
+
         doReturn(createTaskResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
@@ -64,6 +61,13 @@ public class CreateHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
                         any(DescribeTaskRequest.class),
+                        any()
+                );
+
+        doReturn(listTagsForResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        any(ListTagsForResourceRequest.class),
                         any()
                 );
 

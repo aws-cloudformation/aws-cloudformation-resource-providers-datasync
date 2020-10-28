@@ -3,20 +3,16 @@ import software.amazon.awssdk.services.datasync.model.CreateTaskRequest;
 import software.amazon.awssdk.services.datasync.model.DeleteTaskRequest;
 import software.amazon.awssdk.services.datasync.model.DescribeTaskRequest;
 import software.amazon.awssdk.services.datasync.model.ListTasksRequest;
-import software.amazon.awssdk.services.datasync.model.TagListEntry;
 import software.amazon.awssdk.services.datasync.model.UpdateTaskRequest;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Translator {
 
     Translator() {}
 
-    public static CreateTaskRequest translateToCreateRequest(final ResourceModel model) {
+    public static CreateTaskRequest translateToCreateRequest(final ResourceModel model, final Map<String, String> tags) {
         // Schedule is not required for the customer, but this causes a null exception is it gets input as blank
         // Therefore, create a blank Task Schedule
         if (model.getSchedule() == null)
@@ -29,7 +25,7 @@ public class Translator {
                 .options(translateToDataSyncOptions(model.getOptions()))
                 .schedule(translateToDataSyncTaskSchedule(model.getSchedule()))
                 .sourceLocationArn(model.getSourceLocationArn())
-                .tags(translateTags(model.getTags()))
+                .tags(TagTranslator.translateMapToTagListEntries(tags))
                 .build();
     }
 
@@ -149,11 +145,4 @@ public class Translator {
                 .build();
     }
 
-    private static Set<TagListEntry> translateTags(final Set<Tag> tags) {
-        if (tags == null)
-            return Collections.emptySet();
-        return tags.stream()
-                .map(tag -> TagListEntry.builder().key(tag.getKey()).value(tag.getValue()).build())
-                .collect(Collectors.toSet());
-    }
 }

@@ -289,7 +289,6 @@
     "/properties/TaskArn"
   ],
   "createOnlyProperties": [
-    "/properties/Tags",
     "/properties/DestinationLocationArn",
     "/properties/SourceLocationArn"
   ],
@@ -297,6 +296,8 @@
     "create": {
       "permissions": [
         "datasync:CreateTask",
+        "datasync:DescribeTask",
+        "datasync:ListTagsForResource",
         "s3:ListAllMyBuckets",
         "s3:ListBucket",
         "ec2:DescribeNetworkInterfaces",
@@ -314,13 +315,17 @@
     },
     "read": {
       "permissions": [
-        "datasync:DescribeTask"
+        "datasync:DescribeTask",
+        "datasync:ListTagsForResource"
       ]
     },
     "update": {
       "permissions": [
         "datasync:UpdateTask",
-        "datasync:DescribeTask"
+        "datasync:DescribeTask",
+        "datasync:ListTagsForResource",
+        "datasync:TagResource",
+        "datasync:UntagResource"
       ]
     },
     "delete": {

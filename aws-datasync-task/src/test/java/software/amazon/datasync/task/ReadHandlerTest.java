@@ -1,10 +1,6 @@
 package software.amazon.datasync.task;
 
-import software.amazon.awssdk.services.datasync.model.DataSyncException;
-import software.amazon.awssdk.services.datasync.model.DescribeTaskRequest;
-import software.amazon.awssdk.services.datasync.model.DescribeTaskResponse;
-import software.amazon.awssdk.services.datasync.model.InternalException;
-import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.*;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -22,9 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ReadHandlerTest {
@@ -46,6 +40,7 @@ public class ReadHandlerTest {
         final ReadHandler handler = new ReadHandler();
 
         final DescribeTaskResponse describeTaskResponse = buildDefaultResponse();
+        final ListTagsForResourceResponse listTagsForResourceResponse = TagTestResources.buildDefaultTagsResponse();
 
         doReturn(describeTaskResponse)
                 .when(proxy)
@@ -53,6 +48,14 @@ public class ReadHandlerTest {
                         any(DescribeTaskRequest.class),
                         any()
                 );
+
+        doReturn(listTagsForResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        any(ListTagsForResourceRequest.class),
+                        any()
+                );
+
         final ResourceModel model = buildDefaultModel();
 
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
@@ -146,6 +149,7 @@ public class ReadHandlerTest {
         final String taskArn = "arn:aws:datasync:us-east-2:123456789012:task/task-01234567890123456";
         return ResourceModel.builder()
                 .taskArn(taskArn)
+                .tags(TagTestResources.defaultTags)
                 .build();
     }
 }
