@@ -11,6 +11,9 @@ import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
 import software.amazon.cloudformation.proxy.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CreateHandler extends BaseHandlerStd {
 
     public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
@@ -26,8 +29,6 @@ public class CreateHandler extends BaseHandlerStd {
         if (model.getAgentArn() != null) {
             throw new CfnInvalidRequestException("AgentArn cannot be specified to create an Agent.");
         }
-
-        CreateAgentRequest createAgentRequest = Translator.translateToCreateRequest(model);
 
         // Get combined resource- and stack-level tags, since CFN stack stags are not in the model.
         Map<String, String> tagList = request.getDesiredResourceTags();
