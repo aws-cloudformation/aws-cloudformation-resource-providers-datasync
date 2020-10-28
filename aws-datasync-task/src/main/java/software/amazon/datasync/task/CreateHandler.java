@@ -16,6 +16,9 @@ import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CreateHandler extends BaseHandler<CallbackContext> {
 
     @Override
@@ -32,7 +35,13 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         final ResourceModel model = request.getDesiredResourceState();
         final DataSyncClient client = ClientBuilder.getClient();
 
-        CreateTaskRequest createTaskRequest = Translator.translateToCreateRequest(model);
+        // In order to include stack-level tags, they must be retrieved separately from the model
+        Map<String, String> tagList = request.getDesiredResourceTags();
+        if (tagList == null) {
+            tagList = new HashMap<String, String>();
+        }
+
+        CreateTaskRequest createTaskRequest = Translator.translateToCreateRequest(model, tagList);
 
         CreateTaskResponse response;
         try {
@@ -46,44 +55,14 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
             throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
-        ResourceModel modelTagsAndArn = ResourceModel.builder()
+        ResourceModel modelWithArn = ResourceModel.builder()
                 .taskArn(response.taskArn())
-                .tags(model.getTags())
+                .build();
+        ResourceHandlerRequest<ResourceModel> requestWithArn = request.toBuilder()
+                .desiredResourceState(modelWithArn)
                 .build();
 
-        ResourceModel returnModel = retrieveUpdatedModel(modelTagsAndArn, proxy, client);
-
-        return ProgressEvent.defaultSuccessHandler(returnModel);
+        return new ReadHandler().handleRequest(proxy, requestWithArn, callbackContext, logger);
     }
 
-
-    private ResourceModel retrieveUpdatedModel(final ResourceModel model,
-                                               final AmazonWebServicesClientProxy proxy,
-                                               final DataSyncClient client) {
-
-        DescribeTaskRequest describeTaskRequest = Translator.translateToReadRequest(model.getTaskArn());
-        DescribeTaskResponse response;
-        try {
-            response = proxy.injectCredentialsAndInvokeV2(describeTaskRequest, client::describeTask);
-        } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
-        } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
-        }
-
-        return ResourceModel.builder()
-                .cloudWatchLogGroupArn(response.cloudWatchLogGroupArn())
-                .taskArn(response.taskArn())
-                .destinationLocationArn(response.destinationLocationArn())
-                .errorCode(response.errorCode())
-                .errorDetail(response.errorDetail())
-                .status(response.statusAsString())
-                .excludes(Translator.translateToResourceModelExcludes(response.excludes()))
-                .name(response.name())
-                .options(Translator.translateToResourceModelOptions(response.options()))
-                .schedule(Translator.translateToResourceModelTaskSchedule(response.schedule()))
-                .sourceLocationArn(response.sourceLocationArn())
-                .tags(model.getTags())
-                .build();
-    }
 }

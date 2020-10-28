@@ -53,14 +53,6 @@
       "maxLength": 76,
       "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):s3:::([^/]*)$"
     },
-    "BucketAccessRoleName": {
-      "description": "The name of the IAM role of the Amazon S3 bucket.",
-      "type": "string"
-    },
-    "BucketName": {
-      "description": "The name of the S3 bucket.",
-      "type": "string"
-    },
     "Subdirectory": {
       "description": "A subdirectory in the Amazon S3 bucket. This subdirectory in Amazon S3 is used to read data from the S3 source location or write data to the S3 destination.",
       "type": "string",

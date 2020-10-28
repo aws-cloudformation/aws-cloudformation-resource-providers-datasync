@@ -1,58 +1,77 @@
-package software.amazon.datasync.agent;
+package software.amazon.datasync.task;
 
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import software.amazon.awssdk.services.datasync.DataSyncClient;
-import software.amazon.awssdk.services.datasync.model.DataSyncException;
-import software.amazon.awssdk.services.datasync.model.InternalException;
-import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
-import software.amazon.awssdk.services.datasync.model.TagResourceRequest;
-import software.amazon.awssdk.services.datasync.model.UntagResourceRequest;
-import software.amazon.awssdk.services.datasync.model.UpdateAgentRequest;
+import software.amazon.awssdk.services.datasync.model.*;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
 import software.amazon.cloudformation.proxy.Logger;
-import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class UpdateHandler extends BaseHandler<CallbackContext> {
+/**
+ * Since tags cannot be retrieved or updated through the DataSync Describe and Update
+ * API calls, these methods make the appropriate tag-specific API requests.
+ */
+public class TagRequestMaker {
 
-    @Override
-    public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
+    /**
+     * Retrieve the tags associated with the given resource.
+     *
+     * @param proxy
+     * @param client
+     * @param resourceArn
+     * @return the set of tags currently attached to the resource
+     */
+    public static Set<Tag> listTagsForResource(
             final AmazonWebServicesClientProxy proxy,
-            final ResourceHandlerRequest<ResourceModel> request,
-            final CallbackContext callbackContext,
-            final Logger logger) {
+            final DataSyncClient client,
+            final String resourceArn) {
+        final ListTagsForResourceRequest listTagsForResourceRequest = TagTranslator.translateToListTagsRequest(resourceArn);
 
-        final ResourceModel prevModel = request.getPreviousResourceState();
-        final ResourceModel currentModel = request.getDesiredResourceState();
-        final DataSyncClient client = ClientBuilder.getClient();
-
-        UpdateAgentRequest updateAgentRequest = Translator.translateToUpdateRequest(currentModel);
-
+        ListTagsForResourceResponse tagsResponse;
         try {
-            proxy.injectCredentialsAndInvokeV2(updateAgentRequest, client::updateAgent);
-            logger.log(String.format("%s %s updated successfully", ResourceModel.TYPE_NAME,
-                    currentModel.getAgentArn()));
+            tagsResponse = proxy.injectCredentialsAndInvokeV2(listTagsForResourceRequest, client::listTagsForResource);
         } catch (InvalidRequestException e) {
-            throw new CfnNotFoundException(ResourceModel.TYPE_NAME, currentModel.getAgentArn());
+            throw new CfnNotFoundException(ResourceModel.TYPE_NAME, resourceArn);
         } catch (InternalException e) {
             throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
             throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
         }
 
-        // Since tags are not maintained by the update request, we must manually calculate
-        // a delta of tags to add and remove based on the resource- and stack-level tags
-        // provided by the model and CloudFormation
+        if (tagsResponse.tags() != null) {
+            return TagTranslator.translateTagListEntries(tagsResponse.tags());
+        }
+        return new HashSet<Tag>();
+    }
+
+    /**
+     * Calculate and perform a delta update (additions and removals as needed) to
+     * resource tags based on the current and previous tags supplied by the CloudFormation request.
+     *
+     * @param proxy
+     * @param client
+     * @param resourceArn
+     * @param request
+     * @param logger
+     */
+    public static void updateTagsForResource(
+            final AmazonWebServicesClientProxy proxy,
+            final DataSyncClient client,
+            final String resourceArn,
+            final ResourceHandlerRequest<ResourceModel> request,
+            final Logger logger) {
+
         Map<String, String> tagList = request.getDesiredResourceTags();
         if (tagList == null) {
             tagList = new HashMap<String, String>();
@@ -68,14 +87,14 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
                 tagList.keySet()
         );
         if (!keysToRemove.isEmpty()) {
-            UntagResourceRequest untagResourceRequest = Translator.translateToUntagResourceRequest(
-                    keysToRemove, currentModel.getAgentArn());
+            UntagResourceRequest untagResourceRequest = TagTranslator.translateToUntagResourceRequest(
+                    keysToRemove, resourceArn);
             try {
                 proxy.injectCredentialsAndInvokeV2(untagResourceRequest, client::untagResource);
                 logger.log(String.format("%s %s old tags removed successfully", ResourceModel.TYPE_NAME,
-                        currentModel.getAgentArn()));
+                        resourceArn));
             } catch (InvalidRequestException e) {
-                throw new CfnNotFoundException(ResourceModel.TYPE_NAME, currentModel.getAgentArn());
+                throw new CfnNotFoundException(ResourceModel.TYPE_NAME, resourceArn);
             } catch (InternalException e) {
                 throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
             }
@@ -85,23 +104,20 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
         final Set<Tag> tagsToAdd = mapDifference.entriesDiffering().entrySet().stream().map(entry -> {
             return Tag.builder().key(entry.getKey()).value(entry.getValue().leftValue()).build();
         }).collect(Collectors.toSet());
-        tagsToAdd.addAll(Translator.translateMapToTags(mapDifference.entriesOnlyOnLeft()));
+        tagsToAdd.addAll(TagTranslator.translateMapToTags(mapDifference.entriesOnlyOnLeft()));
 
         if (!tagsToAdd.isEmpty()) {
-            TagResourceRequest tagResourceRequest = Translator.translateToTagResourceRequest(
-                    tagsToAdd, currentModel.getAgentArn());
+            TagResourceRequest tagResourceRequest = TagTranslator.translateToTagResourceRequest(
+                    tagsToAdd, resourceArn);
             try {
                 proxy.injectCredentialsAndInvokeV2(tagResourceRequest, client::tagResource);
                 logger.log(String.format("%s %s tags updated successfully", ResourceModel.TYPE_NAME,
-                        currentModel.getAgentArn()));
+                        resourceArn));
             } catch (InvalidRequestException e) {
-                throw new CfnNotFoundException(ResourceModel.TYPE_NAME, currentModel.getAgentArn());
+                throw new CfnNotFoundException(ResourceModel.TYPE_NAME, resourceArn);
             } catch (InternalException e) {
                 throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
             }
         }
-
-        return new ReadHandler().handleRequest(proxy, request, callbackContext, logger);
     }
-
 }

@@ -227,7 +227,7 @@
       "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):datasync:[a-z\\-0-9]+:[0-9]{12}:location/loc-[0-9a-z]{17}$"
     },
     "Name": {
-      "description": "The name of a task. This value is a text reference that is ued to identify the task in the console.",
+      "description": "The name of a task. This value is a text reference that is used to identify the task in the console.",
       "type": "string",
       "maxLength": 256,
       "minLength": 1,
@@ -289,7 +289,6 @@
     "/properties/TaskArn"
   ],
   "createOnlyProperties": [
-    "/properties/Tags",
     "/properties/DestinationLocationArn",
     "/properties/SourceLocationArn"
   ],
@@ -297,6 +296,8 @@
     "create": {
       "permissions": [
         "datasync:CreateTask",
+        "datasync:DescribeTask",
+        "datasync:ListTagsForResource",
         "s3:ListAllMyBuckets",
         "s3:ListBucket",
         "ec2:DescribeNetworkInterfaces",
@@ -314,13 +315,17 @@
     },
     "read": {
       "permissions": [
-        "datasync:DescribeTask"
+        "datasync:DescribeTask",
+        "datasync:ListTagsForResource"
       ]
     },
     "update": {
       "permissions": [
         "datasync:UpdateTask",
-        "datasync:DescribeTask"
+        "datasync:DescribeTask",
+        "datasync:ListTagsForResource",
+        "datasync:TagResource",
+        "datasync:UntagResource"
       ]
     },
     "delete": {

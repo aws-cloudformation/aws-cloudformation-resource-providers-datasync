@@ -16,8 +16,5 @@ out/
 # auto-generated files
 target/
 
-# our logs
+# RPDK logs
 rpdk.log
-
-# contains credentials
-sam-tests/

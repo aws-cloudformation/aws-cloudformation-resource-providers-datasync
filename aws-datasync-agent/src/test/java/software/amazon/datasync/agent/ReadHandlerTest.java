@@ -6,6 +6,8 @@ import software.amazon.awssdk.services.datasync.model.DescribeAgentRequest;
 import software.amazon.awssdk.services.datasync.model.DescribeAgentResponse;
 import software.amazon.awssdk.services.datasync.model.InternalException;
 import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.ListTagsForResourceRequest;
+import software.amazon.awssdk.services.datasync.model.ListTagsForResourceResponse;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -16,10 +18,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 
@@ -42,14 +47,18 @@ public class ReadHandlerTest {
     public void handleRequest_SimpleSuccess() {
         final ReadHandler handler = new ReadHandler();
 
-        final DescribeAgentResponse describeResponse = buildDefaultResponse();
+        final DescribeAgentResponse describeAgentResponse = buildDefaultResponse();
+        final ListTagsForResourceResponse listTagsForResourceResponse = buildDefaultTagsResponse();
 
-        doReturn(describeResponse)
+        doAnswer(invocation -> {
+            Class type = invocation.getArgument(0).getClass();
+            if (ListTagsForResourceRequest.class.equals(type)) {
+                return listTagsForResourceResponse;
+            }
+            return describeAgentResponse;
+        })
                 .when(proxy)
-                .injectCredentialsAndInvokeV2(
-                        any(DescribeAgentRequest.class),
-                        any()
-                );
+                .injectCredentialsAndInvokeV2(any(), any());
 
         final ResourceModel model = buildDefaultModel();
 
@@ -58,7 +67,7 @@ public class ReadHandlerTest {
             .build();
 
         final ProgressEvent<ResourceModel, CallbackContext> response
-            = handler.handleRequest(proxy, request, null, logger);
+                 = handler.handleRequest(proxy, request, null, logger);
 
         assertThat(response).isNotNull();
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
@@ -129,10 +138,13 @@ public class ReadHandlerTest {
         } );
     }
 
+    final static Set<Tag> defaultTags = new HashSet<Tag>();
+
     private static ResourceModel buildDefaultModel() {
         final String agentArn = "arn:aws:datasync:us-east-1:123456789012:agent/agent-01234567890123456";
         return ResourceModel.builder()
                 .agentArn(agentArn)
+                .tags(defaultTags)
                 .build();
     }
 
@@ -140,6 +152,12 @@ public class ReadHandlerTest {
         final String agentArn = "arn:aws:datasync:us-east-1:123456789012:agent/agent-01234567890123456";
         return DescribeAgentResponse.builder()
                 .agentArn(agentArn)
+                .build();
+    }
+
+    private static ListTagsForResourceResponse buildDefaultTagsResponse() {
+        return ListTagsForResourceResponse.builder()
+                .tags(Translator.translateTags(defaultTags))
                 .build();
     }
 }

@@ -28,6 +28,14 @@ public class CreateHandler extends BaseHandlerStd {
         }
 
         CreateAgentRequest createAgentRequest = Translator.translateToCreateRequest(model);
+
+        // Get combined resource- and stack-level tags, since CFN stack stags are not in the model.
+        Map<String, String> tagList = request.getDesiredResourceTags();
+        if (tagList == null) {
+            tagList = new HashMap<String, String>();
+        }
+
+        CreateAgentRequest createAgentRequest = Translator.translateToCreateRequest(model, tagList);
         CreateAgentResponse response;
         try {
             response = proxy.injectCredentialsAndInvokeV2(createAgentRequest, client::createAgent);
@@ -47,7 +55,7 @@ public class CreateHandler extends BaseHandlerStd {
                 .securityGroupArns(model.getSecurityGroupArns())
                 .subnetArns(model.getSubnetArns())
                 .vpcEndpointId(model.getVpcEndpointId())
-                .tags(model.getTags())
+                .tags(Translator.translateMapToTags(tagList))
                 .build();
 
         return ProgressEvent.defaultSuccessHandler(returnModel);

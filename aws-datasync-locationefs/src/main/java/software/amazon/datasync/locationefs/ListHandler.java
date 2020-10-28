@@ -46,7 +46,6 @@ public class ListHandler extends BaseHandler<CallbackContext> {
 
         List<ResourceModel> models = new ArrayList<>();
         for (LocationListEntry loc : response.locations()) {
-            // Add only if it is an EFS location
             if (loc.locationUri().startsWith("efs://")) {
                 ResourceModel model = ResourceModel.builder()
                         .locationArn(loc.locationArn())

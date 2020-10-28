@@ -4,7 +4,7 @@ Description: AWS SAM template for the AWS::DataSync::Agent resource type
 
 Globals:
   Function:
-    Timeout: 600
+    Timeout: 60
     MemorySize: 256
 
 Resources:
