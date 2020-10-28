@@ -68,7 +68,7 @@
       }
     },
     "Password": {
-      "description": "The password of the user who can mount the share, and has the permissions to access files and folders in the SMB share.",
+      "description": "The password of the user who can mount the share and has the permissions to access files and folders in the SMB share.",
       "type": "string",
       "maxLength": 104,
       "pattern": "^.{0,104}$"

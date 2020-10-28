@@ -48,7 +48,7 @@
       "maxItems": 4
     },
     "BucketName": {
-      "description": "The bucket name on the self-managed object storage server.",
+      "description": "The name of the bucket on the self-managed object storage server.",
       "type": "string",
       "maxLength": 63,
       "minLength": 3,
