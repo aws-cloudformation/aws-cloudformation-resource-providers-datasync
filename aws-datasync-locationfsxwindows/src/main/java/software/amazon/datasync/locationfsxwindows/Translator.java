@@ -7,6 +7,7 @@ import software.amazon.awssdk.services.datasync.model.ListLocationsRequest;
 import software.amazon.awssdk.services.datasync.model.TagListEntry;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,14 +15,14 @@ public class Translator {
 
     Translator() {}
 
-    public static CreateLocationFsxWindowsRequest translateToCreateRequest(final ResourceModel model) {
+    public static CreateLocationFsxWindowsRequest translateToCreateRequest(final ResourceModel model, Map<String, String> tags) {
         return CreateLocationFsxWindowsRequest.builder()
                 .domain(model.getDomain())
                 .fsxFilesystemArn(model.getFsxFilesystemArn())
                 .password(model.getPassword())
                 .securityGroupArns(model.getSecurityGroupArns())
                 .subdirectory(model.getSubdirectory())
-                .tags(translateTags(model.getTags()))
+                .tags(TagTranslator.translateMapToTagListEntries(tags))
                 .user(model.getUser())
                 .build();
     }
@@ -44,11 +45,4 @@ public class Translator {
                 .build();
     }
 
-    private static Set<TagListEntry> translateTags(final Set<Tag> tags) {
-        if (tags == null)
-            return Collections.emptySet();
-        return tags.stream()
-                .map(tag -> TagListEntry.builder().key(tag.getKey()).value(tag.getValue()).build())
-                .collect(Collectors.toSet());
-    }
 }

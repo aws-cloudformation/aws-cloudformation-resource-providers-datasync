@@ -105,11 +105,17 @@
   "primaryIdentifier": [
     "/properties/LocationArn"
   ],
+  "createOnlyProperties": [
+    "/properties/EC2Config",
+    "/properties/EfsFilesystemArn",
+    "/properties/Subdirectory"
+  ],
   "handlers": {
     "create": {
       "permissions": [
         "datasync:CreateLocationEfs",
         "datasync:DescribeLocationEfs",
+        "datasync:ListTagsForResource",
         "elasticfilesystem:DescribeFileSystems",
         "elasticfilesystem:DescribeMountTargets",
         "ec2:DescribeSubnets",
@@ -118,7 +124,16 @@
     },
     "read": {
       "permissions": [
-        "datasync:DescribeLocationEfs"
+        "datasync:DescribeLocationEfs",
+        "datasync:ListTagsForResource"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "datasync:DescribeLocationEfs",
+        "datasync:ListTagsForResource",
+        "datasync:TagResource",
+        "datasync:UntagResource"
       ]
     },
     "delete": {

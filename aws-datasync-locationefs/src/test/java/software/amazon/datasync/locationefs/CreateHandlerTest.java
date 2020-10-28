@@ -1,12 +1,6 @@
 package software.amazon.datasync.locationefs;
 
-import software.amazon.awssdk.services.datasync.model.CreateLocationEfsRequest;
-import software.amazon.awssdk.services.datasync.model.CreateLocationEfsResponse;
-import software.amazon.awssdk.services.datasync.model.DataSyncException;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationEfsRequest;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationEfsResponse;
-import software.amazon.awssdk.services.datasync.model.InternalException;
-import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.*;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -59,6 +53,8 @@ public class CreateHandlerTest {
                 DescribeLocationEfsResponse.builder()
                         .build();
 
+        final ListTagsForResourceResponse listTagsForResourceResponse = TagTestResources.buildDefaultTagsResponse();
+
         doReturn(createLocationEfsResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
@@ -70,6 +66,13 @@ public class CreateHandlerTest {
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
                         any(DescribeLocationEfsRequest.class),
+                        any()
+                );
+
+        doReturn(listTagsForResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        any(ListTagsForResourceRequest.class),
                         any()
                 );
 

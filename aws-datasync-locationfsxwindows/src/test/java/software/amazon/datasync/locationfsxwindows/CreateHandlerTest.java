@@ -1,12 +1,6 @@
 package software.amazon.datasync.locationfsxwindows;
 
-import software.amazon.awssdk.services.datasync.model.CreateLocationFsxWindowsRequest;
-import software.amazon.awssdk.services.datasync.model.CreateLocationFsxWindowsResponse;
-import software.amazon.awssdk.services.datasync.model.DataSyncException;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationFsxWindowsRequest;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationFsxWindowsResponse;
-import software.amazon.awssdk.services.datasync.model.InternalException;
-import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.*;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -56,6 +50,9 @@ public class CreateHandlerTest {
         final DescribeLocationFsxWindowsResponse describeLocationFsxWindowsResponse =
                 DescribeLocationFsxWindowsResponse.builder().build();
 
+        final ListTagsForResourceResponse listTagsForResourceResponse =
+                TagTestResources.buildDefaultTagsResponse();
+
         doReturn(createLocationFsxWindowsResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(CreateLocationFsxWindowsRequest.class), any());
@@ -63,6 +60,10 @@ public class CreateHandlerTest {
         doReturn(describeLocationFsxWindowsResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(DescribeLocationFsxWindowsRequest.class), any());
+
+        doReturn(listTagsForResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(any(ListTagsForResourceRequest.class), any());
 
         final ResourceModel model = buildDefaultModel();
 

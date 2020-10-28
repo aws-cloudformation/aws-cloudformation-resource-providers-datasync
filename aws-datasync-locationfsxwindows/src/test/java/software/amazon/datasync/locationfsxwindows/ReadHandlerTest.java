@@ -5,6 +5,8 @@ import software.amazon.awssdk.services.datasync.model.DescribeLocationFsxWindows
 import software.amazon.awssdk.services.datasync.model.DescribeLocationFsxWindowsResponse;
 import software.amazon.awssdk.services.datasync.model.InternalException;
 import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.ListTagsForResourceRequest;
+import software.amazon.awssdk.services.datasync.model.ListTagsForResourceResponse;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -46,11 +48,19 @@ public class ReadHandlerTest {
         final ReadHandler handler = new ReadHandler();
 
         final DescribeLocationFsxWindowsResponse  describeLocationFsxWindowsResponse = buildDefaultResponse();
+        final ListTagsForResourceResponse listTagsForResourceResponse = TagTestResources.buildDefaultTagsResponse();
 
         doReturn(describeLocationFsxWindowsResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
                         any(DescribeLocationFsxWindowsRequest.class),
+                        any()
+                );
+
+        doReturn(listTagsForResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        any(ListTagsForResourceRequest.class),
                         any()
                 );
 

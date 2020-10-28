@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.datasync.model.OnPremConfig;
 import software.amazon.awssdk.services.datasync.model.TagListEntry;
 
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -16,13 +17,13 @@ public class Translator {
 
     Translator() {}
 
-    public static CreateLocationNfsRequest translateToCreateRequest(final ResourceModel model) {
+    public static CreateLocationNfsRequest translateToCreateRequest(final ResourceModel model, Map<String, String> tags) {
         return CreateLocationNfsRequest.builder()
                 .mountOptions(translateToDataSyncMountOptions(model.getMountOptions()))
                 .onPremConfig(translateToDataSyncOnPremConfig(model.getOnPremConfig()))
                 .serverHostname(model.getServerHostname())
                 .subdirectory(model.getSubdirectory())
-                .tags(translateTags(model.getTags()))
+                .tags(TagTranslator.translateMapToTagListEntries(tags))
                 .build();
     }
 
@@ -42,14 +43,6 @@ public class Translator {
         return ListLocationsRequest.builder()
                 .nextToken(nextToken)
                 .build();
-    }
-
-    private static Set<TagListEntry> translateTags(final Set<Tag> tags) {
-        if (tags == null)
-            return Collections.emptySet();
-        return tags.stream()
-                .map(tag -> TagListEntry.builder().key(tag.getKey()).value(tag.getValue()).build())
-                .collect(Collectors.toSet());
     }
 
     public static NfsMountOptions translateToDataSyncMountOptions(MountOptions mountOptions) {

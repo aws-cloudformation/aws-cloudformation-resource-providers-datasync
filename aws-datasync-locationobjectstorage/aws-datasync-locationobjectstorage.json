@@ -123,16 +123,36 @@
   "primaryIdentifier": [
     "/properties/LocationArn"
   ],
+  "createOnlyProperties": [
+    "/properties/AccessKey",
+    "/properties/AgentArns",
+    "/properties/BucketName",
+    "/properties/SecretKey",
+    "/properties/ServerHostname",
+    "/properties/ServerPort",
+    "/properties/ServerProtocol",
+    "/properties/Subdirectory"
+  ],
   "handlers": {
     "create": {
       "permissions": [
         "datasync:CreateLocationObjectStorage",
-        "datasync:DescribeLocationObjectStorage"
+        "datasync:DescribeLocationObjectStorage",
+        "datasync:ListTagsForResource"
       ]
     },
     "read": {
       "permissions": [
-        "datasync:DescribeLocationObjectStorage"
+        "datasync:DescribeLocationObjectStorage",
+        "datasync:ListTagsForResource"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "datasync:DescribeLocationObjectStorage",
+        "datasync:ListTagsForResource",
+        "datasync:TagResource",
+        "datasync:UntagResource"
       ]
     },
     "delete": {

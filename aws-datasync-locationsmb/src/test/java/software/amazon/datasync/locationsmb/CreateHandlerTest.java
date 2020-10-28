@@ -1,12 +1,6 @@
 package software.amazon.datasync.locationsmb;
 
-import software.amazon.awssdk.services.datasync.model.CreateLocationSmbRequest;
-import software.amazon.awssdk.services.datasync.model.CreateLocationSmbResponse;
-import software.amazon.awssdk.services.datasync.model.DataSyncException;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationSmbRequest;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationSmbResponse;
-import software.amazon.awssdk.services.datasync.model.InternalException;
-import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.*;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -57,6 +51,9 @@ public class CreateHandlerTest {
                 DescribeLocationSmbResponse.builder()
                         .build();
 
+        final ListTagsForResourceResponse listTagsForResourceResponse =
+                TagTestResources.buildDefaultTagsResponse();
+
         doReturn(createLocationSmbResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(CreateLocationSmbRequest.class), any());
@@ -64,6 +61,10 @@ public class CreateHandlerTest {
         doReturn(describeLocationSmbResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(any(DescribeLocationSmbRequest.class), any());
+
+        doReturn(listTagsForResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(any(ListTagsForResourceRequest.class), any());
 
         final ResourceModel model = buildDefaultModel();
 

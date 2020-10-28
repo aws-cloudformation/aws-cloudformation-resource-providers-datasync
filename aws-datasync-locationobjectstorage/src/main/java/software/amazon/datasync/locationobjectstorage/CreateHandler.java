@@ -17,6 +17,9 @@ import software.amazon.cloudformation.proxy.ProgressEvent;
 
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CreateHandler extends BaseHandler<CallbackContext> {
 
     @Override
@@ -33,8 +36,14 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         final ResourceModel model = request.getDesiredResourceState();
         final DataSyncClient client = ClientBuilder.getClient();
 
+        // In order to include stack-level tags, they must be retrieved separately from the model
+        Map<String, String> tagList = request.getDesiredResourceTags();
+        if (tagList == null) {
+            tagList = new HashMap<String, String>();
+        }
+
         CreateLocationObjectStorageRequest createLocationObjectStorageRequest =
-                Translator.translateToCreateRequest(model);
+                Translator.translateToCreateRequest(model, tagList);
 
         CreateLocationObjectStorageResponse response;
         try {
@@ -58,38 +67,12 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
                 .locationArn(response.locationArn())
                 .build();
 
-        ResourceModel returnModel = retrieveUpdatedModel(modelNoUri, proxy, client);
-
-        return ProgressEvent.defaultSuccessHandler(returnModel);
-    }
-
-    private static ResourceModel retrieveUpdatedModel(final ResourceModel model,
-                                                      final AmazonWebServicesClientProxy proxy,
-                                                      final DataSyncClient client) {
-
-        DescribeLocationObjectStorageRequest describeLocationObjectStorageRequest =
-                Translator.translateToReadRequest(model.getLocationArn());
-        DescribeLocationObjectStorageResponse response;
-        try {
-            response = proxy.injectCredentialsAndInvokeV2(describeLocationObjectStorageRequest, client::describeLocationObjectStorage);
-        } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
-        } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
-        }
-
-        return ResourceModel.builder()
-                .locationArn(response.locationArn())
-                .locationUri(response.locationUri())
-                .accessKey(response.accessKey())
-                .agentArns(response.agentArns())
-                .bucketName(model.getBucketName())
-                .secretKey(model.getSecretKey())
-                .serverHostname(model.getServerHostname())
-                .serverPort(model.getServerPort())
-                .serverProtocol(response.serverProtocolAsString())
-                .subdirectory(model.getSubdirectory())
-                .tags(model.getTags())
+        ResourceHandlerRequest<ResourceModel> requestWithArn = request.toBuilder()
+                .desiredResourceState(modelNoUri)
                 .build();
+
+        return new ReadHandler().handleRequest(proxy, requestWithArn, callbackContext, logger);
+
     }
+
 }

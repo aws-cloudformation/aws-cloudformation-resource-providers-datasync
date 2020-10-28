@@ -106,11 +106,20 @@
   "primaryIdentifier": [
     "/properties/LocationArn"
   ],
+  "createOnlyProperties": [
+    "/properties/S3Config",
+    "/properties/S3BucketArn",
+    "/properties/BucketAccessRoleName",
+    "/properties/BucketName",
+    "/properties/Subdirectory",
+    "/properties/S3StorageClass"
+  ],
   "handlers": {
     "create": {
       "permissions": [
         "datasync:CreateLocationS3",
         "datasync:DescribeLocationS3",
+        "datasync:ListTagsForResource",
         "s3:ListAllMyBuckets",
         "s3:ListBucket",
         "iam:GetRole",
@@ -119,7 +128,16 @@
     },
     "read": {
       "permissions": [
-        "datasync:DescribeLocationS3"
+        "datasync:DescribeLocationS3",
+        "datasync:ListTagsForResource"
+      ]
+    },
+    "update": {
+      "permissions": [
+        "datasync:DescribeLocationS3",
+        "datasync:ListTagsForResource",
+        "datasync:TagResource",
+        "datasync:UntagResource"
       ]
     },
     "delete": {

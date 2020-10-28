@@ -16,6 +16,9 @@ import software.amazon.cloudformation.proxy.Logger;
 import software.amazon.cloudformation.proxy.ProgressEvent;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class CreateHandler extends BaseHandler<CallbackContext> {
 
     @Override
@@ -32,8 +35,14 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
             throw new CfnInvalidRequestException("LocationArn cannot be specified to create a location.");
         }
 
+        // In order to include stack-level tags, they must be retrieved separately from the model
+        Map<String, String> tagList = request.getDesiredResourceTags();
+        if (tagList == null) {
+            tagList = new HashMap<String, String>();
+        }
+
         CreateLocationFsxWindowsRequest createLocationFsxWindowsRequest =
-                Translator.translateToCreateRequest(model);
+                Translator.translateToCreateRequest(model, tagList);
 
         CreateLocationFsxWindowsResponse response;
         try {
@@ -56,36 +65,10 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
                 .tags(model.getTags())
                 .build();
 
-        ResourceModel returnModel = retrieveUpdatedModel(modelNoUri, proxy, client);
-
-        return ProgressEvent.defaultSuccessHandler(returnModel);
-    }
-
-    private static ResourceModel retrieveUpdatedModel(final ResourceModel model,
-                                                      final AmazonWebServicesClientProxy proxy,
-                                                      final DataSyncClient client) {
-
-        DescribeLocationFsxWindowsRequest describeLocationFsxWindowsRequest =
-                Translator.translateToReadRequest(model.getLocationArn());
-        DescribeLocationFsxWindowsResponse response;
-        try {
-            response = proxy.injectCredentialsAndInvokeV2(describeLocationFsxWindowsRequest, client::describeLocationFsxWindows);
-        } catch (InternalException e) {
-            throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
-        } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
-        }
-
-        return ResourceModel.builder()
-                .locationArn(response.locationArn())
-                .locationUri(response.locationUri())
-                .domain(response.domain())
-                .fsxFilesystemArn(model.getFsxFilesystemArn())
-                .securityGroupArns(response.securityGroupArns())
-                .subdirectory(model.getSubdirectory())
-                .user(response.user())
-                .tags(model.getTags())
+        ResourceHandlerRequest<ResourceModel> requestWithArn = request.toBuilder()
+                .desiredResourceState(modelNoUri)
                 .build();
 
+        return new ReadHandler().handleRequest(proxy, requestWithArn, callbackContext, logger);
     }
 }

@@ -1,10 +1,6 @@
 package software.amazon.datasync.locationnfs;
 
-import software.amazon.awssdk.services.datasync.model.DataSyncException;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationNfsRequest;
-import software.amazon.awssdk.services.datasync.model.DescribeLocationNfsResponse;
-import software.amazon.awssdk.services.datasync.model.InternalException;
-import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
+import software.amazon.awssdk.services.datasync.model.*;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
@@ -47,10 +43,19 @@ public class ReadHandlerTest {
 
         final DescribeLocationNfsResponse describeLocationNfsResponse = buildDefaultResponse();
 
+        final ListTagsForResourceResponse listTagsForResourceResponse = TagTestResources.buildDefaultTagsResponse();
+
         doReturn(describeLocationNfsResponse)
                 .when(proxy)
                 .injectCredentialsAndInvokeV2(
                         any(DescribeLocationNfsRequest.class),
+                        any()
+                );
+
+        doReturn(listTagsForResourceResponse)
+                .when(proxy)
+                .injectCredentialsAndInvokeV2(
+                        any(ListTagsForResourceRequest.class),
                         any()
                 );
 
