@@ -66,7 +66,6 @@ public class ReadHandler extends BaseHandlerStd {
         ResourceModel returnModel = ResourceModel.builder()
                 .agentArn(response.agentArn())
                 .agentName(response.name())
-                .agentAddress(model.getAgentAddress())
                 .activationKey(model.getActivationKey())
                 .securityGroupArns(model.getSecurityGroupArns())
                 .subnetArns(model.getSubnetArns())

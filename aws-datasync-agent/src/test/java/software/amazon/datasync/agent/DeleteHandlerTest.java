@@ -15,7 +15,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.cloudformation.proxy.*;
-import software.amazon.cloudformation.proxy.delay.Constant;
 
 import java.time.Duration;
 
@@ -23,7 +22,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
-import static software.amazon.datasync.agent.AbstractTestBase.MOCK_PROXY;
 
 @ExtendWith(MockitoExtension.class)
 public class DeleteHandlerTest extends AbstractTestBase {
@@ -35,8 +33,6 @@ public class DeleteHandlerTest extends AbstractTestBase {
 
     @Mock DataSyncClient dataSyncClient;
 
-    Delay testDelay = Constant.of().timeout(Duration.ofMinutes(1)).delay(Duration.ofMillis(1L)).build();
-
     @BeforeEach
     public void setup() {
         proxy = new AmazonWebServicesClientProxy(logger, MOCK_CREDENTIALS, () -> Duration.ofSeconds(600).toMillis());
@@ -46,7 +42,7 @@ public class DeleteHandlerTest extends AbstractTestBase {
 
     @Test
     public void handleRequest_SimpleSuccess() {
-        final DeleteHandler handler = new DeleteHandler(testDelay);
+        final DeleteHandler handler = new DeleteHandler();
 
         final DeleteAgentResponse deleteAgentResponse = DeleteAgentResponse.builder().build();
 

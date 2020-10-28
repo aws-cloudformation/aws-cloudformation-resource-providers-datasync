@@ -34,10 +34,6 @@ public class ReadHandlerTest {
     @Mock
     private AmazonWebServicesClientProxy proxy;
 
-    @Mock private ProxyClient<DataSyncClient> proxyClient;
-
-    @Mock DataSyncClient dataSyncClient;
-
     @Mock
     private Logger logger;
 
