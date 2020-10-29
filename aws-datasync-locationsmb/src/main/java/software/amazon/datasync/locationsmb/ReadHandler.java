@@ -51,7 +51,6 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
                 .locationArn(response.locationArn())
                 .domain(response.domain())
                 .agentArns(model.getAgentArns())
-                .password(model.getPassword())
                 .serverHostname(model.getServerHostname())
                 .subdirectory(model.getSubdirectory())
                 .tags(tags)
