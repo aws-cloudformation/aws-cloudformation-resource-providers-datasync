@@ -100,8 +100,7 @@
     "/properties/AgentArn"
   ],
   "createOnlyProperties": [
-    "/properties/ActivationKey",
-    "/properties/Tags"
+    "/properties/ActivationKey"
   ],
   "handlers": {
     "create": {
