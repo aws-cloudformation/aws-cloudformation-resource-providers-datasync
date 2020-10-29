@@ -70,7 +70,7 @@ public class ReadHandler extends BaseHandlerStd {
                 .securityGroupArns(model.getSecurityGroupArns())
                 .subnetArns(model.getSubnetArns())
                 .vpcEndpointId(model.getVpcEndpointId())
-                .endpointType(model.getEndpointType())
+                .endpointType(response.endpointType() == null ? null : response.endpointType().toString())
                 .tags(tags)
                 .build();
 

@@ -100,7 +100,10 @@
     "/properties/AgentArn"
   ],
   "createOnlyProperties": [
-    "/properties/ActivationKey"
+    "/properties/ActivationKey",
+    "/properties/SecurityGroupArns",
+    "/properties/SubnetArns",
+    "/properties/VpcEndpointId"
   ],
   "handlers": {
     "create": {

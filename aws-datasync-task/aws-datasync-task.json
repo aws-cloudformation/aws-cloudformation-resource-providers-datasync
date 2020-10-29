@@ -175,24 +175,6 @@
           ]
         }
       }
-    },
-    "SourceNetworkInterfaceArns": {
-      "description": "The Amazon Resource Names (ARNs) of the source ENIs (Elastic Network Interfaces) that were created for your subnet.",
-      "type": "array",
-      "items": {
-        "type": "string",
-        "pattern": "^arn:aws[\\-a-z]{0,}:ec2:[a-z\\-0-9]*:[0-9]{12}:network-interface/eni-[0-9a-f]+$"
-      },
-      "maxItems": 128
-    },
-    "DestinationNetworkInterfaceArns": {
-      "description": "The Amazon Resource Names (ARNs) of the destination ENIs (Elastic Network Interfaces) that were created for your subnet.",
-      "type": "array",
-      "items": {
-        "type": "string",
-        "pattern": "^arn:aws[\\-a-z]{0,}:ec2:[a-z\\-0-9]*:[0-9]{12}:network-interface/eni-[0-9a-f]+$"
-      },
-      "maxItems": 128
     }
   },
   "properties": {
@@ -269,9 +251,6 @@
         "RUNNING",
         "UNAVAILABLE"
       ]
-    },
-    "SourceNetworkInterfaceArns": {
-      "$ref": "#/definitions/SourceNetworkInterfaceArns"
     }
   },
   "additionalProperties": false,
