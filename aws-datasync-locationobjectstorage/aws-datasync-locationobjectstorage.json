@@ -120,6 +120,9 @@
     "/properties/LocationArn",
     "/properties/LocationUri"
   ],
+  "writeOnlyProperties": [
+    "/properties/SecretKey"
+  ],
   "primaryIdentifier": [
     "/properties/LocationArn"
   ],

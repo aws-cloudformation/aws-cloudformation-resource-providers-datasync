@@ -3,7 +3,7 @@
   "description": "Resource schema for AWS::DataSync::LocationEFS.",
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-datasync.git",
   "definitions": {
-    "EC2Config": {
+    "Ec2Config": {
       "description": "The subnet and security group that DataSync uses to access target EFS file system.",
       "type": "object",
       "properties": {
@@ -56,8 +56,8 @@
     }
   },
   "properties": {
-    "EC2Config": {
-      "$ref": "#/definitions/EC2Config"
+    "Ec2Config": {
+      "$ref": "#/definitions/Ec2Config"
     },
     "EfsFilesystemArn": {
       "description": "The Amazon Resource Name (ARN) for the Amazon EFS file system.",
@@ -95,7 +95,7 @@
   },
   "additionalProperties": false,
   "required": [
-    "EC2Config",
+    "Ec2Config",
     "EfsFilesystemArn"
   ],
   "readOnlyProperties": [
@@ -106,7 +106,7 @@
     "/properties/LocationArn"
   ],
   "createOnlyProperties": [
-    "/properties/EC2Config",
+    "/properties/Ec2Config",
     "/properties/EfsFilesystemArn",
     "/properties/Subdirectory"
   ],

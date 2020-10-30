@@ -3,20 +3,15 @@ package software.amazon.datasync.locationefs;
 import software.amazon.awssdk.services.datasync.model.CreateLocationEfsRequest;
 import software.amazon.awssdk.services.datasync.model.DeleteLocationRequest;
 import software.amazon.awssdk.services.datasync.model.DescribeLocationEfsRequest;
-import software.amazon.awssdk.services.datasync.model.Ec2Config;
 import software.amazon.awssdk.services.datasync.model.ListLocationsRequest;
-import software.amazon.awssdk.services.datasync.model.TagListEntry;
 
-import java.util.Collections;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Translator {
 
     public static CreateLocationEfsRequest translateToCreateRequest(final ResourceModel model, Map<String, String> tags) {
         return CreateLocationEfsRequest.builder()
-                .ec2Config(translateToDataSyncEC2Config(model.getEC2Config()))
+                .ec2Config(translateToDataSyncEc2Config(model.getEc2Config()))
                 .efsFilesystemArn(model.getEfsFilesystemArn())
                 .subdirectory(model.getSubdirectory())
                 .tags(TagTranslator.translateMapToTagListEntries(tags))
@@ -43,20 +38,20 @@ public class Translator {
     }
 
     // Convert Resource Model defined EC2 Config to a DataSync EC2 Config
-    private static Ec2Config translateToDataSyncEC2Config(final EC2Config ec2Config) {
+    private static software.amazon.awssdk.services.datasync.model.Ec2Config translateToDataSyncEc2Config(final Ec2Config ec2Config) {
         if (ec2Config == null)
-            return Ec2Config.builder().build();
-        return Ec2Config.builder()
+            return software.amazon.awssdk.services.datasync.model.Ec2Config.builder().build();
+        return software.amazon.awssdk.services.datasync.model.Ec2Config.builder()
                 .securityGroupArns(ec2Config.getSecurityGroupArns())
                 .subnetArn(ec2Config.getSubnetArn())
                 .build();
     }
 
     // Convert DataSync EC2 Config to a Resource Model defined EC2 Config
-    public static EC2Config translateToResourceModelEc2Config(final Ec2Config ec2Config) {
+    public static Ec2Config translateToResourceModelEc2Config(final software.amazon.awssdk.services.datasync.model.Ec2Config ec2Config) {
         if (ec2Config == null)
-            return EC2Config.builder().build();
-        return EC2Config.builder()
+            return Ec2Config.builder().build();
+        return Ec2Config.builder()
                 .securityGroupArns(ec2Config.securityGroupArns())
                 .subnetArn(ec2Config.subnetArn())
                 .build();

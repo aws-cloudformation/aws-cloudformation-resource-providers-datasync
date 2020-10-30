@@ -4,6 +4,7 @@ import software.amazon.awssdk.services.datasync.DataSyncClient;
 import software.amazon.awssdk.services.datasync.model.DataSyncException;
 import software.amazon.awssdk.services.datasync.model.DescribeAgentRequest;
 import software.amazon.awssdk.services.datasync.model.DescribeAgentResponse;
+import software.amazon.awssdk.services.datasync.model.EndpointType;
 import software.amazon.awssdk.services.datasync.model.InternalException;
 import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
 import software.amazon.awssdk.services.datasync.model.ListTagsForResourceRequest;
@@ -144,6 +145,7 @@ public class ReadHandlerTest {
         final String agentArn = "arn:aws:datasync:us-east-1:123456789012:agent/agent-01234567890123456";
         return ResourceModel.builder()
                 .agentArn(agentArn)
+                .endpointType("PUBLIC")
                 .tags(defaultTags)
                 .build();
     }
@@ -152,6 +154,7 @@ public class ReadHandlerTest {
         final String agentArn = "arn:aws:datasync:us-east-1:123456789012:agent/agent-01234567890123456";
         return DescribeAgentResponse.builder()
                 .agentArn(agentArn)
+                .endpointType(EndpointType.PUBLIC)
                 .build();
     }
 

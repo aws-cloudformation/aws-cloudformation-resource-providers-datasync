@@ -156,13 +156,13 @@ public class CreateHandlerTest {
         final String subnetArn = "arn:aws:ec2:us-east-1:123456789012:subnet/subnet-1234567890123456";
         final String securityGroupArn = "arn:aws:ec2:us-east-1:123456789012:security-group/sg-1234567890123456";
         final String efsFilesystemArn = "arn:aws:elasticfilesystem:us-east-1:123456789012:fs-01234567";
-        EC2Config ec2Config = EC2Config.builder()
+        Ec2Config ec2Config = Ec2Config.builder()
                 .subnetArn(subnetArn)
                 .securityGroupArns(Arrays.asList(securityGroupArn))
                 .build();
         return ResourceModel.builder()
                 .efsFilesystemArn(efsFilesystemArn)
-                .eC2Config(ec2Config)
+                .ec2Config(ec2Config)
                 .build();
     }
 }

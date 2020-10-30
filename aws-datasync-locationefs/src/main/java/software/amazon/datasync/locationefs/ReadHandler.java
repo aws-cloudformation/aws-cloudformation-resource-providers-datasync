@@ -49,7 +49,7 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
         ResourceModel returnModel = ResourceModel.builder()
                 .locationArn(response.locationArn())
                 .locationUri(response.locationUri())
-                .eC2Config(Translator.translateToResourceModelEc2Config(response.ec2Config()))
+                .ec2Config(Translator.translateToResourceModelEc2Config(response.ec2Config()))
                 .efsFilesystemArn(model.getEfsFilesystemArn())
                 .subdirectory(model.getSubdirectory())
                 .tags(tags)

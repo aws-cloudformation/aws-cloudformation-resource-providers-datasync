@@ -57,6 +57,8 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
                 .options(Translator.translateToResourceModelOptions(response.options()))
                 .schedule(Translator.translateToResourceModelTaskSchedule(response.schedule()))
                 .sourceLocationArn(response.sourceLocationArn())
+                .sourceNetworkInterfaceArns(response.sourceNetworkInterfaceArns())
+                .destinationNetworkInterfaceArns(response.destinationNetworkInterfaceArns())
                 .tags(tags)
                 .build();
 

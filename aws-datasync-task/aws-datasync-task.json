@@ -272,6 +272,9 @@
     },
     "SourceNetworkInterfaceArns": {
       "$ref": "#/definitions/SourceNetworkInterfaceArns"
+    },
+    "DestinationNetworkInterfaceArns": {
+      "$ref": "#/definitions/DestinationNetworkInterfaceArns"
     }
   },
   "additionalProperties": false,
@@ -283,7 +286,9 @@
     "/properties/TaskArn",
     "/properties/ErrorCode",
     "/properties/ErrorDetail",
-    "/properties/Status"
+    "/properties/Status",
+    "/properties/SourceNetworkInterfaceArns",
+    "/properties/DestinationNetworkInterfaceArns"
   ],
   "primaryIdentifier": [
     "/properties/TaskArn"

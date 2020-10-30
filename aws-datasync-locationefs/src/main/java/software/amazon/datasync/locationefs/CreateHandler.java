@@ -57,7 +57,7 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
 
         final ResourceModel modelNoUri = ResourceModel.builder()
                 .locationArn(response.locationArn())
-                .eC2Config(model.getEC2Config())
+                .ec2Config(model.getEc2Config())
                 .efsFilesystemArn(model.getEfsFilesystemArn())
                 .subdirectory(model.getSubdirectory())
                 .tags(model.getTags())
