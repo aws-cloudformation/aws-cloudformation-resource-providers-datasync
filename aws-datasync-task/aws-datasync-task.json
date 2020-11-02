@@ -314,6 +314,7 @@
         "fsx:DescribeFileSystems",
         "elasticfilesystem:DescribeFileSystems",
         "elasticfilesystem:DescribeMountTargets",
+        "logs:DescribeLogGroups",
         "iam:GetRole",
         "iam:PassRole"
       ]
@@ -330,7 +331,8 @@
         "datasync:DescribeTask",
         "datasync:ListTagsForResource",
         "datasync:TagResource",
-        "datasync:UntagResource"
+        "datasync:UntagResource",
+        "logs:DescribeLogGroups"
       ]
     },
     "delete": {

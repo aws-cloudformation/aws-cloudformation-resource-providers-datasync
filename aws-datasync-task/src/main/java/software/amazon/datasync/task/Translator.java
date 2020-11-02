@@ -90,9 +90,10 @@ public class Translator {
             final software.amazon.awssdk.services.datasync.model.Options options) {
         if (options == null)
             return software.amazon.datasync.task.Options.builder().build();
+        Integer bytesPerSecond = options.bytesPerSecond() != null ? options.bytesPerSecond().intValue() : null;
         return software.amazon.datasync.task.Options.builder()
                 .atime(options.atimeAsString())
-                .bytesPerSecond(options.bytesPerSecond().intValue())
+                .bytesPerSecond(bytesPerSecond)
                 .gid(options.gidAsString())
                 .logLevel(options.logLevelAsString())
                 .mtime(options.mtimeAsString())
@@ -111,9 +112,11 @@ public class Translator {
             final software.amazon.datasync.task.Options options) {
         if (options == null)
             return software.amazon.awssdk.services.datasync.model.Options.builder().build();
+
+        Long bytesPerSecond = options.getBytesPerSecond() != null ? options.getBytesPerSecond().longValue() : null;
         return software.amazon.awssdk.services.datasync.model.Options.builder()
                 .atime(options.getAtime())
-                .bytesPerSecond(options.getBytesPerSecond().longValue())
+                .bytesPerSecond(bytesPerSecond)
                 .gid(options.getGid())
                 .logLevel(options.getLogLevel())
                 .mtime(options.getMtime())
