@@ -44,7 +44,7 @@
         "Value": {
           "type": "string",
           "description": "The value for an AWS resource tag.",
-          "pattern": "^[a-zA-Z0-9\\s+=.:@/-]+$",
+          "pattern": "^[a-zA-Z0-9\\s+=._:@/-]+$",
           "maxLength": 256,
           "minLength": 1
         }
@@ -68,12 +68,13 @@
     "Subdirectory": {
       "description": "A subdirectory in the location's path. This subdirectory in the EFS file system is used to read data from the EFS source location or write data to the EFS destination.",
       "type": "string",
-      "maxLength": 4096
+      "maxLength": 4096,
+      "pattern": "^[a-zA-Z0-9_\\-\\+\\./\\(\\)\\$\\p{Zs}]+$"
     },
     "Tags": {
       "description": "An array of key-value pairs to apply to this resource.",
       "type": "array",
-      "maxItems": 55,
+      "maxItems": 50,
       "uniqueItems": true,
       "insertionOrder": false,
       "items": {
