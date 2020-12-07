@@ -17,7 +17,7 @@
         "Value": {
           "type": "string",
           "description": "The value for an AWS resource tag.",
-          "pattern": "^[a-zA-Z0-9\\s+=.:@/-]+$",
+          "pattern": "^[a-zA-Z0-9\\s+=._:@/-]+$",
           "maxLength": 256,
           "minLength": 1
         }
@@ -90,7 +90,7 @@
     "Tags": {
       "description": "An array of key-value pairs to apply to this resource.",
       "type": "array",
-      "maxItems": 55,
+      "maxItems": 50,
       "uniqueItems": true,
       "insertionOrder": false,
       "items": {

@@ -32,7 +32,7 @@
             "maxLength": 128
           },
           "minItems": 1,
-          "maxItems": 64
+          "maxItems": 4
         }
       },
       "required": [
@@ -53,7 +53,7 @@
         "Value": {
           "type": "string",
           "description": "The value for an AWS resource tag.",
-          "pattern": "^[a-zA-Z0-9\\s+=.:@/-]+$",
+          "pattern": "^[a-zA-Z0-9\\s+=._:@/-]+$",
           "maxLength": 256,
           "minLength": 1
         }
@@ -83,12 +83,13 @@
     "Subdirectory": {
       "description": "The subdirectory in the NFS file system that is used to read data from the NFS source location or write data to the NFS destination.",
       "type": "string",
-      "maxLength": 4096
+      "maxLength": 4096,
+      "pattern": "^[a-zA-Z0-9_\\-\\+\\./\\(\\)\\$\\p{Zs}]+$"
     },
     "Tags": {
       "description": "An array of key-value pairs to apply to this resource.",
       "type": "array",
-      "maxItems": 55,
+      "maxItems": 50,
       "uniqueItems": true,
       "insertionOrder": false,
       "items": {

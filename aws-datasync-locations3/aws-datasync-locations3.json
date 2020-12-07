@@ -32,7 +32,7 @@
         "Value": {
           "type": "string",
           "description": "The value for an AWS resource tag.",
-          "pattern": "^[a-zA-Z0-9\\s+=.:@/-]+$",
+          "pattern": "^[a-zA-Z0-9\\s+=._:@/-]+$",
           "maxLength": 256,
           "minLength": 1
         }
@@ -50,13 +50,14 @@
     "S3BucketArn": {
       "description": "The Amazon Resource Name (ARN) of the Amazon S3 bucket.",
       "type": "string",
-      "maxLength": 76,
-      "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):s3:::([^/]*)$"
+      "maxLength": 156,
+      "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):s3:[a-z\\-0-9]*:[0-9]*:.*$"
     },
     "Subdirectory": {
       "description": "A subdirectory in the Amazon S3 bucket. This subdirectory in Amazon S3 is used to read data from the S3 source location or write data to the S3 destination.",
       "type": "string",
-      "maxLength": 4096
+      "maxLength": 4096,
+      "pattern": "^[a-zA-Z0-9_\\-\\+\\./\\(\\)\\$\\p{Zs}]+$"
     },
     "S3StorageClass": {
       "description": "The Amazon S3 storage class you want to store your files in when this location is used as a task destination.",
@@ -74,7 +75,7 @@
     "Tags": {
       "description": "An array of key-value pairs to apply to this resource.",
       "type": "array",
-      "maxItems": 55,
+      "maxItems": 50,
       "uniqueItems": true,
       "insertionOrder": false,
       "items": {
