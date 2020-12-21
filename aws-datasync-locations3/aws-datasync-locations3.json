@@ -110,8 +110,6 @@
   "createOnlyProperties": [
     "/properties/S3Config",
     "/properties/S3BucketArn",
-    "/properties/BucketAccessRoleName",
-    "/properties/BucketName",
     "/properties/Subdirectory",
     "/properties/S3StorageClass"
   ],

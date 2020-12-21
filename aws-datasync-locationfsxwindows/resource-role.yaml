@@ -30,6 +30,7 @@ Resources:
                 - "datasync:ListTagsForResource"
                 - "datasync:TagResource"
                 - "datasync:UntagResource"
+                - "ec2:DescribeNetworkInterfaces"
                 - "ec2:DescribeSecurityGroups"
                 - "ec2:DescribeSubnets"
                 - "fsx:DescribeFileSystems"

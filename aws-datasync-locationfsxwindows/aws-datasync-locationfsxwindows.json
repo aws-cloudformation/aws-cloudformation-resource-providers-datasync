@@ -122,6 +122,7 @@
         "datasync:DescribeLocationFsxWindows",
         "datasync:ListTagsForResource",
         "fsx:DescribeFileSystems",
+        "ec2:DescribeNetworkInterfaces",
         "ec2:DescribeSubnets",
         "ec2:DescribeSecurityGroups"
       ]
