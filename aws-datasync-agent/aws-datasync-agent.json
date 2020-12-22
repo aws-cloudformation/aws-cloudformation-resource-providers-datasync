@@ -92,6 +92,9 @@
     }
   },
   "additionalProperties": false,
+  "required": [
+    "ActivationKey"
+  ],
   "readOnlyProperties": [
     "/properties/AgentArn",
     "/properties/EndpointType"
