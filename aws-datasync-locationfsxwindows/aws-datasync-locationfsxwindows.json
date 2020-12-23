@@ -94,6 +94,7 @@
   "additionalProperties": false,
   "required": [
     "User",
+    "Password",
     "SecurityGroupArns",
     "FsxFilesystemArn"
   ],
