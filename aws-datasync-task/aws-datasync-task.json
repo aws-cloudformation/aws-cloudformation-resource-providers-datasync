@@ -78,6 +78,7 @@
         "BytesPerSecond": {
           "description": "A value that limits the bandwidth used by AWS DataSync.",
           "type": "integer",
+          "format": "int64",
           "minimum": -1
         },
         "Gid": {
