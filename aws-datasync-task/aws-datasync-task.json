@@ -4,6 +4,7 @@
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-datasync.git",
   "definitions": {
     "FilterRule": {
+      "additionalProperties": false,
       "description": "Specifies which files folders and objects to include or exclude when transferring files from source to destination.",
       "type": "object",
       "properties": {
@@ -25,6 +26,7 @@
       }
     },
     "Tag": {
+      "additionalProperties": false,
       "description": "A key-value pair to associate with a resource.",
       "type": "object",
       "properties": {
@@ -49,6 +51,7 @@
       ]
     },
     "TaskSchedule": {
+      "additionalProperties": false,
       "description": "Specifies the schedule you want your task to use for repeated executions.",
       "type": "object",
       "properties": {
@@ -64,6 +67,7 @@
       ]
     },
     "Options": {
+      "additionalProperties": false,
       "description": "Represents the options that are available to control the behavior of a StartTaskExecution operation.",
       "type": "object",
       "properties": {
