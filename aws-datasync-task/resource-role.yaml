@@ -41,7 +41,6 @@ Resources:
                 - "elasticfilesystem:DescribeMountTargets"
                 - "fsx:DescribeFileSystems"
                 - "iam:GetRole"
-                - "iam:PassRole"
                 - "logs:DescribeLogGroups"
                 - "s3:ListAllMyBuckets"
                 - "s3:ListBucket"

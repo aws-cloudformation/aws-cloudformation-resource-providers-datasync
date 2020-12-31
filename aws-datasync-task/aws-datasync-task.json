@@ -320,8 +320,7 @@
         "elasticfilesystem:DescribeFileSystems",
         "elasticfilesystem:DescribeMountTargets",
         "logs:DescribeLogGroups",
-        "iam:GetRole",
-        "iam:PassRole"
+        "iam:GetRole"
       ]
     },
     "read": {
@@ -349,8 +348,7 @@
         "fsx:DescribeFileSystems",
         "elasticfilesystem:DescribeFileSystems",
         "elasticfilesystem:DescribeMountTargets",
-        "iam:GetRole",
-        "iam:PassRole"
+        "iam:GetRole"
       ]
     },
     "list": {
