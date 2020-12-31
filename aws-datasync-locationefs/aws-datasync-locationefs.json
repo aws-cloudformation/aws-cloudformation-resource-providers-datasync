@@ -4,6 +4,7 @@
   "sourceUrl": "https://github.com/aws-cloudformation/aws-cloudformation-resource-providers-datasync.git",
   "definitions": {
     "Ec2Config": {
+      "additionalProperties": false,
       "description": "The subnet and security group that DataSync uses to access target EFS file system.",
       "type": "object",
       "properties": {
@@ -31,6 +32,7 @@
       ]
     },
     "Tag": {
+      "additionalProperties": false,
       "description": "A key-value pair to associate with a resource.",
       "type": "object",
       "properties": {
