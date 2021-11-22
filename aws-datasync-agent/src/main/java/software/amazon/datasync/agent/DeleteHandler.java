@@ -29,7 +29,7 @@ public class DeleteHandler extends BaseHandlerStd {
         } catch (InternalException e) {
             throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
+            throw Translator.translateDataSyncExceptionToCfnException(e);
         }
 
         return ProgressEvent.defaultSuccessHandler(null);

@@ -1,9 +1,13 @@
 package software.amazon.datasync.locationefs;
 
 import software.amazon.awssdk.services.datasync.model.CreateLocationEfsRequest;
+import software.amazon.awssdk.services.datasync.model.DataSyncException;
 import software.amazon.awssdk.services.datasync.model.DeleteLocationRequest;
 import software.amazon.awssdk.services.datasync.model.DescribeLocationEfsRequest;
 import software.amazon.awssdk.services.datasync.model.ListLocationsRequest;
+import software.amazon.cloudformation.exceptions.BaseHandlerException;
+import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.cloudformation.exceptions.CfnThrottlingException;
 
 import java.util.Map;
 
@@ -57,4 +61,11 @@ public class Translator {
                 .build();
     }
 
+    public static BaseHandlerException translateDataSyncExceptionToCfnException(DataSyncException e) {
+        if (e.isThrottlingException()) {
+            return new CfnThrottlingException(e);
+        } else {
+            return new CfnGeneralServiceException(e.getMessage(), e.getCause());
+        }
+    }
 }

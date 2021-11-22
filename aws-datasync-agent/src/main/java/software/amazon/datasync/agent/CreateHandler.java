@@ -6,7 +6,6 @@ import software.amazon.awssdk.services.datasync.model.CreateAgentResponse;
 import software.amazon.awssdk.services.datasync.model.InternalException;
 import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
 import software.amazon.awssdk.services.datasync.model.DataSyncException;
-import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
 import software.amazon.cloudformation.proxy.*;
@@ -15,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CreateHandler extends BaseHandlerStd {
+    private static final String AWS_TAG_PREFIX = "aws:";
 
     public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
             final AmazonWebServicesClientProxy proxy,
@@ -30,10 +30,22 @@ public class CreateHandler extends BaseHandlerStd {
             throw new CfnInvalidRequestException("AgentArn cannot be specified to create an Agent.");
         }
 
-        // Get combined resource- and stack-level tags, since CFN stack stags are not in the model.
         Map<String, String> tagList = request.getDesiredResourceTags();
         if (tagList == null) {
             tagList = new HashMap<String, String>();
+        }
+
+        // Check for invalid requested system tags.
+        for (String key : tagList.keySet()) {
+            if (key.trim().toLowerCase().startsWith(AWS_TAG_PREFIX)) {
+                throw new CfnInvalidRequestException(key + " is an invalid key. aws: prefixed tag key names cannot be requested.");
+            }
+        }
+
+        //  Retrieve default stack-level tags with aws:cloudformation prefix.
+        Map<String, String> systemTagList = request.getSystemTags();
+        if (systemTagList != null) {
+            tagList.putAll(systemTagList);
         }
 
         CreateAgentRequest createAgentRequest = Translator.translateToCreateRequest(model, tagList);
@@ -46,7 +58,7 @@ public class CreateHandler extends BaseHandlerStd {
         } catch (InternalException e) {
             throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
+            throw Translator.translateDataSyncExceptionToCfnException(e);
         }
 
         ResourceModel returnModel = ResourceModel.builder()

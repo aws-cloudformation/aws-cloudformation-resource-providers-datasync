@@ -1,10 +1,14 @@
 package software.amazon.datasync.locationfsxwindows;
 
 import software.amazon.awssdk.services.datasync.model.CreateLocationFsxWindowsRequest;
+import software.amazon.awssdk.services.datasync.model.DataSyncException;
 import software.amazon.awssdk.services.datasync.model.DeleteLocationRequest;
 import software.amazon.awssdk.services.datasync.model.DescribeLocationFsxWindowsRequest;
 import software.amazon.awssdk.services.datasync.model.ListLocationsRequest;
 import software.amazon.awssdk.services.datasync.model.TagListEntry;
+import software.amazon.cloudformation.exceptions.BaseHandlerException;
+import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.cloudformation.exceptions.CfnThrottlingException;
 
 import java.util.Collections;
 import java.util.Map;
@@ -45,4 +49,11 @@ public class Translator {
                 .build();
     }
 
+    public static BaseHandlerException translateDataSyncExceptionToCfnException(DataSyncException e) {
+        if (e.isThrottlingException()) {
+            return new CfnThrottlingException(e);
+        } else {
+            return new CfnGeneralServiceException(e.getMessage(), e.getCause());
+        }
+    }
 }

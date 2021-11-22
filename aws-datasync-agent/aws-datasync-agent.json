@@ -46,6 +46,7 @@
     "SecurityGroupArns": {
       "description": "The ARNs of the security group used to protect your data transfer task subnets.",
       "type": "array",
+      "insertionOrder": false,
       "items": {
         "type": "string",
         "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:security-group/.*$",
@@ -55,6 +56,7 @@
     "SubnetArns": {
       "description": "The ARNs of the subnets in which DataSync will create elastic network interfaces for each data transfer task.",
       "type": "array",
+      "insertionOrder": false,
       "items": {
         "type": "string",
         "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):ec2:[a-z\\-0-9]*:[0-9]{12}:subnet/.*$",
@@ -92,6 +94,7 @@
       "maxLength": 128
     }
   },
+  "taggable": true,
   "additionalProperties": false,
   "required": [
     "ActivationKey"
@@ -108,6 +111,9 @@
     "/properties/SecurityGroupArns",
     "/properties/SubnetArns",
     "/properties/VpcEndpointId"
+  ],
+  "writeOnlyProperties": [
+    "/properties/ActivationKey"
   ],
   "handlers": {
     "create": {

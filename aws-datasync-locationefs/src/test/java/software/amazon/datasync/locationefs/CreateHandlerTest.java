@@ -16,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,7 +34,6 @@ public class CreateHandlerTest {
 
     @Mock
     private Logger logger;
-
 
 
     @BeforeEach
@@ -53,7 +54,7 @@ public class CreateHandlerTest {
                 DescribeLocationEfsResponse.builder()
                         .build();
 
-        final ListTagsForResourceResponse listTagsForResourceResponse = TagTestResources.buildDefaultTagsResponse();
+        final ListTagsForResourceResponse listTagsForResourceResponse = TagTestResources.buildTagsWithSystemTagResponse();
 
         doReturn(createLocationEfsResponse)
                 .when(proxy)
@@ -78,20 +79,43 @@ public class CreateHandlerTest {
 
         ResourceModel model = buildDefaultModel();
 
+        Map<String, String> mockSystemTag = new HashMap<String, String>() {{
+            put("aws:cloudformation:stackid", "123");
+        }};
+
         final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
                 .desiredResourceState(model)
+                .desiredResourceTags(TagTranslator.translateTagsToMap(TagTestResources.defaultTags))
+                .systemTags(mockSystemTag)
                 .build();
 
         final ProgressEvent<ResourceModel, CallbackContext> response
                 = handler.handleRequest(proxy, request, null, logger);
 
         assertThat(response).isNotNull();
+        assertThat(response.getResourceModel().getTags()).isEqualTo(TagTestResources.defaultTags);
         assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
         assertThat(response.getResourceModels()).isNull();
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
+    }
+
+    @Test
+    public void handleRequest_InvalidSystemTagRequest() {
+        final CreateHandler handler = new CreateHandler();
+
+        final ResourceModel model = buildDefaultModel();
+
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(model)
+                .desiredResourceTags(TagTranslator.translateTagsToMap(TagTestResources.TagsWithSystemTag))
+                .build();
+
+        assertThrows(CfnInvalidRequestException.class, () -> {
+            handler.handleRequest(proxy, request, null, logger);
+        });
     }
 
     @Test
@@ -110,7 +134,7 @@ public class CreateHandlerTest {
 
         assertThrows(CfnInvalidRequestException.class, () -> {
             handler.handleRequest(proxy, request, null, logger);
-        } );
+        });
     }
 
     @Test
@@ -129,7 +153,7 @@ public class CreateHandlerTest {
 
         assertThrows(CfnServiceInternalErrorException.class, () -> {
             handler.handleRequest(proxy, request, null, logger);
-        } );
+        });
     }
 
     @Test
@@ -148,7 +172,7 @@ public class CreateHandlerTest {
 
         assertThrows(CfnGeneralServiceException.class, () -> {
             handler.handleRequest(proxy, request, null, logger);
-        } );
+        });
     }
 
 

@@ -9,6 +9,7 @@ import software.amazon.awssdk.services.datasync.model.ListTagsForResourceRespons
 import software.amazon.awssdk.services.datasync.model.TagResourceRequest;
 import software.amazon.awssdk.services.datasync.model.UpdateAgentRequest;
 import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -25,7 +26,9 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -133,6 +136,73 @@ public class UpdateHandlerTest {
     }
 
     @Test
+    public void handleRequest_AddSystemTagForImportedResource() {
+        final UpdateHandler handler = new UpdateHandler();
+
+        final ResourceModel model = buildDefaultModel();
+        final ResourceModel updatedModel = buildDefaultModel();
+
+        when(proxy.injectCredentialsAndInvokeV2(any(), any())).thenAnswer(
+                new Answer() {
+                    final DescribeAgentResponse describeAgentResponse = buildDefaultResponse();
+                    ListTagsForResourceResponse listTagsForResourceResponse = buildDefaultTagsResponse();
+
+                    public Object answer(InvocationOnMock invocation) {
+                        Class type = invocation.getArgument(0).getClass();
+                        if (ListTagsForResourceRequest.class.equals(type)) {
+                            return listTagsForResourceResponse;
+                        } else if (TagResourceRequest.class.equals(type)) {
+                            listTagsForResourceResponse = buildTagsWithSystemTagResponse();
+                        }
+                        return describeAgentResponse;
+                    }
+                }
+        );
+
+        Map<String, String> mockSystemTag = new HashMap<String, String>() {{
+            put("aws:cloudformation:stackid", "123");
+        }};
+
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .previousResourceState(model)
+                .desiredResourceState(updatedModel)
+                .previousResourceTags(Translator.translateTagsToMap(defaultTags))
+                .systemTags(mockSystemTag)
+                .build();
+
+        final ProgressEvent<ResourceModel, CallbackContext> response
+                = handler.handleRequest(proxy, request, null, logger);
+
+        assertThat(response).isNotNull();
+        assertThat(response.getStatus()).isEqualTo(OperationStatus.SUCCESS);
+        assertThat(response.getCallbackContext()).isNull();
+        assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
+        assertThat(response.getResourceModel().getTags()).isEqualTo(defaultTags);
+        assertThat(response.getResourceModels()).isNull();
+        assertThat(response.getMessage()).isNull();
+        assertThat(response.getErrorCode()).isNull();
+    }
+
+    @Test
+    public void handleRequest_SystemTagInvalidAddRequest() {
+        final UpdateHandler handler = new UpdateHandler();
+
+        final ResourceModel model = buildDefaultModel();
+        final ResourceModel updatedModel = buildDefaultModel();
+
+        final ResourceHandlerRequest<ResourceModel> requestAddTag = ResourceHandlerRequest.<ResourceModel>builder()
+                .previousResourceState(model)
+                .previousResourceTags(Translator.translateTagsToMap(defaultTags))
+                .desiredResourceState(updatedModel)
+                .desiredResourceTags(Translator.translateTagsToMap(TagsWithSystemTag))
+                .build();
+
+        assertThrows(CfnInvalidRequestException.class, () -> {
+            handler.handleRequest(proxy, requestAddTag, null, logger);
+        });
+    }
+
+    @Test
     public void handleRequest_FailureNotFoundRequest() {
         final UpdateHandler handler = new UpdateHandler();
 
@@ -148,7 +218,7 @@ public class UpdateHandlerTest {
 
         assertThrows(CfnNotFoundException.class, () -> {
             handler.handleRequest(proxy, request, null, logger);
-        } );
+        });
     }
 
     @Test
@@ -167,7 +237,7 @@ public class UpdateHandlerTest {
 
         assertThrows(CfnServiceInternalErrorException.class, () -> {
             handler.handleRequest(proxy, request, null, logger);
-        } );
+        });
 
     }
 
@@ -187,7 +257,7 @@ public class UpdateHandlerTest {
 
         assertThrows(CfnGeneralServiceException.class, () -> {
             handler.handleRequest(proxy, request, null, logger);
-        } );
+        });
     }
 
     final static Set<Tag> defaultTags = new HashSet<Tag>(Arrays.asList(
@@ -200,6 +270,13 @@ public class UpdateHandlerTest {
             Tag.builder().key("Constant").value("Should remain").build(),
             Tag.builder().key("Update").value("Has been updated").build(),
             Tag.builder().key("Add").value("Should be added").build()
+    ));
+
+    final static Set<Tag> TagsWithSystemTag = new HashSet<Tag>(Arrays.asList(
+            Tag.builder().key("Constant").value("Should remain").build(),
+            Tag.builder().key("Update").value("Should be updated").build(),
+            Tag.builder().key("Delete").value("Should be deleted").build(),
+            Tag.builder().key("aws:cloudformation:stackid").value("123").build()
     ));
 
     private static ResourceModel buildDefaultModel() {
@@ -240,4 +317,9 @@ public class UpdateHandlerTest {
                 .build();
     }
 
+    private static ListTagsForResourceResponse buildTagsWithSystemTagResponse() {
+        return ListTagsForResourceResponse.builder()
+                .tags(Translator.translateTags(TagsWithSystemTag))
+                .build();
+    }
 }

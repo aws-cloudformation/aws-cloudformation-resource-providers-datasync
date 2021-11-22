@@ -17,7 +17,8 @@
             "maxLength": 128
           },
           "minItems": 1,
-          "maxItems": 5
+          "maxItems": 5,
+          "insertionOrder": false
         },
         "SubnetArn": {
           "description": "The ARN of the subnet that DataSync uses to access the target EFS file system.",
@@ -97,6 +98,7 @@
     }
   },
   "additionalProperties": false,
+  "taggable": true,
   "required": [
     "Ec2Config",
     "EfsFilesystemArn"
@@ -110,6 +112,10 @@
   ],
   "createOnlyProperties": [
     "/properties/Ec2Config",
+    "/properties/EfsFilesystemArn",
+    "/properties/Subdirectory"
+  ],
+  "writeOnlyProperties": [
     "/properties/EfsFilesystemArn",
     "/properties/Subdirectory"
   ],

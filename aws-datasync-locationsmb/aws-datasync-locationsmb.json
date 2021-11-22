@@ -55,7 +55,8 @@
         "maxLength": 128
       },
       "minItems": 1,
-      "maxItems": 4
+      "maxItems": 4,
+      "insertionOrder": false
     },
     "Domain": {
       "description": "The name of the Windows domain that the SMB server belongs to.",
@@ -116,6 +117,7 @@
       "maxLength": 4356
     }
   },
+  "taggable": true,
   "additionalProperties": false,
   "required": [
     "User",
@@ -132,16 +134,12 @@
     "/properties/LocationArn"
   ],
   "writeOnlyProperties": [
-    "/properties/Password"
+    "/properties/Password",
+    "/properties/Subdirectory",
+    "/properties/ServerHostname"
   ],
   "createOnlyProperties": [
-    "/properties/AgentArns",
-    "/properties/Domain",
-    "/properties/MountOptions",
-    "/properties/Password",
-    "/properties/ServerHostname",
-    "/properties/Subdirectory",
-    "/properties/User"
+    "/properties/ServerHostname"
   ],
   "handlers": {
     "create": {
@@ -162,7 +160,8 @@
         "datasync:DescribeLocationSmb",
         "datasync:ListTagsForResource",
         "datasync:TagResource",
-        "datasync:UntagResource"
+        "datasync:UntagResource",
+        "datasync:UpdateLocationSmb"
       ]
     },
     "delete": {
