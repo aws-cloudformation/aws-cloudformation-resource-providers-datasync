@@ -7,7 +7,6 @@ import software.amazon.awssdk.services.datasync.model.InternalException;
 import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
 import software.amazon.awssdk.services.datasync.model.ListAgentsRequest;
 import software.amazon.awssdk.services.datasync.model.ListAgentsResponse;
-import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -41,7 +40,7 @@ public class ListHandler extends BaseHandler<CallbackContext> {
         } catch (InternalException e) {
             throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
+            throw Translator.translateDataSyncExceptionToCfnException(e);
         }
 
         List<ResourceModel> models = new ArrayList<>();

@@ -6,7 +6,6 @@ import software.amazon.awssdk.services.datasync.model.DescribeLocationFsxWindows
 import software.amazon.awssdk.services.datasync.model.DescribeLocationFsxWindowsResponse;
 import software.amazon.awssdk.services.datasync.model.InternalException;
 import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
-import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -16,8 +15,10 @@ import software.amazon.cloudformation.proxy.OperationStatus;
 import software.amazon.cloudformation.proxy.ResourceHandlerRequest;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ReadHandler extends BaseHandler<CallbackContext> {
+    private static final String AWS_CFN_TAG_PREFIX = "aws:cloudformation:";
 
     @Override
     public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
@@ -40,21 +41,22 @@ public class ReadHandler extends BaseHandler<CallbackContext> {
         } catch (InternalException e) {
             throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
+            throw Translator.translateDataSyncExceptionToCfnException(e);
         }
 
         // Current tags are not supplied by the Describe call and must be retrieved separately
-        final Set<Tag> tags = TagRequestMaker.listTagsForResource(proxy, client, model.getLocationArn());
+        final Set<Tag> allTags = TagRequestMaker.listTagsForResource(proxy, client, model.getLocationArn());
+        final Set<Tag> userTags = allTags.stream()
+                .filter(tag -> !tag.getKey().startsWith(AWS_CFN_TAG_PREFIX)) // Filter our system tags on the user tags
+                .collect(Collectors.toSet());
 
         ResourceModel returnModel = ResourceModel.builder()
                 .locationArn(response.locationArn())
                 .locationUri(response.locationUri())
                 .domain(response.domain())
-                .fsxFilesystemArn(model.getFsxFilesystemArn())
                 .securityGroupArns(response.securityGroupArns())
-                .subdirectory(model.getSubdirectory())
                 .user(response.user())
-                .tags(tags)
+                .tags(userTags)
                 .build();
 
         return ProgressEvent.<ResourceModel, CallbackContext>builder()

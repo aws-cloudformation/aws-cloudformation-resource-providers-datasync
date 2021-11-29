@@ -7,7 +7,6 @@ import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
 import software.amazon.awssdk.services.datasync.model.ListTasksRequest;
 import software.amazon.awssdk.services.datasync.model.ListTasksResponse;
 import software.amazon.awssdk.services.datasync.model.TaskListEntry;
-import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -41,7 +40,7 @@ public class ListHandler extends BaseHandler<CallbackContext> {
         } catch (InternalException e) {
             throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
+            throw Translator.translateDataSyncExceptionToCfnException(e);
         }
 
         final List<ResourceModel> models = new ArrayList<>();

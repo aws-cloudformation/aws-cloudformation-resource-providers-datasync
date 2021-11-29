@@ -8,7 +8,6 @@ import software.amazon.awssdk.services.datasync.model.DescribeLocationObjectStor
 import software.amazon.awssdk.services.datasync.model.DescribeLocationObjectStorageResponse;
 import software.amazon.awssdk.services.datasync.model.InternalException;
 import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
-import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
 import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -21,13 +20,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CreateHandler extends BaseHandler<CallbackContext> {
+    private static final String AWS_TAG_PREFIX = "aws:";
 
     @Override
     public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
-        final AmazonWebServicesClientProxy proxy,
-        final ResourceHandlerRequest<ResourceModel> request,
-        final CallbackContext callbackContext,
-        final Logger logger) {
+            final AmazonWebServicesClientProxy proxy,
+            final ResourceHandlerRequest<ResourceModel> request,
+            final CallbackContext callbackContext,
+            final Logger logger) {
+
 
         if (callbackContext == null && (request.getDesiredResourceState().getLocationArn() != null)) {
             throw new CfnInvalidRequestException("LocationArn cannot be specified to create a location.");
@@ -36,10 +37,22 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         final ResourceModel model = request.getDesiredResourceState();
         final DataSyncClient client = ClientBuilder.getClient();
 
-        // In order to include stack-level tags, they must be retrieved separately from the model
         Map<String, String> tagList = request.getDesiredResourceTags();
         if (tagList == null) {
             tagList = new HashMap<String, String>();
+        }
+
+        // Check for invalid requested system tags.
+        for (String key : tagList.keySet()) {
+            if (key.trim().toLowerCase().startsWith(AWS_TAG_PREFIX)) {
+                throw new CfnInvalidRequestException(key + " is an invalid key. aws: prefixed tag key names cannot be requested.");
+            }
+        }
+
+        //  Retrieve default stack-level tags with aws:cloudformation prefix.
+        Map<String, String> systemTagList = request.getSystemTags();
+        if (systemTagList != null) {
+            tagList.putAll(systemTagList);
         }
 
         CreateLocationObjectStorageRequest createLocationObjectStorageRequest =
@@ -54,7 +67,7 @@ public class CreateHandler extends BaseHandler<CallbackContext> {
         } catch (InternalException e) {
             throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
+            throw Translator.translateDataSyncExceptionToCfnException(e);
         }
 
         final ResourceModel modelNoUri = ResourceModel.builder()

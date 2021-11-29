@@ -7,6 +7,9 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import software.amazon.awssdk.services.datasync.model.*;
+import software.amazon.cloudformation.exceptions.BaseHandlerException;
+import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.cloudformation.exceptions.CfnThrottlingException;
 
 public class Translator {
 
@@ -108,4 +111,11 @@ public class Translator {
         }).collect(Collectors.toSet());
     }
 
+    public static BaseHandlerException translateDataSyncExceptionToCfnException(DataSyncException e) {
+        if (e.isThrottlingException()) {
+            return new CfnThrottlingException(e);
+        } else {
+            return new CfnGeneralServiceException(e.getMessage(), e.getCause());
+        }
+    }
 }

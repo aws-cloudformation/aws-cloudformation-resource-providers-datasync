@@ -21,6 +21,13 @@ public class TagTestResources {
             Tag.builder().key("Add").value("Should be added").build()
     ));
 
+    final static Set<Tag> TagsWithSystemTag = new HashSet<Tag>(Arrays.asList(
+            Tag.builder().key("Constant").value("Should remain").build(),
+            Tag.builder().key("Update").value("Should be updated").build(),
+            Tag.builder().key("Delete").value("Should be deleted").build(),
+            Tag.builder().key("aws:cloudformation:stackid").value("123").build()
+    ));
+
     static ListTagsForResourceResponse buildDefaultTagsResponse() {
         return ListTagsForResourceResponse.builder()
                 .tags(TagTranslator.translateTags(defaultTags))
@@ -30,6 +37,12 @@ public class TagTestResources {
     static ListTagsForResourceResponse buildUpdatedTagsResponse() {
         return ListTagsForResourceResponse.builder()
                 .tags(TagTranslator.translateTags(updatedTags))
+                .build();
+    }
+
+    static ListTagsForResourceResponse buildTagsWithSystemTagResponse() {
+        return ListTagsForResourceResponse.builder()
+                .tags(TagTranslator.translateTags(TagsWithSystemTag))
                 .build();
     }
 }

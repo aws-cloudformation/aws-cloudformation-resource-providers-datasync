@@ -1,9 +1,13 @@
 package software.amazon.datasync.task;
 import software.amazon.awssdk.services.datasync.model.CreateTaskRequest;
+import software.amazon.awssdk.services.datasync.model.DataSyncException;
 import software.amazon.awssdk.services.datasync.model.DeleteTaskRequest;
 import software.amazon.awssdk.services.datasync.model.DescribeTaskRequest;
 import software.amazon.awssdk.services.datasync.model.ListTasksRequest;
 import software.amazon.awssdk.services.datasync.model.UpdateTaskRequest;
+import software.amazon.cloudformation.exceptions.BaseHandlerException;
+import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.cloudformation.exceptions.CfnThrottlingException;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,7 +24,8 @@ public class Translator {
         return CreateTaskRequest.builder()
                 .cloudWatchLogGroupArn(model.getCloudWatchLogGroupArn())
                 .destinationLocationArn(model.getDestinationLocationArn())
-                .excludes(translateToDataSyncExcludes(model.getExcludes()))
+                .excludes(translateToDataSyncFilterRules(model.getExcludes()))
+                .includes(translateToDataSyncFilterRules(model.getIncludes()))
                 .name(model.getName())
                 .options(translateToDataSyncOptions(model.getOptions()))
                 .schedule(translateToDataSyncTaskSchedule(model.getSchedule()))
@@ -53,7 +58,8 @@ public class Translator {
             model.setSchedule(TaskSchedule.builder().scheduleExpression("").build());
         return UpdateTaskRequest.builder()
                 .cloudWatchLogGroupArn(model.getCloudWatchLogGroupArn())
-                .excludes(translateToDataSyncExcludes(model.getExcludes()))
+                .excludes(translateToDataSyncFilterRules(model.getExcludes()))
+                .includes(translateToDataSyncFilterRules(model.getIncludes()))
                 .name(model.getName())
                 .options(translateToDataSyncOptions(model.getOptions()))
                 .schedule(translateToDataSyncTaskSchedule(model.getSchedule()))
@@ -61,20 +67,20 @@ public class Translator {
                 .build();
     }
 
-    public static List<FilterRule> translateToResourceModelExcludes(
+    public static List<FilterRule> translateToResourceModelFilterRules(
             final List<software.amazon.awssdk.services.datasync.model.FilterRule> filterRules) {
         if (filterRules == null)
             return Collections.emptyList();
-        Set<FilterRule> excludesAsSet = filterRules.stream()
+        Set<FilterRule> filterRulesAsSet = filterRules.stream()
                 .map(filterRule -> software.amazon.datasync.task.FilterRule.builder()
                         .value(filterRule.value())
                         .filterType(filterRule.filterTypeAsString())
                         .build())
                 .collect(Collectors.toSet());
-        return new ArrayList<>(excludesAsSet);
+        return new ArrayList<>(filterRulesAsSet);
     }
 
-    private static Set<software.amazon.awssdk.services.datasync.model.FilterRule> translateToDataSyncExcludes(
+    private static Set<software.amazon.awssdk.services.datasync.model.FilterRule> translateToDataSyncFilterRules(
             final List<software.amazon.datasync.task.FilterRule> filterRules) {
         if (filterRules == null)
             return Collections.emptySet();
@@ -103,6 +109,8 @@ public class Translator {
                 .taskQueueing(options.taskQueueingAsString())
                 .uid(options.uidAsString())
                 .verifyMode(options.verifyModeAsString())
+                .securityDescriptorCopyFlags(options.securityDescriptorCopyFlagsAsString())
+                .transferMode(options.transferModeAsString())
                 .build();
 
     }
@@ -124,6 +132,8 @@ public class Translator {
                 .taskQueueing(options.getTaskQueueing())
                 .uid(options.getUid())
                 .verifyMode(options.getVerifyMode())
+                .securityDescriptorCopyFlags(options.getSecurityDescriptorCopyFlags())
+                .transferMode(options.getTransferMode())
                 .build();
     }
 
@@ -145,4 +155,11 @@ public class Translator {
                 .build();
     }
 
+    public static BaseHandlerException translateDataSyncExceptionToCfnException(DataSyncException e) {
+        if (e.isThrottlingException()) {
+            return new CfnThrottlingException(e);
+        } else {
+            return new CfnGeneralServiceException(e.getMessage(), e.getCause());
+        }
+    }
 }

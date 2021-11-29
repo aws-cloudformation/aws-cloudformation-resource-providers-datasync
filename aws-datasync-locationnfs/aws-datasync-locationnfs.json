@@ -34,7 +34,8 @@
             "maxLength": 128
           },
           "minItems": 1,
-          "maxItems": 4
+          "maxItems": 4,
+          "insertionOrder": false
         }
       },
       "required": [
@@ -112,6 +113,7 @@
       "maxLength": 4356
     }
   },
+  "taggable": true,
   "additionalProperties": false,
   "required": [
     "OnPremConfig",
@@ -126,8 +128,9 @@
     "/properties/LocationArn"
   ],
   "createOnlyProperties": [
-    "/properties/MountOptions",
-    "/properties/OnPremConfig",
+    "/properties/ServerHostname"
+  ],
+  "writeOnlyProperties": [
     "/properties/ServerHostname",
     "/properties/Subdirectory"
   ],
@@ -150,7 +153,8 @@
         "datasync:DescribeLocationNfs",
         "datasync:ListTagsForResource",
         "datasync:TagResource",
-        "datasync:UntagResource"
+        "datasync:UntagResource",
+        "datasync:UpdateLocationNfs"
       ]
     },
     "delete": {

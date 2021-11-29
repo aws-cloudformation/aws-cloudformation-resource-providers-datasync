@@ -1,12 +1,17 @@
 package software.amazon.datasync.locationnfs;
 
 import software.amazon.awssdk.services.datasync.model.CreateLocationNfsRequest;
+import software.amazon.awssdk.services.datasync.model.DataSyncException;
 import software.amazon.awssdk.services.datasync.model.DeleteLocationRequest;
 import software.amazon.awssdk.services.datasync.model.DescribeLocationNfsRequest;
+import software.amazon.awssdk.services.datasync.model.UpdateLocationNfsRequest;
 import software.amazon.awssdk.services.datasync.model.ListLocationsRequest;
 import software.amazon.awssdk.services.datasync.model.NfsMountOptions;
 import software.amazon.awssdk.services.datasync.model.OnPremConfig;
 import software.amazon.awssdk.services.datasync.model.TagListEntry;
+import software.amazon.cloudformation.exceptions.BaseHandlerException;
+import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.cloudformation.exceptions.CfnThrottlingException;
 
 import java.util.Collections;
 import java.util.Map;
@@ -36,6 +41,15 @@ public class Translator {
     public static DescribeLocationNfsRequest translateToReadRequest(final String locationArn) {
         return DescribeLocationNfsRequest.builder()
                 .locationArn(locationArn)
+                .build();
+    }
+
+    public static UpdateLocationNfsRequest translateToUpdateRequest(final ResourceModel model) {
+        return UpdateLocationNfsRequest.builder()
+                .locationArn(model.getLocationArn())
+                .mountOptions(translateToDataSyncMountOptions(model.getMountOptions()))
+                .onPremConfig(translateToDataSyncOnPremConfig(model.getOnPremConfig()))
+                .subdirectory(model.getSubdirectory())
                 .build();
     }
 
@@ -78,5 +92,13 @@ public class Translator {
         return software.amazon.datasync.locationnfs.OnPremConfig.builder()
                 .agentArns(onPremConfig.agentArns())
                 .build();
+    }
+
+    public static BaseHandlerException translateDataSyncExceptionToCfnException(DataSyncException e) {
+        if (e.isThrottlingException()) {
+            return new CfnThrottlingException(e);
+        } else {
+            return new CfnGeneralServiceException(e.getMessage(), e.getCause());
+        }
     }
 }

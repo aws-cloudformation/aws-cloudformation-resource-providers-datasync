@@ -1,11 +1,16 @@
 package software.amazon.datasync.locationsmb;
 
 import software.amazon.awssdk.services.datasync.model.CreateLocationSmbRequest;
+import software.amazon.awssdk.services.datasync.model.DataSyncException;
 import software.amazon.awssdk.services.datasync.model.DeleteLocationRequest;
+import software.amazon.awssdk.services.datasync.model.UpdateLocationSmbRequest;
 import software.amazon.awssdk.services.datasync.model.DescribeLocationSmbRequest;
 import software.amazon.awssdk.services.datasync.model.ListLocationsRequest;
 import software.amazon.awssdk.services.datasync.model.SmbMountOptions;
 import software.amazon.awssdk.services.datasync.model.TagListEntry;
+import software.amazon.cloudformation.exceptions.BaseHandlerException;
+import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.cloudformation.exceptions.CfnThrottlingException;
 
 import java.util.Collections;
 import java.util.Map;
@@ -47,6 +52,18 @@ public class Translator {
                 .build();
     }
 
+    public static UpdateLocationSmbRequest translateToUpdateRequest(final ResourceModel model) {
+        return UpdateLocationSmbRequest.builder()
+                .locationArn(model.getLocationArn())
+                .subdirectory(model.getSubdirectory())
+                .user(model.getUser())
+                .domain(model.getDomain())
+                .password(model.getPassword())
+                .mountOptions(translateToDataSyncMountOptions(model.getMountOptions()))
+                .agentArns(model.getAgentArns())
+                .build();
+    }
+
     private static SmbMountOptions translateToDataSyncMountOptions(MountOptions mountOptions) {
         if (mountOptions == null)
             return null;
@@ -62,5 +79,13 @@ public class Translator {
         return MountOptions.builder()
                 .version(mountOptions.versionAsString())
                 .build();
+    }
+
+    public static BaseHandlerException translateDataSyncExceptionToCfnException(DataSyncException e) {
+        if (e.isThrottlingException()) {
+            return new CfnThrottlingException(e);
+        } else {
+            return new CfnGeneralServiceException(e.getMessage(), e.getCause());
+        }
     }
 }

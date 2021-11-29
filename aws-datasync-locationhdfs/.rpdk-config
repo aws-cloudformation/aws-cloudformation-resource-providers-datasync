@@ -1,0 +1,17 @@
+{
+    "typeName": "AWS::DataSync::LocationHDFS",
+    "language": "java",
+    "runtime": "java8",
+    "entrypoint": "software.amazon.datasync.locationhdfs.HandlerWrapper::handleRequest",
+    "testEntrypoint": "software.amazon.datasync.locationhdfs.HandlerWrapper::testEntrypoint",
+    "settings": {
+        "namespace": [
+            "software",
+            "amazon",
+            "datasync",
+            "locationhdfs"
+        ],
+        "codegen_template_path": "default",
+        "protocolVersion": "2.0.0"
+    }
+}

@@ -46,7 +46,8 @@
         "pattern": "^arn:(aws|aws-cn|aws-us-gov|aws-iso|aws-iso-b):datasync:[a-z\\-0-9]+:[0-9]{12}:agent/agent-[0-9a-z]{17}$"
       },
       "minItems": 1,
-      "maxItems": 4
+      "maxItems": 4,
+      "insertionOrder": false
     },
     "BucketName": {
       "description": "The name of the bucket on the self-managed object storage server.",
@@ -111,6 +112,7 @@
       "maxLength": 4356
     }
   },
+  "taggable": true,
   "additionalProperties": false,
   "required": [
     "AgentArns",
@@ -122,20 +124,17 @@
     "/properties/LocationUri"
   ],
   "writeOnlyProperties": [
-    "/properties/SecretKey"
+    "/properties/SecretKey",
+    "/properties/BucketName",
+    "/properties/ServerHostname",
+    "/properties/Subdirectory"
   ],
   "primaryIdentifier": [
     "/properties/LocationArn"
   ],
   "createOnlyProperties": [
-    "/properties/AccessKey",
-    "/properties/AgentArns",
     "/properties/BucketName",
-    "/properties/SecretKey",
-    "/properties/ServerHostname",
-    "/properties/ServerPort",
-    "/properties/ServerProtocol",
-    "/properties/Subdirectory"
+    "/properties/ServerHostname"
   ],
   "handlers": {
     "create": {
@@ -156,7 +155,8 @@
         "datasync:DescribeLocationObjectStorage",
         "datasync:ListTagsForResource",
         "datasync:TagResource",
-        "datasync:UntagResource"
+        "datasync:UntagResource",
+        "datasync:UpdateLocationObjectStorage"
       ]
     },
     "delete": {

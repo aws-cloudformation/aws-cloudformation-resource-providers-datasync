@@ -10,7 +10,7 @@ import software.amazon.awssdk.services.datasync.model.InvalidRequestException;
 import software.amazon.awssdk.services.datasync.model.TagResourceRequest;
 import software.amazon.awssdk.services.datasync.model.UntagResourceRequest;
 import software.amazon.awssdk.services.datasync.model.UpdateAgentRequest;
-import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class UpdateHandler extends BaseHandler<CallbackContext> {
+    private static final String AWS_TAG_PREFIX = "aws:";
 
     @Override
     public ProgressEvent<ResourceModel, CallbackContext> handleRequest(
@@ -47,7 +48,7 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
         } catch (InternalException e) {
             throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
+            throw Translator.translateDataSyncExceptionToCfnException(e);
         }
 
         // Since tags are not maintained by the update request, we must manually calculate
@@ -67,6 +68,7 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
                 prevTagList.keySet(),
                 tagList.keySet()
         );
+
         if (!keysToRemove.isEmpty()) {
             UntagResourceRequest untagResourceRequest = Translator.translateToUntagResourceRequest(
                     keysToRemove, currentModel.getAgentArn());
@@ -86,6 +88,16 @@ public class UpdateHandler extends BaseHandler<CallbackContext> {
             return Tag.builder().key(entry.getKey()).value(entry.getValue().leftValue()).build();
         }).collect(Collectors.toSet());
         tagsToAdd.addAll(Translator.translateMapToTags(mapDifference.entriesOnlyOnLeft()));
+
+        for (Tag tag: tagsToAdd) {
+            if (tag.getKey().trim().toLowerCase().startsWith(AWS_TAG_PREFIX)) {
+                throw new CfnInvalidRequestException(tag.getKey() + " is an invalid key. aws: prefixed tag key names cannot be requested.");
+            }
+        }
+
+        if (request.getPreviousSystemTags() == null && request.getSystemTags() != null) {
+            tagsToAdd.addAll(Translator.translateMapToTags(request.getSystemTags()));
+        }
 
         if (!tagsToAdd.isEmpty()) {
             TagResourceRequest tagResourceRequest = Translator.translateToTagResourceRequest(

@@ -144,6 +144,15 @@
             "PRESERVE"
           ]
         },
+        "SecurityDescriptorCopyFlags": {
+          "description": "A value that determines which components of the SMB security descriptor are copied during transfer.",
+          "type": "string",
+          "enum": [
+            "NONE",
+            "OWNER_DACL",
+            "OWNER_DACL_SACL"
+          ]
+        },
         "TaskQueueing": {
           "description": "A value that determines whether tasks should be queued before executing the tasks.",
           "type": "string",
@@ -188,7 +197,8 @@
         "type": "string",
         "pattern": "^arn:aws[\\-a-z]{0,}:ec2:[a-z\\-0-9]*:[0-9]{12}:network-interface/eni-[0-9a-f]+$"
       },
-      "maxItems": 128
+      "maxItems": 128,
+      "insertionOrder": false
     },
     "DestinationNetworkInterfaceArns": {
       "description": "The Amazon Resource Names (ARNs) of the destination ENIs (Elastic Network Interfaces) that were created for your subnet.",
@@ -197,7 +207,8 @@
         "type": "string",
         "pattern": "^arn:aws[\\-a-z]{0,}:ec2:[a-z\\-0-9]*:[0-9]{12}:network-interface/eni-[0-9a-f]+$"
       },
-      "maxItems": 128
+      "maxItems": 128,
+      "insertionOrder": false
     }
   },
   "properties": {
@@ -207,7 +218,17 @@
       "maxItems": 1,
       "items": {
         "$ref": "#/definitions/FilterRule"
-      }
+      },
+      "insertionOrder": false
+    },
+    "Includes": {
+      "type": "array",
+      "minItems": 0,
+      "maxItems": 1,
+      "items": {
+        "$ref": "#/definitions/FilterRule"
+      },
+      "insertionOrder": false
     },
     "Tags": {
       "description": "An array of key-value pairs to apply to this resource.",
@@ -282,6 +303,7 @@
       "$ref": "#/definitions/DestinationNetworkInterfaceArns"
     }
   },
+  "taggable": true,
   "additionalProperties": false,
   "required": [
     "DestinationLocationArn",

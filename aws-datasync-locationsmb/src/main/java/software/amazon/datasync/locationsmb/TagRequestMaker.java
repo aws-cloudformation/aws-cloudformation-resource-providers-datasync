@@ -5,7 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import software.amazon.awssdk.services.datasync.DataSyncClient;
 import software.amazon.awssdk.services.datasync.model.*;
-import software.amazon.cloudformation.exceptions.CfnGeneralServiceException;
+import software.amazon.cloudformation.exceptions.CfnInvalidRequestException;
 import software.amazon.cloudformation.exceptions.CfnNotFoundException;
 import software.amazon.cloudformation.exceptions.CfnServiceInternalErrorException;
 import software.amazon.cloudformation.proxy.AmazonWebServicesClientProxy;
@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
  * API calls, these methods make the appropriate tag-specific API requests.
  */
 public class TagRequestMaker {
+    private static final String AWS_TAG_PREFIX = "aws:";
 
     /**
      * Retrieve the tags associated with the given resource.
@@ -46,7 +47,7 @@ public class TagRequestMaker {
         } catch (InternalException e) {
             throw new CfnServiceInternalErrorException(e.getMessage(), e.getCause());
         } catch (DataSyncException e) {
-            throw new CfnGeneralServiceException(e.getMessage(), e.getCause());
+            throw Translator.translateDataSyncExceptionToCfnException(e);
         }
 
         if (tagsResponse.tags() != null) {
@@ -86,6 +87,13 @@ public class TagRequestMaker {
                 prevTagList.keySet(),
                 tagList.keySet()
         );
+
+        for (String key : keysToRemove) {
+            if (key.trim().toLowerCase().startsWith(AWS_TAG_PREFIX)) {
+                throw new CfnInvalidRequestException(key + " is an invalid key. aws: prefixed tag key names cannot be removed.");
+            }
+        }
+
         if (!keysToRemove.isEmpty()) {
             UntagResourceRequest untagResourceRequest = TagTranslator.translateToUntagResourceRequest(
                     keysToRemove, resourceArn);
@@ -105,6 +113,16 @@ public class TagRequestMaker {
             return Tag.builder().key(entry.getKey()).value(entry.getValue().leftValue()).build();
         }).collect(Collectors.toSet());
         tagsToAdd.addAll(TagTranslator.translateMapToTags(mapDifference.entriesOnlyOnLeft()));
+
+        for (Tag tag : tagsToAdd) {
+            if (tag.getKey().trim().toLowerCase().startsWith(AWS_TAG_PREFIX)) {
+                throw new CfnInvalidRequestException(tag.getKey() + " is an invalid key. aws: prefixed tag key names cannot be requested.");
+            }
+        }
+
+        if (request.getPreviousSystemTags() == null && request.getSystemTags() != null) {
+            tagsToAdd.addAll(TagTranslator.translateMapToTags(request.getSystemTags()));
+        }
 
         if (!tagsToAdd.isEmpty()) {
             TagResourceRequest tagResourceRequest = TagTranslator.translateToTagResourceRequest(

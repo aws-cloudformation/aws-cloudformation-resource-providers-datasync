@@ -16,6 +16,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import software.amazon.cloudformation.proxy.*;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 
@@ -76,10 +80,30 @@ public class CreateHandlerTest {
         assertThat(response.getCallbackContext()).isNull();
         assertThat(response.getCallbackDelaySeconds()).isEqualTo(0);
         assertThat(response.getResourceModels()).isNull();
-        assertThat(response.getResourceModel()).hasFieldOrPropertyWithValue("agentName", "MyAgent");
         assertThat(response.getMessage()).isNull();
         assertThat(response.getErrorCode()).isNull();
     }
+
+    @Test
+    public void handleRequest_InvalidSystemTagRequest() {
+        final CreateHandler handler = new CreateHandler();
+
+        final ResourceModel model = buildDefaultModel();
+
+        Set<Tag> TagsWithSystemTag = new HashSet<Tag>(Arrays.asList(
+                Tag.builder().key("aws:cloudformation:stackid").value("100").build()
+        ));
+
+        final ResourceHandlerRequest<ResourceModel> request = ResourceHandlerRequest.<ResourceModel>builder()
+                .desiredResourceState(model)
+                .desiredResourceTags(Translator.translateTagsToMap(TagsWithSystemTag))
+                .build();
+
+        assertThrows(CfnInvalidRequestException.class, () -> {
+            handler.handleRequest(proxy, request, null, proxyClient, logger);
+        } );
+    }
+
 
     @Test
     public void handleRequest_FailureInvalidRequest() {
