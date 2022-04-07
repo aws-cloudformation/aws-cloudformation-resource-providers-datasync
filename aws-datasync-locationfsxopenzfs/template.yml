@@ -21,4 +21,3 @@ Resources:
       Handler: software.amazon.datasync.locationfsxopenzfs.HandlerWrapper::testEntrypoint
       Runtime: java8
       CodeUri: ./target/aws-datasync-locationfsxopenzfs-handler-1.0-SNAPSHOT.jar
-
