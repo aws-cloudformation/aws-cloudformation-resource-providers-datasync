@@ -1,0 +1,20 @@
+{
+    "artifact_type": "RESOURCE",
+    "typeName": "AWS::DataSync::StorageSystem",
+    "language": "java",
+    "runtime": "java8",
+    "entrypoint": "software.amazon.datasync.storagesystem.HandlerWrapper::handleRequest",
+    "testEntrypoint": "software.amazon.datasync.storagesystem.HandlerWrapper::testEntrypoint",
+    "settings": {
+        "namespace": [
+            "software",
+            "amazon",
+            "datasync",
+            "storagesystem"
+        ],
+        "codegen_template_path": "default",
+        "protocolVersion": "2.0.0"
+    },
+    "logProcessorEnabled": "true",
+    "executableEntrypoint": "software.amazon.datasync.storagesystem.HandlerWrapperExecutable"
+}
